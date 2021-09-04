@@ -3,18 +3,6 @@
 	"version": "0.0.1",
 	"description": "A powerful library for interacting with the Discord API",
 	"main": "./src/index",
-	"scripts": {
-		"build:browser": "webpack",
-		"docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
-		"docs:test": "docgen --source src --custom docs/index.yml",
-		"lint": "eslint src",
-		"lint:fix": "eslint src --fix",
-		"lint:typings": "tslint typings/index.d.ts",
-		"prepublishOnly": "npm run test && cross-env NODE_ENV=production npm run build:browser",
-		"prettier": "prettier --write src/**/*.js typings/**/*.ts",
-		"test": "npm run lint && npm run docs:test && npm run lint:typings",
-		"test:typescript": "tsc"
-	},
 	"dependencies": {
 		"@discordjs/collection": "^0.1.6",
 		"@discordjs/form-data": "^3.0.1",
