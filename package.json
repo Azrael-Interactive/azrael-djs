@@ -1,59 +1,58 @@
 {
-  "name": "azrael-djs",
-  "version": "0.0.1",
-  "description": "A powerful library for interacting with the Discord API",
-  "main": "./src/index",
-  "scripts": {
-    "build:browser": "webpack",
-    "docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
-    "docs:test": "docgen --source src --custom docs/index.yml",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "lint:typings": "tslint typings/index.d.ts",
-    "prepublishOnly": "npm run test && cross-env NODE_ENV=production npm run build:browser",
-    "prettier": "prettier --write src/**/*.js typings/**/*.ts",
-    "test": "npm run lint && npm run docs:test && npm run lint:typings",
-    "test:typescript": "tsc"
-  },
-  "dependencies": {
-    "@discordjs/collection": "^0.1.6",
-    "@discordjs/form-data": "^3.0.1",
-    "abort-controller": "^3.0.0",
-    "node-fetch": "2.6.1",
-    "prism-media": "^1.2.9",
-    "setimmediate": "^1.0.5",
-    "tweetnacl": "^1.0.3",
-    "ws": "^7.4.4"
-  },
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "exports": {
-    ".": [
-      {
-        "require": "./src/index.js",
-        "import": "./esm/discord.mjs"
-      },
-      "./src/index.js"
-    ],
-    "./esm": "./esm/discord.mjs"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Azrael-Interactive/azrael-djs.git"
-  },
-  "keywords": [
-    "discord",
-    "api",
-    "bot",
-    "client",
-    "node",
-    "discordapp",
-    "azrael"
-  ],
-  "author": {
-    "name": "Azrael Interactive LLC",
-    "email": "legal@azrael.gg"
-  },
-  "license": "Apache-2.0",
+	"name": "azrael-djs",
+	"version": "0.0.1",
+	"description": "A powerful library for interacting with the Discord API",
+	"main": "./src/index",
+	"scripts": {
+		"build:browser": "webpack",
+		"docs": "docgen --source src --custom docs/index.yml --output docs/docs.json",
+		"docs:test": "docgen --source src --custom docs/index.yml",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"lint:typings": "tslint typings/index.d.ts",
+		"prepublishOnly": "npm run test && cross-env NODE_ENV=production npm run build:browser",
+		"prettier": "prettier --write src/**/*.js typings/**/*.ts",
+		"test": "npm run lint && npm run docs:test && npm run lint:typings",
+		"test:typescript": "tsc"
+	},
+	"dependencies": {
+		"@discordjs/collection": "^0.1.6",
+		"@discordjs/form-data": "^3.0.1",
+		"abort-controller": "^3.0.0",
+		"node-fetch": "2.6.1",
+		"prism-media": "^1.2.9",
+		"setimmediate": "^1.0.5",
+		"tweetnacl": "^1.0.3",
+		"ws": "^7.4.4"
+	},
+	"engines": {
+		"node": ">=12.0.0"
+	},
+	"exports": {
+		".": [{
+				"require": "./src/index.js",
+				"import": "./esm/discord.mjs"
+			},
+			"./src/index.js"
+		],
+		"./esm": "./esm/discord.mjs"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Azrael-Interactive/azrael-djs.git"
+	},
+	"keywords": [
+		"discord",
+		"api",
+		"bot",
+		"client",
+		"node",
+		"discordapp",
+		"azrael"
+	],
+	"author": {
+		"name": "Azrael Interactive LLC",
+		"email": "legal@azrael.gg"
+	},
+	"license": "Apache-2.0"
 }
