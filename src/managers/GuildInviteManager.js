@@ -79,7 +79,7 @@ class GuildInviteManager extends CachedManager {
   /**
    * Options used to fetch all invites from a guild.
    * @typedef {Object} FetchInvitesOptions
-   * @property {GuildInvitableChannelResolvable} [channelId]
+   * @property {GuildInvitableChannelResolvable} [channelID]
    * The channel to fetch all invites from
    * @property {boolean} [cache=true] Whether or not to cache the fetched invites
    */
@@ -100,7 +100,7 @@ class GuildInviteManager extends CachedManager {
    *   .catch(console.error);
    * @example
    * // Fetch all invites from a channel
-   * guild.invites.fetch({ channelId: '222197033908436994' })
+   * guild.invites.fetch({ channelID: '222197033908436994' })
    *   .then(console.log)
    *   .catch(console.error);
    * @example
@@ -127,8 +127,8 @@ class GuildInviteManager extends CachedManager {
       return this._fetchSingle({ code, cache: true });
     }
     if (!options.code) {
-      if (options.channelId) {
-        const id = this.guild.channels.resolveId(options.channelId);
+      if (options.channelID) {
+        const id = this.guild.channels.resolveId(options.channelID);
         if (!id) return Promise.reject(new Error('GUILD_CHANNEL_RESOLVE'));
         return this._fetchChannelMany(id, options.cache);
       }
@@ -159,8 +159,8 @@ class GuildInviteManager extends CachedManager {
     return data.reduce((col, invite) => col.set(invite.code, this._add(invite, cache)), new Collection());
   }
 
-  async _fetchChannelMany(channelId, cache) {
-    const data = await this.client.api.channels(channelId).invites.get();
+  async _fetchChannelMany(channelID, cache) {
+    const data = await this.client.api.channels(channelID).invites.get();
     return data.reduce((col, invite) => col.set(invite.code, this._add(invite, cache)), new Collection());
   }
 

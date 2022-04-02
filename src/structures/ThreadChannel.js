@@ -26,7 +26,7 @@ class ThreadChannel extends Channel {
      * The id of the guild the channel is in
      * @type {Snowflake}
      */
-    this.guildId = guild?.id ?? data.guild_id;
+    this.guildID = guild?.id ?? data.guild_id;
 
     /**
      * A manager of the messages sent to this thread
@@ -54,7 +54,7 @@ class ThreadChannel extends Channel {
     }
 
     if ('guild_id' in data) {
-      this.guildId = data.guild_id;
+      this.guildID = data.guild_id;
     }
 
     if ('parent_id' in data) {
@@ -113,9 +113,9 @@ class ThreadChannel extends Channel {
        * The id of the member who created this thread
        * @type {?Snowflake}
        */
-      this.ownerId = data.owner_id;
+      this.ownerID = data.owner_id;
     } else {
-      this.ownerId ??= null;
+      this.ownerID ??= null;
     }
 
     if ('last_message_id' in data) {
@@ -236,19 +236,19 @@ class ThreadChannel extends Channel {
 
   /**
    * Fetches the owner of this thread. If the thread member object isn't needed,
-   * use {@link ThreadChannel#ownerId} instead.
+   * use {@link ThreadChannel#ownerID} instead.
    * @param {BaseFetchOptions} [options] The options for fetching the member
    * @returns {Promise<?ThreadMember>}
    */
   async fetchOwner({ cache = true, force = false } = {}) {
     if (!force) {
-      const existing = this.members.cache.get(this.ownerId);
+      const existing = this.members.cache.get(this.ownerID);
       if (existing) return existing;
     }
 
     // We cannot fetch a single thread member, as of this commit's date, Discord API responds with 405
     const members = await this.members.fetch(cache);
-    return members.get(this.ownerId) ?? null;
+    return members.get(this.ownerID) ?? null;
   }
 
   /**
@@ -413,7 +413,7 @@ class ThreadChannel extends Channel {
    */
   get editable() {
     return (
-      (this.ownerId === this.client.user.id && (this.type !== 'GUILD_PRIVATE_THREAD' || this.joined)) || this.manageable
+      (this.ownerID === this.client.user.id && (this.type !== 'GUILD_PRIVATE_THREAD' || this.joined)) || this.manageable
     );
   }
 
@@ -456,7 +456,7 @@ class ThreadChannel extends Channel {
    * @readonly
    */
   get viewable() {
-    if (this.client.user.id === this.guild.ownerId) return true;
+    if (this.client.user.id === this.guild.ownerID) return true;
     const permissions = this.permissionsFor(this.client.user);
     if (!permissions) return false;
     return permissions.has(Permissions.FLAGS.VIEW_CHANNEL, false);

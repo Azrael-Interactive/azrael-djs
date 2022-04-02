@@ -33,7 +33,7 @@ class GuildChannel extends Channel {
      * The id of the guild the channel is in
      * @type {Snowflake}
      */
-    this.guildId = guild?.id ?? data.guild_id;
+    this.guildID = guild?.id ?? data.guild_id;
 
     this.parentId = this.parentId ?? null;
     /**
@@ -65,7 +65,7 @@ class GuildChannel extends Channel {
     }
 
     if ('guild_id' in data) {
-      this.guildId = data.guild_id;
+      this.guildID = data.guild_id;
     }
 
     if ('parent_id' in data) {
@@ -197,7 +197,7 @@ class GuildChannel extends Channel {
    * @private
    */
   memberPermissions(member, checkAdmin) {
-    if (checkAdmin && member.id === this.guild.ownerId) return new Permissions(Permissions.ALL).freeze();
+    if (checkAdmin && member.id === this.guild.ownerID) return new Permissions(Permissions.ALL).freeze();
 
     const roles = member.roles.cache;
     const permissions = new Permissions(roles.map(role => role.permissions));
@@ -507,7 +507,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get manageable() {
-    if (this.client.user.id === this.guild.ownerId) return true;
+    if (this.client.user.id === this.guild.ownerID) return true;
     const permissions = this.permissionsFor(this.client.user);
     if (!permissions) return false;
 
@@ -527,7 +527,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get viewable() {
-    if (this.client.user.id === this.guild.ownerId) return true;
+    if (this.client.user.id === this.guild.ownerID) return true;
     const permissions = this.permissionsFor(this.client.user);
     if (!permissions) return false;
     return permissions.has(Permissions.FLAGS.VIEW_CHANNEL, false);

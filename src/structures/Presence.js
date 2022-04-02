@@ -42,7 +42,7 @@ class Presence extends Base {
      * The presence's user id
      * @type {Snowflake}
      */
-    this.userId = data.user.id;
+    this.userID = data.user.id;
 
     /**
      * The guild this presence is in
@@ -59,7 +59,7 @@ class Presence extends Base {
    * @readonly
    */
   get user() {
-    return this.client.users.resolve(this.userId);
+    return this.client.users.resolve(this.userID);
   }
 
   /**
@@ -68,7 +68,7 @@ class Presence extends Base {
    * @readonly
    */
   get member() {
-    return this.guild.members.resolve(this.userId);
+    return this.guild.members.resolve(this.userID);
   }
 
   _patch(data) {

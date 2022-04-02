@@ -453,7 +453,7 @@ class Guild extends AnonymousGuild {
        * The user id of this guild's owner
        * @type {Snowflake}
        */
-      this.ownerId = data.owner_id;
+      this.ownerID = data.owner_id;
     }
 
     if (data.presences) {
@@ -532,12 +532,12 @@ class Guild extends AnonymousGuild {
 
   /**
    * Fetches the owner of the guild.
-   * If the member object isn't needed, use {@link Guild#ownerId} instead.
+   * If the member object isn't needed, use {@link Guild#ownerID} instead.
    * @param {BaseFetchOptions} [options] The options for fetching the member
    * @returns {Promise<GuildMember>}
    */
   fetchOwner(options) {
-    return this.members.fetch({ ...options, user: this.ownerId });
+    return this.members.fetch({ ...options, user: this.ownerID });
   }
 
   /**
@@ -1242,7 +1242,7 @@ class Guild extends AnonymousGuild {
    * @returns {Promise<Guild>}
    * @deprecated Use {@link GuildChannelManager#setPositions} instead
    * @example
-   * guild.setChannelPositions([{ channel: channelId, position: newChannelIndex }])
+   * guild.setChannelPositions([{ channel: channelID, position: newChannelIndex }])
    *   .then(guild => console.log(`Updated channel positions for ${guild}`))
    *   .catch(console.error);
    */
@@ -1316,7 +1316,7 @@ class Guild extends AnonymousGuild {
    *   .catch(console.error);
    */
   async leave() {
-    if (this.ownerId === this.client.user.id) throw new Error('GUILD_OWNED');
+    if (this.ownerID === this.client.user.id) throw new Error('GUILD_OWNED');
     await this.client.api.users('@me').guilds(this.id).delete();
     return this.client.actions.GuildDelete.handle({ id: this.id }).guild;
   }
@@ -1354,7 +1354,7 @@ class Guild extends AnonymousGuild {
       this.memberCount === guild.memberCount &&
       this.large === guild.large &&
       this.icon === guild.icon &&
-      this.ownerId === guild.ownerId &&
+      this.ownerID === guild.ownerID &&
       this.verificationLevel === guild.verificationLevel &&
       (this.features === guild.features ||
         (this.features.length === guild.features.length &&

@@ -89,10 +89,10 @@ class GuildMemberManager extends CachedManager {
    * @returns {Promise<GuildMember|null>}
    */
   async add(user, options) {
-    const userId = this.client.users.resolveId(user);
-    if (!userId) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
+    const userID = this.client.users.resolveId(user);
+    if (!userID) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
     if (!options.force) {
-      const cachedUser = this.cache.get(userId);
+      const cachedUser = this.cache.get(userID);
       if (cachedUser) return cachedUser;
     }
     const resolvedOptions = {
@@ -113,9 +113,9 @@ class GuildMemberManager extends CachedManager {
       }
       resolvedOptions.roles = resolvedRoles;
     }
-    const data = await this.client.api.guilds(this.guild.id).members(userId).put({ data: resolvedOptions });
+    const data = await this.client.api.guilds(this.guild.id).members(userID).put({ data: resolvedOptions });
     // Data is an empty buffer if the member is already part of the guild.
-    return data instanceof Buffer ? (options.fetchWhenExisting === false ? null : this.fetch(userId)) : this._add(data);
+    return data instanceof Buffer ? (options.fetchWhenExisting === false ? null : this.fetch(userID)) : this._add(data);
   }
 
   /**

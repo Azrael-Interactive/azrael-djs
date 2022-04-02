@@ -36,7 +36,7 @@ class StageInstance extends Base {
        * The id of the guild associated with the stage channel
        * @type {Snowflake}
        */
-      this.guildId = data.guild_id;
+      this.guildID = data.guild_id;
     }
 
     if ('channel_id' in data) {
@@ -44,7 +44,7 @@ class StageInstance extends Base {
        * The id of the channel associated with the stage channel
        * @type {Snowflake}
        */
-      this.channelId = data.channel_id;
+      this.channelID = data.channel_id;
     }
 
     if ('topic' in data) {
@@ -80,7 +80,7 @@ class StageInstance extends Base {
    * @readonly
    */
   get channel() {
-    return this.client.channels.resolve(this.channelId);
+    return this.client.channels.resolve(this.channelID);
   }
 
   /**
@@ -119,7 +119,7 @@ class StageInstance extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildId);
+    return this.client.guilds.resolve(this.guildID);
   }
 
   /**
@@ -133,7 +133,7 @@ class StageInstance extends Base {
    *  .catch(console.error)
    */
   edit(options) {
-    return this.guild.stageInstances.edit(this.channelId, options);
+    return this.guild.stageInstances.edit(this.channelID, options);
   }
 
   /**
@@ -146,7 +146,7 @@ class StageInstance extends Base {
    *  .catch(console.error);
    */
   async delete() {
-    await this.guild.stageInstances.delete(this.channelId);
+    await this.guild.stageInstances.delete(this.channelID);
     const clone = this._clone();
     deletedStageInstances.add(clone);
     return clone;
@@ -163,7 +163,7 @@ class StageInstance extends Base {
    *  .catch(console.error);
    */
   setTopic(topic) {
-    return this.guild.stageInstances.edit(this.channelId, { topic });
+    return this.guild.stageInstances.edit(this.channelID, { topic });
   }
 
   /**

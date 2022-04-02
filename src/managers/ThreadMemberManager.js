@@ -92,13 +92,13 @@ class ThreadMemberManager extends CachedManager {
     return id;
   }
 
-  async _fetchOne(memberId, cache, force) {
+  async _fetchOne(memberID, cache, force) {
     if (!force) {
-      const existing = this.cache.get(memberId);
+      const existing = this.cache.get(memberID);
       if (existing) return existing;
     }
 
-    const data = await this.client.api.channels(this.thread.id, 'thread-members', memberId).get();
+    const data = await this.client.api.channels(this.thread.id, 'thread-members', memberID).get();
     return this._add(data, cache);
   }
 

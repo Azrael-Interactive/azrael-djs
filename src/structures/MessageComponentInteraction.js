@@ -17,7 +17,7 @@ class MessageComponentInteraction extends Interaction {
     /**
      * The id of the channel this interaction was sent in
      * @type {Snowflake}
-     * @name MessageComponentInteraction#channelId
+     * @name MessageComponentInteraction#channelID
      */
 
     /**

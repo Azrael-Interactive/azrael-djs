@@ -513,9 +513,9 @@ class Client extends BaseClient {
     }
 
     if (options.guild) {
-      const guildId = this.guilds.resolveId(options.guild);
-      if (!guildId) throw new TypeError('INVALID_TYPE', 'options.guild', 'GuildResolvable');
-      query.set('guild_id', guildId);
+      const guildID = this.guilds.resolveId(options.guild);
+      if (!guildID) throw new TypeError('INVALID_TYPE', 'options.guild', 'GuildResolvable');
+      query.set('guild_id', guildID);
     }
 
     return `${this.options.http.api}${this.api.oauth2.authorize}?${query}`;

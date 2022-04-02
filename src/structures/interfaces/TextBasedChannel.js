@@ -300,23 +300,23 @@ class TextBasedChannel {
    */
   async bulkDelete(messages, filterOld = false) {
     if (Array.isArray(messages) || messages instanceof Collection) {
-      let messageIds = messages instanceof Collection ? [...messages.keys()] : messages.map(m => m.id ?? m);
+      let messageIDs = messages instanceof Collection ? [...messages.keys()] : messages.map(m => m.id ?? m);
       if (filterOld) {
-        messageIds = messageIds.filter(id => Date.now() - SnowflakeUtil.timestampFrom(id) < 1_209_600_000);
+        messageIDs = messageIDs.filter(id => Date.now() - SnowflakeUtil.timestampFrom(id) < 1_209_600_000);
       }
-      if (messageIds.length === 0) return new Collection();
-      if (messageIds.length === 1) {
-        await this.client.api.channels(this.id).messages(messageIds[0]).delete();
+      if (messageIDs.length === 0) return new Collection();
+      if (messageIDs.length === 1) {
+        await this.client.api.channels(this.id).messages(messageIDs[0]).delete();
         const message = this.client.actions.MessageDelete.getMessage(
           {
-            message_id: messageIds[0],
+            message_id: messageIDs[0],
           },
           this,
         );
         return message ? new Collection([[message.id, message]]) : new Collection();
       }
-      await this.client.api.channels[this.id].messages['bulk-delete'].post({ data: { messages: messageIds } });
-      return messageIds.reduce(
+      await this.client.api.channels[this.id].messages['bulk-delete'].post({ data: { messages: messageIDs } });
+      return messageIDs.reduce(
         (col, id) =>
           col.set(
             id,

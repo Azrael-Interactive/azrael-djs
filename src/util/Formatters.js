@@ -48,7 +48,7 @@ Formatters.bold = bold;
  * Formats a channel id into a channel mention.
  * @method channelMention
  * @memberof Formatters
- * @param {string} channelId The channel id to format.
+ * @param {string} channelID The channel id to format.
  * @returns {string}
  */
 Formatters.channelMention = channelMention;
@@ -115,7 +115,7 @@ Formatters.italic = italic;
  * Formats a user id into a member-nickname mention.
  * @method memberNicknameMention
  * @memberof Formatters
- * @param {string} memberId The user id to format.
+ * @param {string} memberID The user id to format.
  * @returns {string}
  */
 Formatters.memberNicknameMention = memberNicknameMention;
@@ -200,7 +200,7 @@ Formatters.underscore = underscore;
  * Formats a user id into a user mention.
  * @method userMention
  * @memberof Formatters
- * @param {string} userId The user id to format.
+ * @param {string} userID The user id to format.
  * @returns {string}
  */
 Formatters.userMention = userMention;

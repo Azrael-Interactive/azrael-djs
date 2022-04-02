@@ -102,9 +102,9 @@ class Sticker extends Base {
        * The id of the guild that owns this sticker
        * @type {?Snowflake}
        */
-      this.guildId = sticker.guild_id;
+      this.guildID = sticker.guild_id;
     } else {
-      this.guildId ??= null;
+      this.guildID ??= null;
     }
 
     if ('user' in sticker) {
@@ -191,7 +191,7 @@ class Sticker extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildId);
+    return this.client.guilds.resolve(this.guildID);
   }
 
   /**
@@ -227,9 +227,9 @@ class Sticker extends Base {
    */
   async fetchUser() {
     if (this.partial) await this.fetch();
-    if (!this.guildId) throw new Error('NOT_GUILD_STICKER');
+    if (!this.guildID) throw new Error('NOT_GUILD_STICKER');
 
-    const data = await this.client.api.guilds(this.guildId).stickers(this.id).get();
+    const data = await this.client.api.guilds(this.guildID).stickers(this.id).get();
     this._patch(data);
     return this.user;
   }
@@ -289,7 +289,7 @@ class Sticker extends Base {
         other.tags.length === this.tags.length &&
         other.tags.every(tag => this.tags.includes(tag)) &&
         other.available === this.available &&
-        other.guildId === this.guildId &&
+        other.guildID === this.guildID &&
         other.sortValue === this.sortValue
       );
     } else {

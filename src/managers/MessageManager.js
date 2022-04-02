@@ -120,8 +120,8 @@ class MessageManager extends CachedManager {
    * @returns {Promise<Message>}
    */
   async edit(message, options) {
-    const messageId = this.resolveId(message);
-    if (!messageId) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
+    const messageID = this.resolveId(message);
+    if (!messageID) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     const { data, files } = await (options instanceof MessagePayload
       ? options
@@ -129,9 +129,9 @@ class MessageManager extends CachedManager {
     )
       .resolveData()
       .resolveFiles();
-    const d = await this.client.api.channels[this.channel.id].messages[messageId].patch({ data, files });
+    const d = await this.client.api.channels[this.channel.id].messages[messageID].patch({ data, files });
 
-    const existing = this.cache.get(messageId);
+    const existing = this.cache.get(messageID);
     if (existing) {
       const clone = existing._clone();
       clone._patch(d);
@@ -210,13 +210,13 @@ class MessageManager extends CachedManager {
     await this.client.api.channels(this.channel.id).messages(message).delete();
   }
 
-  async _fetchId(messageId, cache, force) {
+  async _fetchId(messageID, cache, force) {
     if (!force) {
-      const existing = this.cache.get(messageId);
+      const existing = this.cache.get(messageID);
       if (existing && !existing.partial) return existing;
     }
 
-    const data = await this.client.api.channels[this.channel.id].messages[messageId].get();
+    const data = await this.client.api.channels[this.channel.id].messages[messageID].get();
     return this._add(data, cache);
   }
 

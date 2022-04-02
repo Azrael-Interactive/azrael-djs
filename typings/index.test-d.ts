@@ -132,16 +132,16 @@ client.on('ready', async () => {
     await client.application!.commands.fetch(),
   );
   expectType<Collection<string, ApplicationCommand<{ guild: GuildResolvable }>>>(
-    await client.application!.commands.fetch({ guildId: testGuildId }),
+    await client.application!.commands.fetch({ guildID: testGuildId }),
   );
 
   // Test command manager methods
   const globalCommand = await client.application?.commands.fetch(globalCommandId);
-  const guildCommandFromGlobal = await client.application?.commands.fetch(guildCommandId, { guildId: testGuildId });
+  const guildCommandFromGlobal = await client.application?.commands.fetch(guildCommandId, { guildID: testGuildId });
   const guildCommandFromGuild = await client.guilds.cache.get(testGuildId)?.commands.fetch(guildCommandId);
 
   // @ts-expect-error
-  await client.guilds.cache.get(testGuildId)?.commands.fetch(guildCommandId, { guildId: testGuildId });
+  await client.guilds.cache.get(testGuildId)?.commands.fetch(guildCommandId, { guildID: testGuildId });
 
   // Test command permissions
   const globalPermissionsManager = client.application?.commands.permissions;
@@ -670,8 +670,8 @@ client.on('messageCreate', async message => {
 });
 
 client.on('interaction', async interaction => {
-  expectType<Snowflake | null>(interaction.guildId);
-  expectType<Snowflake | null>(interaction.channelId);
+  expectType<Snowflake | null>(interaction.guildID);
+  expectType<Snowflake | null>(interaction.channelID);
   expectType<GuildMember | APIInteractionGuildMember | null>(interaction.member);
 
   if (!interaction.isCommand()) return;
@@ -694,7 +694,7 @@ client.on('interaction', async interaction => {
   await interaction.reply({ content: 'Hi!', components: [button] });
 
   if (interaction.isMessageComponent()) {
-    expectType<Snowflake>(interaction.channelId);
+    expectType<Snowflake>(interaction.channelID);
   }
 });
 
@@ -942,7 +942,7 @@ expectDeprecated(sticker.deleted);
 // Test interactions
 declare const interaction: Interaction;
 declare const booleanValue: boolean;
-if (interaction.inGuild()) expectType<Snowflake>(interaction.guildId);
+if (interaction.inGuild()) expectType<Snowflake>(interaction.guildID);
 
 client.on('interactionCreate', async interaction => {
   if (interaction.inCachedGuild()) {
@@ -959,7 +959,7 @@ client.on('interactionCreate', async interaction => {
   } else {
     expectType<APIInteractionGuildMember | GuildMember | null>(interaction.member);
     expectNotAssignable<Interaction<'cached'>>(interaction);
-    expectType<string | null>(interaction.guildId);
+    expectType<string | null>(interaction.guildID);
   }
 
   if (interaction.isContextMenu()) {

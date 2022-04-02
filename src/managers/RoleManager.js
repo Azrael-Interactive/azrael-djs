@@ -288,9 +288,9 @@ class RoleManager extends CachedManager {
    * @returns {?Role}
    */
   botRoleFor(user) {
-    const userId = this.client.users.resolveId(user);
-    if (!userId) return null;
-    return this.cache.find(role => role.tags?.botId === userId) ?? null;
+    const userID = this.client.users.resolveId(user);
+    if (!userID) return null;
+    return this.cache.find(role => role.tags?.botId === userID) ?? null;
   }
 
   /**

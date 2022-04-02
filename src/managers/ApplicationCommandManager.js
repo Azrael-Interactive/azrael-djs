@@ -28,21 +28,21 @@ class ApplicationCommandManager extends CachedManager {
    * @name ApplicationCommandManager#cache
    */
 
-  _add(data, cache, guildId) {
-    return super._add(data, cache, { extras: [this.guild, guildId] });
+  _add(data, cache, guildID) {
+    return super._add(data, cache, { extras: [this.guild, guildID] });
   }
 
   /**
    * The APIRouter path to the commands
    * @param {Snowflake} [options.id] The application command's id
-   * @param {Snowflake} [options.guildId] The guild's id to use in the path,
+   * @param {Snowflake} [options.guildID] The guild's id to use in the path,
    * ignored when using a {@link GuildApplicationCommandManager}
    * @returns {Object}
    * @private
    */
-  commandPath({ id, guildId } = {}) {
+  commandPath({ id, guildID } = {}) {
     let path = this.client.api.applications(this.client.application.id);
-    if (this.guild ?? guildId) path = path.guilds(this.guild?.id ?? guildId);
+    if (this.guild ?? guildID) path = path.guilds(this.guild?.id ?? guildID);
     return id ? path.commands(id) : path.commands;
   }
 
@@ -63,7 +63,7 @@ class ApplicationCommandManager extends CachedManager {
   /**
    * Options used to fetch Application Commands from Discord
    * @typedef {BaseFetchOptions} FetchApplicationCommandOptions
-   * @property {Snowflake} [guildId] The guild's id to fetch commands for, for when the guild is not cached
+   * @property {Snowflake} [guildID] The guild's id to fetch commands for, for when the guild is not cached
    */
 
   /**
@@ -82,26 +82,26 @@ class ApplicationCommandManager extends CachedManager {
    *   .then(commands => console.log(`Fetched ${commands.size} commands`))
    *   .catch(console.error);
    */
-  async fetch(id, { guildId, cache = true, force = false } = {}) {
+  async fetch(id, { guildID, cache = true, force = false } = {}) {
     if (typeof id === 'object') {
-      ({ guildId, cache = true } = id);
+      ({ guildID, cache = true } = id);
     } else if (id) {
       if (!force) {
         const existing = this.cache.get(id);
         if (existing) return existing;
       }
-      const command = await this.commandPath({ id, guildId }).get();
+      const command = await this.commandPath({ id, guildID }).get();
       return this._add(command, cache);
     }
 
-    const data = await this.commandPath({ guildId }).get();
-    return data.reduce((coll, command) => coll.set(command.id, this._add(command, cache, guildId)), new Collection());
+    const data = await this.commandPath({ guildID }).get();
+    return data.reduce((coll, command) => coll.set(command.id, this._add(command, cache, guildID)), new Collection());
   }
 
   /**
    * Creates an application command.
    * @param {ApplicationCommandData|APIApplicationCommand} command The command
-   * @param {Snowflake} [guildId] The guild's id to create this command in,
+   * @param {Snowflake} [guildID] The guild's id to create this command in,
    * ignored when using a {@link GuildApplicationCommandManager}
    * @returns {Promise<ApplicationCommand>}
    * @example
@@ -113,17 +113,17 @@ class ApplicationCommandManager extends CachedManager {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async create(command, guildId) {
-    const data = await this.commandPath({ guildId }).post({
+  async create(command, guildID) {
+    const data = await this.commandPath({ guildID }).post({
       data: this.constructor.transformCommand(command),
     });
-    return this._add(data, true, guildId);
+    return this._add(data, true, guildID);
   }
 
   /**
    * Sets all the commands for this application or guild.
    * @param {ApplicationCommandData[]|APIApplicationCommand[]} commands The commands
-   * @param {Snowflake} [guildId] The guild's id to create the commands in,
+   * @param {Snowflake} [guildID] The guild's id to create the commands in,
    * ignored when using a {@link GuildApplicationCommandManager}
    * @returns {Promise<Collection<Snowflake, ApplicationCommand>>}
    * @example
@@ -142,18 +142,18 @@ class ApplicationCommandManager extends CachedManager {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async set(commands, guildId) {
-    const data = await this.commandPath({ guildId }).put({
+  async set(commands, guildID) {
+    const data = await this.commandPath({ guildID }).put({
       data: commands.map(c => this.constructor.transformCommand(c)),
     });
-    return data.reduce((coll, command) => coll.set(command.id, this._add(command, true, guildId)), new Collection());
+    return data.reduce((coll, command) => coll.set(command.id, this._add(command, true, guildID)), new Collection());
   }
 
   /**
    * Edits an application command.
    * @param {ApplicationCommandResolvable} command The command to edit
    * @param {ApplicationCommandData|APIApplicationCommand} data The data to update the command with
-   * @param {Snowflake} [guildId] The guild's id where the command registered,
+   * @param {Snowflake} [guildID] The guild's id where the command registered,
    * ignored when using a {@link GuildApplicationCommandManager}
    * @returns {Promise<ApplicationCommand>}
    * @example
@@ -164,20 +164,20 @@ class ApplicationCommandManager extends CachedManager {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async edit(command, data, guildId) {
+  async edit(command, data, guildID) {
     const id = this.resolveId(command);
     if (!id) throw new TypeError('INVALID_TYPE', 'command', 'ApplicationCommandResolvable');
 
-    const patched = await this.commandPath({ id, guildId }).patch({
+    const patched = await this.commandPath({ id, guildID }).patch({
       data: this.constructor.transformCommand(data),
     });
-    return this._add(patched, true, guildId);
+    return this._add(patched, true, guildID);
   }
 
   /**
    * Deletes an application command.
    * @param {ApplicationCommandResolvable} command The command to delete
-   * @param {Snowflake} [guildId] The guild's id where the command is registered,
+   * @param {Snowflake} [guildID] The guild's id where the command is registered,
    * ignored when using a {@link GuildApplicationCommandManager}
    * @returns {Promise<?ApplicationCommand>}
    * @example
@@ -186,11 +186,11 @@ class ApplicationCommandManager extends CachedManager {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async delete(command, guildId) {
+  async delete(command, guildID) {
     const id = this.resolveId(command);
     if (!id) throw new TypeError('INVALID_TYPE', 'command', 'ApplicationCommandResolvable');
 
-    await this.commandPath({ id, guildId }).delete();
+    await this.commandPath({ id, guildID }).delete();
 
     const cached = this.cache.get(id);
     this.cache.delete(id);

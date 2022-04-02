@@ -15,8 +15,8 @@ class ThreadMembersUpdateAction extends Action {
         thread.members._add(rawMember);
       });
 
-      data.removed_member_ids?.forEach(memberId => {
-        thread.members.cache.delete(memberId);
+      data.removed_member_ids?.forEach(memberID => {
+        thread.members.cache.delete(memberID);
       });
 
       /**

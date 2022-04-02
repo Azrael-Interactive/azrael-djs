@@ -210,7 +210,7 @@ class GuildChannelManager extends CachedManager {
    * @param {ChannelPosition[]} channelPositions Channel positions to update
    * @returns {Promise<Guild>}
    * @example
-   * guild.channels.setPositions([{ channel: channelId, position: newChannelIndex }])
+   * guild.channels.setPositions([{ channel: channelID, position: newChannelIndex }])
    *   .then(guild => console.log(`Updated channel positions for ${guild}`))
    *   .catch(console.error);
    */
