@@ -279,12 +279,12 @@ class ApplicationCommandPermissionsManager extends BaseManager {
     let resolvedIds = [];
     if (Array.isArray(users)) {
       users.forEach(user => {
-        const userID = this.client.users.resolveId(user);
+        const userID = this.client.users.resolveID(user);
         if (!userID) throw new TypeError('INVALID_ELEMENT', 'Array', 'users', user);
         resolvedIds.push(userID);
       });
     } else if (users) {
-      const userID = this.client.users.resolveId(users);
+      const userID = this.client.users.resolveID(users);
       if (!userID) {
         throw new TypeError('INVALID_TYPE', 'users', 'Array or UserResolvable');
       }
@@ -298,7 +298,7 @@ class ApplicationCommandPermissionsManager extends BaseManager {
           return;
         }
         if (!this.guild) throw new Error('GUILD_UNCACHED_ROLE_RESOLVE');
-        const roleId = this.guild.roles.resolveId(role);
+        const roleId = this.guild.roles.resolveID(role);
         if (!roleId) throw new TypeError('INVALID_ELEMENT', 'Array', 'users', role);
         resolvedIds.push(roleId);
       });
@@ -307,7 +307,7 @@ class ApplicationCommandPermissionsManager extends BaseManager {
         resolvedIds.push(roles);
       } else {
         if (!this.guild) throw new Error('GUILD_UNCACHED_ROLE_RESOLVE');
-        const roleId = this.guild.roles.resolveId(roles);
+        const roleId = this.guild.roles.resolveID(roles);
         if (!roleId) {
           throw new TypeError('INVALID_TYPE', 'users', 'Array or RoleResolvable');
         }
@@ -352,10 +352,10 @@ class ApplicationCommandPermissionsManager extends BaseManager {
     if (!permissionId) throw new TypeError('INVALID_TYPE', 'permissionId', 'UserResolvable or RoleResolvable');
     let resolvedId = permissionId;
     if (typeof permissionId !== 'string') {
-      resolvedId = this.client.users.resolveId(permissionId);
+      resolvedId = this.client.users.resolveID(permissionId);
       if (!resolvedId) {
         if (!this.guild) throw new Error('GUILD_UNCACHED_ROLE_RESOLVE');
-        resolvedId = this.guild.roles.resolveId(permissionId);
+        resolvedId = this.guild.roles.resolveID(permissionId);
       }
       if (!resolvedId) {
         throw new TypeError('INVALID_TYPE', 'permissionId', 'UserResolvable or RoleResolvable');
@@ -373,15 +373,15 @@ class ApplicationCommandPermissionsManager extends BaseManager {
   }
 
   _validateOptions(guild, command) {
-    const guildID = this.guildID ?? this.client.guilds.resolveId(guild);
+    const guildID = this.guildID ?? this.client.guilds.resolveID(guild);
     if (!guildID) throw new Error('GLOBAL_COMMAND_PERMISSIONS');
     let commandId = this.commandId;
     if (command && !commandId) {
-      commandId = this.manager.resolveId?.(command);
+      commandId = this.manager.resolveID?.(command);
       if (!commandId && this.guild) {
-        commandId = this.guild.commands.resolveId(command);
+        commandId = this.guild.commands.resolveID(command);
       }
-      commandId ??= this.client.application?.commands.resolveId(command);
+      commandId ??= this.client.application?.commands.resolveID(command);
       if (!commandId) {
         throw new TypeError('INVALID_TYPE', 'command', 'ApplicationCommandResolvable', true);
       }

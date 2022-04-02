@@ -87,7 +87,7 @@ class GuildStickerManager extends CachedManager {
 
   /**
    * Resolves a StickerResolvable to a Sticker id string.
-   * @method resolveId
+   * @method resolveID
    * @memberof GuildStickerManager
    * @instance
    * @param {StickerResolvable} sticker The Sticker resolvable to identify
@@ -102,7 +102,7 @@ class GuildStickerManager extends CachedManager {
    * @returns {Promise<Sticker>}
    */
   async edit(sticker, data, reason) {
-    const stickerId = this.resolveId(sticker);
+    const stickerId = this.resolveID(sticker);
     if (!stickerId) throw new TypeError('INVALID_TYPE', 'sticker', 'StickerResolvable');
 
     const d = await this.client.api.guilds(this.guild.id).stickers(stickerId).patch({
@@ -126,7 +126,7 @@ class GuildStickerManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async delete(sticker, reason) {
-    sticker = this.resolveId(sticker);
+    sticker = this.resolveID(sticker);
     if (!sticker) throw new TypeError('INVALID_TYPE', 'sticker', 'StickerResolvable');
 
     await this.client.api.guilds(this.guild.id).stickers(sticker).delete({ reason });

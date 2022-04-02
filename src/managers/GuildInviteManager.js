@@ -61,7 +61,7 @@ class GuildInviteManager extends CachedManager {
 
   /**
    * Resolves an InviteResolvable to an invite code string.
-   * @method resolveId
+   * @method resolveID
    * @memberof GuildInviteManager
    * @instance
    * @param {InviteResolvable} invite The invite resolvable to resolve
@@ -128,7 +128,7 @@ class GuildInviteManager extends CachedManager {
     }
     if (!options.code) {
       if (options.channelID) {
-        const id = this.guild.channels.resolveId(options.channelID);
+        const id = this.guild.channels.resolveID(options.channelID);
         if (!id) return Promise.reject(new Error('GUILD_CHANNEL_RESOLVE'));
         return this._fetchChannelMany(id, options.cache);
       }
@@ -179,7 +179,7 @@ class GuildInviteManager extends CachedManager {
     channel,
     { temporary = false, maxAge = 86400, maxUses = 0, unique, targetUser, targetApplication, targetType, reason } = {},
   ) {
-    const id = this.guild.channels.resolveId(channel);
+    const id = this.guild.channels.resolveID(channel);
     if (!id) throw new Error('GUILD_CHANNEL_RESOLVE');
 
     const invite = await this.client.api.channels(id).invites.post({
@@ -188,7 +188,7 @@ class GuildInviteManager extends CachedManager {
         max_age: maxAge,
         max_uses: maxUses,
         unique,
-        target_user_id: this.client.users.resolveId(targetUser),
+        target_user_id: this.client.users.resolveID(targetUser),
         target_application_id: targetApplication?.id ?? targetApplication?.applicationId ?? targetApplication,
         target_type: targetType,
       },

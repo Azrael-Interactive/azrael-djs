@@ -46,7 +46,7 @@ class ReactionManager extends CachedManager {
 
   /**
    * Resolves a {@link MessageReactionResolvable} to a {@link MessageReaction} id.
-   * @method resolveId
+   * @method resolveID
    * @memberof ReactionManager
    * @instance
    * @param {MessageReactionResolvable} reaction The MessageReaction to resolve

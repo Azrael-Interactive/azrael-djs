@@ -46,19 +46,19 @@ class InteractionCollector extends Collector {
      * @type {?Snowflake}
      */
     this.channelID =
-      this.client.channels.resolveId(options.message?.channel) ??
+      this.client.channels.resolveID(options.message?.channel) ??
       options.message?.channel_id ??
-      this.client.channels.resolveId(options.channel);
+      this.client.channels.resolveID(options.channel);
 
     /**
      * The guild from which to collect interactions, if provided
      * @type {?Snowflake}
      */
     this.guildID =
-      this.client.guilds.resolveId(options.message?.guild) ??
+      this.client.guilds.resolveID(options.message?.guild) ??
       options.message?.guild_id ??
-      this.client.guilds.resolveId(options.channel?.guild) ??
-      this.client.guilds.resolveId(options.guild);
+      this.client.guilds.resolveID(options.channel?.guild) ??
+      this.client.guilds.resolveID(options.guild);
 
     /**
      * The type of interaction to collect

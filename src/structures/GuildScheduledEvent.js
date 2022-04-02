@@ -49,9 +49,9 @@ class GuildScheduledEvent extends Base {
        * The id of the user that created this guild scheduled event
        * @type {?Snowflake}
        */
-      this.creatorId = data.creator_id;
+      this.creatorID = data.creator_id;
     } else {
-      this.creatorId ??= null;
+      this.creatorID ??= null;
     }
 
     /**
@@ -129,7 +129,7 @@ class GuildScheduledEvent extends Base {
        */
       this.creator = this.client.users._add(data.creator);
     } else {
-      this.creator ??= this.client.users.resolve(this.creatorId);
+      this.creator ??= this.client.users.resolve(this.creatorID);
     }
 
     /* eslint-disable max-len */
@@ -238,7 +238,7 @@ class GuildScheduledEvent extends Base {
     let channelID = this.channelID;
     if (this.entityType === 'EXTERNAL') {
       if (!options?.channel) throw new Error('INVITE_OPTIONS_MISSING_CHANNEL');
-      channelID = this.guild.channels.resolveId(options.channel);
+      channelID = this.guild.channels.resolveID(options.channel);
       if (!channelID) throw new Error('GUILD_CHANNEL_RESOLVE');
     }
     const invite = await this.guild.invites.create(channelID, options);

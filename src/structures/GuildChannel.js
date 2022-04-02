@@ -35,7 +35,7 @@ class GuildChannel extends Channel {
      */
     this.guildID = guild?.id ?? data.guild_id;
 
-    this.parentId = this.parentId ?? null;
+    this.parentID = this.parentID ?? null;
     /**
      * A manager of permission overwrites that belong to this channel
      * @type {PermissionOverwriteManager}
@@ -73,7 +73,7 @@ class GuildChannel extends Channel {
        * The id of the category parent of this channel
        * @type {?Snowflake}
        */
-      this.parentId = data.parent_id;
+      this.parentID = data.parent_id;
     }
 
     if ('permission_overwrites' in data) {
@@ -96,7 +96,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get parent() {
-    return this.guild.channels.resolve(this.parentId);
+    return this.guild.channels.resolve(this.parentID);
   }
 
   /**
@@ -295,7 +295,7 @@ class GuildChannel extends Channel {
    *   .catch(console.error);
    */
   async edit(data, reason) {
-    data.parent &&= this.client.channels.resolveId(data.parent);
+    data.parent &&= this.client.channels.resolveID(data.parent);
 
     if (typeof data.position !== 'undefined') {
       const updatedChannels = await Util.setPosition(
@@ -498,7 +498,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get deletable() {
-    return this.manageable && this.guild.rulesChannelId !== this.id && this.guild.publicUpdatesChannelId !== this.id;
+    return this.manageable && this.guild.rulesChannelID !== this.id && this.guild.publicUpdatesChannelID !== this.id;
   }
 
   /**

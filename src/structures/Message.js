@@ -235,9 +235,9 @@ class Message extends Base {
        * The id of the webhook that sent the message, if applicable
        * @type {?Snowflake}
        */
-      this.webhookId = data.webhook_id;
+      this.webhookID = data.webhook_id;
     } else {
-      this.webhookId ??= null;
+      this.webhookID ??= null;
     }
 
     if ('application' in data) {
@@ -266,7 +266,7 @@ class Message extends Base {
        * @type {?MessageActivity}
        */
       this.activity = {
-        partyId: data.activity.party_id,
+        partyID: data.activity.party_id,
         type: data.activity.type,
       };
     } else {
@@ -888,9 +888,9 @@ class Message extends Base {
    * @returns {Promise<?Webhook>}
    */
   fetchWebhook() {
-    if (!this.webhookId) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
-    if (this.webhookId === this.applicationId) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
-    return this.client.fetchWebhook(this.webhookId);
+    if (!this.webhookID) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
+    if (this.webhookID === this.applicationId) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
+    return this.client.fetchWebhook(this.webhookID);
   }
 
   /**

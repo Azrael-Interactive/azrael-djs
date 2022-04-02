@@ -88,9 +88,9 @@ class GuildChannelManager extends CachedManager {
    * @param {GuildChannelResolvable} channel The GuildChannel resolvable to resolve
    * @returns {?Snowflake}
    */
-  resolveId(channel) {
-    if (channel instanceof ThreadChannel) return super.resolveId(channel.id);
-    return super.resolveId(channel);
+  resolveID(channel) {
+    if (channel instanceof ThreadChannel) return super.resolveID(channel.id);
+    return super.resolveID(channel);
   }
 
   /**
@@ -137,7 +137,7 @@ class GuildChannelManager extends CachedManager {
       reason,
     } = {},
   ) {
-    parent &&= this.client.channels.resolveId(parent);
+    parent &&= this.client.channels.resolveID(parent);
     permissionOverwrites &&= permissionOverwrites.map(o => PermissionOverwrites.resolve(o, this.guild));
     const intType = typeof type === 'number' ? type : ChannelTypes[type] ?? ChannelTypes.GUILD_TEXT;
 
@@ -216,10 +216,10 @@ class GuildChannelManager extends CachedManager {
    */
   async setPositions(channelPositions) {
     channelPositions = channelPositions.map(r => ({
-      id: this.client.channels.resolveId(r.channel),
+      id: this.client.channels.resolveID(r.channel),
       position: r.position,
       lock_permissions: r.lockPermissions,
-      parent_id: typeof r.parent !== 'undefined' ? this.channels.resolveId(r.parent) : undefined,
+      parent_id: typeof r.parent !== 'undefined' ? this.channels.resolveID(r.parent) : undefined,
     }));
 
     await this.client.api.guilds(this.guild.id).channels.patch({ data: channelPositions });

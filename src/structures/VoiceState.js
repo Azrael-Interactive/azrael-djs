@@ -78,9 +78,9 @@ class VoiceState extends Base {
        * The session id for this member's connection
        * @type {?string}
        */
-      this.sessionId = data.session_id;
+      this.sessionID = data.session_id;
     } else {
-      this.sessionId ??= null;
+      this.sessionID ??= null;
     }
 
     // The self_stream is property is omitted if false, check for another property
@@ -266,7 +266,7 @@ class VoiceState extends Base {
       serverMute: true,
       selfDeaf: true,
       selfMute: true,
-      sessionId: true,
+      sessionID: true,
       channelID: 'channel',
     });
   }

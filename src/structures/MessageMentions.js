@@ -192,7 +192,7 @@ class MessageMentions {
 
     if (!ignoreDirect) {
       const id =
-        this.guild?.roles.resolveId(data) ?? this.client.channels.resolveId(data) ?? this.client.users.resolveId(data);
+        this.guild?.roles.resolveID(data) ?? this.client.channels.resolveID(data) ?? this.client.users.resolveID(data);
 
       return typeof id === 'string' && (this.users.has(id) || this.channels.has(id) || this.roles.has(id));
     }

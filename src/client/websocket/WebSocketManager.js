@@ -204,7 +204,7 @@ class WebSocketManager extends EventEmitter {
 
         if (UNRESUMABLE_CLOSE_CODES.includes(event.code)) {
           // These event codes cannot be resumed
-          shard.sessionId = null;
+          shard.sessionID = null;
         }
 
         /**
@@ -216,7 +216,7 @@ class WebSocketManager extends EventEmitter {
 
         this.shardQueue.add(shard);
 
-        if (shard.sessionId) {
+        if (shard.sessionID) {
           this.debug(`Session id is present, attempting an immediate reconnect...`, shard);
           this.reconnect();
         } else {

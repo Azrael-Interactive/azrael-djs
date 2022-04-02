@@ -90,7 +90,7 @@ class RoleManager extends CachedManager {
 
   /**
    * Resolves a {@link RoleResolvable} to a {@link Role} id.
-   * @method resolveId
+   * @method resolveID
    * @memberof RoleManager
    * @instance
    * @param {RoleResolvable} role The role resolvable to resolve
@@ -231,7 +231,7 @@ class RoleManager extends CachedManager {
    *   .catch(console.error);
    */
   async delete(role, reason) {
-    const id = this.resolveId(role);
+    const id = this.resolveID(role);
     await this.client.api.guilds[this.guild.id].roles[id].delete({ reason });
     this.client.actions.GuildRoleDelete.handle({ guild_id: this.guild.id, role_id: id });
   }
@@ -248,7 +248,7 @@ class RoleManager extends CachedManager {
   async setPositions(rolePositions) {
     // Make sure rolePositions are prepared for API
     rolePositions = rolePositions.map(o => ({
-      id: this.resolveId(o.role),
+      id: this.resolveID(o.role),
       position: o.position,
     }));
 
@@ -288,7 +288,7 @@ class RoleManager extends CachedManager {
    * @returns {?Role}
    */
   botRoleFor(user) {
-    const userID = this.client.users.resolveId(user);
+    const userID = this.client.users.resolveID(user);
     if (!userID) return null;
     return this.cache.find(role => role.tags?.botId === userID) ?? null;
   }

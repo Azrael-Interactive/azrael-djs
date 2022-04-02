@@ -113,7 +113,7 @@ class MessageCollector extends Collector {
    * @returns {void}
    */
   _handleChannelDeletion(channel) {
-    if (channel.id === this.channel.id || channel.id === this.channel.parentId) {
+    if (channel.id === this.channel.id || channel.id === this.channel.parentID) {
       this.stop('channelDelete');
     }
   }

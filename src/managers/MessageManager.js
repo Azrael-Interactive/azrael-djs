@@ -106,7 +106,7 @@ class MessageManager extends CachedManager {
 
   /**
    * Resolves a {@link MessageResolvable} to a {@link Message} id.
-   * @method resolveId
+   * @method resolveID
    * @memberof MessageManager
    * @instance
    * @param {MessageResolvable} message The message resolvable to resolve
@@ -120,7 +120,7 @@ class MessageManager extends CachedManager {
    * @returns {Promise<Message>}
    */
   async edit(message, options) {
-    const messageID = this.resolveId(message);
+    const messageID = this.resolveID(message);
     if (!messageID) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     const { data, files } = await (options instanceof MessagePayload
@@ -146,7 +146,7 @@ class MessageManager extends CachedManager {
    * @returns {Promise<Message>}
    */
   async crosspost(message) {
-    message = this.resolveId(message);
+    message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     const data = await this.client.api.channels(this.channel.id).messages(message).crosspost.post();
@@ -159,7 +159,7 @@ class MessageManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async pin(message) {
-    message = this.resolveId(message);
+    message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     await this.client.api.channels(this.channel.id).pins(message).put();
@@ -171,7 +171,7 @@ class MessageManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async unpin(message) {
-    message = this.resolveId(message);
+    message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     await this.client.api.channels(this.channel.id).pins(message).delete();
@@ -184,7 +184,7 @@ class MessageManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async react(message, emoji) {
-    message = this.resolveId(message);
+    message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     emoji = Util.resolvePartialEmoji(emoji);
@@ -204,7 +204,7 @@ class MessageManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async delete(message) {
-    message = this.resolveId(message);
+    message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     await this.client.api.channels(this.channel.id).messages(message).delete();

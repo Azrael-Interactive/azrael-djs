@@ -25,7 +25,7 @@ class TextBasedChannel {
      * The channel's last message id, if one was sent
      * @type {?Snowflake}
      */
-    this.lastMessageId = null;
+    this.lastMessageID = null;
 
     /**
      * The timestamp when the last pinned message was pinned, if there was one
@@ -40,7 +40,7 @@ class TextBasedChannel {
    * @readonly
    */
   get lastMessage() {
-    return this.messages.resolve(this.lastMessageId);
+    return this.messages.resolve(this.lastMessageID);
   }
 
   /**

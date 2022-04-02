@@ -86,7 +86,7 @@ class GuildScheduledEventManager extends CachedManager {
       channel_id = typeof channel === 'undefined' ? channel : null;
       entity_metadata = { location: entityMetadata?.location };
     } else {
-      channel_id = this.guild.channels.resolveId(channel);
+      channel_id = this.guild.channels.resolveID(channel);
       if (!channel_id) throw new Error('GUILD_VOICE_CHANNEL_RESOLVE');
       entity_metadata = typeof entityMetadata === 'undefined' ? entityMetadata : null;
     }
@@ -130,7 +130,7 @@ class GuildScheduledEventManager extends CachedManager {
    * @returns {Promise<GuildScheduledEvent|Collection<Snowflake, GuildScheduledEvent>>}
    */
   async fetch(options = {}) {
-    const id = this.resolveId(options.guildScheduledEvent ?? options);
+    const id = this.resolveID(options.guildScheduledEvent ?? options);
 
     if (id) {
       if (!options.force) {
@@ -182,7 +182,7 @@ class GuildScheduledEventManager extends CachedManager {
    * @returns {Promise<GuildScheduledEvent>}
    */
   async edit(guildScheduledEvent, options) {
-    const guildScheduledEventId = this.resolveId(guildScheduledEvent);
+    const guildScheduledEventId = this.resolveID(guildScheduledEvent);
     if (!guildScheduledEventId) throw new Error('GUILD_SCHEDULED_EVENT_RESOLVE');
 
     if (typeof options !== 'object') throw new TypeError('INVALID_TYPE', 'options', 'object', true);
@@ -212,7 +212,7 @@ class GuildScheduledEventManager extends CachedManager {
 
     const data = await this.client.api.guilds(this.guild.id, 'scheduled-events', guildScheduledEventId).patch({
       data: {
-        channel_id: typeof channel === 'undefined' ? channel : this.guild.channels.resolveId(channel),
+        channel_id: typeof channel === 'undefined' ? channel : this.guild.channels.resolveID(channel),
         name,
         privacy_level: privacyLevel,
         scheduled_start_time: scheduledStartTime ? new Date(scheduledStartTime).toISOString() : undefined,
@@ -234,7 +234,7 @@ class GuildScheduledEventManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async delete(guildScheduledEvent) {
-    const guildScheduledEventId = this.resolveId(guildScheduledEvent);
+    const guildScheduledEventId = this.resolveID(guildScheduledEvent);
     if (!guildScheduledEventId) throw new Error('GUILD_SCHEDULED_EVENT_RESOLVE');
 
     await this.client.api.guilds(this.guild.id, 'scheduled-events', guildScheduledEventId).delete();
@@ -265,7 +265,7 @@ class GuildScheduledEventManager extends CachedManager {
    * @returns {Promise<Collection<Snowflake, GuildScheduledEventUser>>}
    */
   async fetchSubscribers(guildScheduledEvent, options = {}) {
-    const guildScheduledEventId = this.resolveId(guildScheduledEvent);
+    const guildScheduledEventId = this.resolveID(guildScheduledEvent);
     if (!guildScheduledEventId) throw new Error('GUILD_SCHEDULED_EVENT_RESOLVE');
 
     let { limit, withMember, before, after } = options;

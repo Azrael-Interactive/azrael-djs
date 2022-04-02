@@ -58,7 +58,7 @@ class ReactionUserManager extends CachedManager {
    * @returns {Promise<MessageReaction>}
    */
   async remove(user = this.client.user) {
-    const userID = this.client.users.resolveId(user);
+    const userID = this.client.users.resolveID(user);
     if (!userID) throw new Error('REACTION_RESOLVE_USER');
     const message = this.reaction.message;
     await this.client.api.channels[message.channelID].messages[message.id].reactions[this.reaction.emoji.identifier][

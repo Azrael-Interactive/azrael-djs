@@ -53,7 +53,7 @@ class GuildTemplate extends Base {
        * The id of the user that created this template
        * @type {Snowflake}
        */
-      this.creatorId = data.creator_id;
+      this.creatorID = data.creator_id;
     }
 
     if ('creator' in data) {

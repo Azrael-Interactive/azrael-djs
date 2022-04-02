@@ -58,7 +58,7 @@ class BaseGuildTextChannel extends GuildChannel {
        * The last message id sent in the channel, if one was sent
        * @type {?Snowflake}
        */
-      this.lastMessageId = data.last_message_id;
+      this.lastMessageID = data.last_message_id;
     }
 
     if ('last_pin_timestamp' in data) {

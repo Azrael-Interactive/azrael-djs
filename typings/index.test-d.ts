@@ -784,9 +784,9 @@ expectDeprecated(categoryChannel.createChannel('Store', { type: 'GUILD_STORE' })
 expectDeprecated(guild.channels.create('Store', { type: 'GUILD_STORE' }));
 
 notPropertyOf(user, 'lastMessage');
-notPropertyOf(user, 'lastMessageId');
+notPropertyOf(user, 'lastMessageID');
 notPropertyOf(guildMember, 'lastMessage');
-notPropertyOf(guildMember, 'lastMessageId');
+notPropertyOf(guildMember, 'lastMessageID');
 
 // Test collector event parameters
 declare const messageCollector: MessageCollector;
@@ -894,7 +894,7 @@ expectType<PartialUser>(typing.user);
 if (typing.user.partial) expectType<null>(typing.user.username);
 
 expectType<TextBasedChannel>(typing.channel);
-if (typing.channel.partial) expectType<undefined>(typing.channel.lastMessageId);
+if (typing.channel.partial) expectType<undefined>(typing.channel.lastMessageID);
 
 expectType<GuildMember | null>(typing.member);
 expectType<Guild | null>(typing.guild);

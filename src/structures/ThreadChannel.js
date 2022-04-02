@@ -62,9 +62,9 @@ class ThreadChannel extends Channel {
        * The id of the parent channel of this thread
        * @type {?Snowflake}
        */
-      this.parentId = data.parent_id;
+      this.parentID = data.parent_id;
     } else {
-      this.parentId ??= null;
+      this.parentID ??= null;
     }
 
     if ('thread_metadata' in data) {
@@ -123,9 +123,9 @@ class ThreadChannel extends Channel {
        * The last message id sent in this thread, if one was sent
        * @type {?Snowflake}
        */
-      this.lastMessageId = data.last_message_id;
+      this.lastMessageID = data.last_message_id;
     } else {
-      this.lastMessageId ??= null;
+      this.lastMessageID ??= null;
     }
 
     if ('last_pin_timestamp' in data) {
@@ -202,7 +202,7 @@ class ThreadChannel extends Channel {
    * @readonly
    */
   get parent() {
-    return this.guild.channels.resolve(this.parentId);
+    return this.guild.channels.resolve(this.parentID);
   }
 
   /**

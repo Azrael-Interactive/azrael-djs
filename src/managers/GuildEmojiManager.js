@@ -59,7 +59,7 @@ class GuildEmojiManager extends BaseGuildEmojiManager {
       }
       data.roles = [];
       for (const role of roles.values()) {
-        const resolvedRole = this.guild.roles.resolveId(role);
+        const resolvedRole = this.guild.roles.resolveID(role);
         if (!resolvedRole) throw new TypeError('INVALID_ELEMENT', 'Array or Collection', 'options.roles', role);
         data.roles.push(resolvedRole);
       }

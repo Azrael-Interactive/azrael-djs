@@ -165,7 +165,7 @@ class ApplicationCommandManager extends CachedManager {
    *   .catch(console.error);
    */
   async edit(command, data, guildID) {
-    const id = this.resolveId(command);
+    const id = this.resolveID(command);
     if (!id) throw new TypeError('INVALID_TYPE', 'command', 'ApplicationCommandResolvable');
 
     const patched = await this.commandPath({ id, guildID }).patch({
@@ -187,7 +187,7 @@ class ApplicationCommandManager extends CachedManager {
    *   .catch(console.error);
    */
   async delete(command, guildID) {
-    const id = this.resolveId(command);
+    const id = this.resolveID(command);
     if (!id) throw new TypeError('INVALID_TYPE', 'command', 'ApplicationCommandResolvable');
 
     await this.commandPath({ id, guildID }).delete();
