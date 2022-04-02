@@ -697,7 +697,15 @@ class Message extends Base {
    *   .then(msg => console.log(`Updated the content of a message to ${msg.content}`))
    *   .catch(console.error);
    */
-  edit(options) {
+  edit(content, options) {
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else {
+        options = content
+    }
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
     return this.channel.messages.edit(this, options);
   }

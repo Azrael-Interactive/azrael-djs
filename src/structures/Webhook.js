@@ -180,10 +180,19 @@ class Webhook {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async send(options) {
+  async send(content, options) {
     if (!this.token) throw new Error('WEBHOOK_TOKEN_UNAVAILABLE');
 
     let messagePayload;
+
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else {
+        options = content
+    }
 
     if (options instanceof MessagePayload) {
       messagePayload = options.resolveData();
