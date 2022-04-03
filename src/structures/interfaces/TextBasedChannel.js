@@ -196,7 +196,7 @@ class TextBasedChannel {
    * @returns {Promise<void>} Resolves upon the typing status being sent
    * @example
    * // Start typing in a channel
-   * channel.sendTyping();
+   * channel.startTyping();
    */
   async startTyping() {
     await this.client.api.channels(this.id).typing.post();
@@ -350,7 +350,7 @@ class TextBasedChannel {
         'lastMessage',
         'lastPinAt',
         'bulkDelete',
-        'sendTyping',
+        'startTyping',
         'createMessageCollector',
         'awaitMessages',
         'createMessageComponentCollector',
