@@ -163,7 +163,7 @@ class TextBasedChannel {
         options.content = content
     } else if (typeof content == "object" && content?.type == "rich") {
         options.embeds = [content]
-    } else if (typeof content == "object" && content?.embed?.type == "rich") {
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
         options.embeds = [content?.embed]
     } else {
         options = content
