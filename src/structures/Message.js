@@ -707,6 +707,9 @@ class Message extends Base {
         options.embeds = [content?.embed]
     } else {
         options = content
+        if (option.embed) {
+          option.embeds = [option.embed]
+        }
     }
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
     return this.channel.messages.edit(this, options);
@@ -833,6 +836,9 @@ class Message extends Base {
         options.embeds = [content?.embed]
     } else {
         options = content
+        if (option.embed) {
+          option.embeds = [option.embed]
+        }
     }
     let data;
 
