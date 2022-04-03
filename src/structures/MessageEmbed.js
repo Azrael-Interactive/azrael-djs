@@ -377,10 +377,10 @@ class MessageEmbed {
 
     if (typeof options === 'string') {
       if (!deprecationEmittedForSetAuthor) {
-        process.emitWarning(
+        /*process.emitWarning(
           'Passing strings for MessageEmbed#setAuthor is deprecated. Pass a sole object instead.',
           'DeprecationWarning',
-        );
+        );*/
 
         deprecationEmittedForSetAuthor = true;
       }
@@ -436,10 +436,10 @@ class MessageEmbed {
 
     if (typeof options === 'string') {
       if (!deprecationEmittedForSetFooter) {
-        process.emitWarning(
+        /*process.emitWarning(
           'Passing strings for MessageEmbed#setFooter is deprecated. Pass a sole object instead.',
           'DeprecationWarning',
-        );
+        );*/
 
         deprecationEmittedForSetFooter = true;
       }
