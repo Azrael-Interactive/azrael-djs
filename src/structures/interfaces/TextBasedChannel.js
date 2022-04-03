@@ -198,7 +198,7 @@ class TextBasedChannel {
    * // Start typing in a channel
    * channel.sendTyping();
    */
-  async sendTyping() {
+  async startTyping() {
     await this.client.api.channels(this.id).typing.post();
   }
 
