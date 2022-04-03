@@ -167,8 +167,8 @@ class TextBasedChannel {
         options.embeds = [content?.embed]
     } else {
         options = content
-        if (option.embed) {
-          option.embeds = [option.embed]
+        if (options.embed) {
+          options.embeds = [options.embed]
         }
     }
     if (this instanceof User || this instanceof GuildMember) {
