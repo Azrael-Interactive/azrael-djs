@@ -175,6 +175,18 @@ class Guild extends AnonymousGuild {
     return this.client.ws.shards.get(this.shardID);
   }
 
+  /**
+   * Returns the GuildMember form of a User object, if the user is present in the guild.
+   * @param {UserResolvable} user The user that you want to obtain the GuildMember of
+   * @returns {?GuildMember}
+   * @example
+   * // Get the guild member of a user
+   * const member = guild.member(message.author);
+   */
+  member(user) {
+    return this.members.resolve(user);
+  }
+
   _patch(data) {
     super._patch(data);
     this.id = data.id;
