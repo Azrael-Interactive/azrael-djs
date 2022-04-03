@@ -704,6 +704,7 @@ class Message extends Base {
     } else if (typeof content == "object" && content?.type == "rich") {
         options.embeds = [content]
     } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
         options.embeds = [content?.embed]
     } else {
         options = content
@@ -833,6 +834,7 @@ class Message extends Base {
     } else if (typeof content == "object" && content?.type == "rich") {
         options.embeds = [content]
     } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
         options.embeds = [content?.embed]
     } else {
         options = content
