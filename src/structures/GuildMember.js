@@ -324,6 +324,20 @@ class GuildMember extends Base {
   }
 
   /**
+   * Checks if any of this member's roles have a permission.
+   * @param {PermissionResolvable} permission Permission(s) to check for
+   * @param {Object} [options] Options
+   * @param {boolean} [options.checkAdmin=true] Whether to allow the administrator permission to override
+   * @param {boolean} [options.checkOwner=true] Whether to allow being the guild's owner to override
+   * @returns {boolean}
+   */
+   hasPermission(permission, { checkAdmin = true, checkOwner = true } = {}) {
+    if (checkOwner && this.user.id === this.guild.ownerID) return true;
+    const permissions = new Permissions(this.roles.cache.map(role => role.permissions));
+    return permissions.has(permission, checkAdmin);
+   }
+
+  /**
    * Edits this member.
    * @param {GuildMemberEditData} data The data to edit the member with
    * @param {string} [reason] Reason for editing this user
