@@ -86,11 +86,27 @@ class InteractionResponses {
    *   .then(() => console.log('Reply sent.'))
    *   .catch(console.error);
    */
-  async reply(options) {
+  async reply(content, options) {
     if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
     this.ephemeral = options.ephemeral ?? false;
 
     let messagePayload;
+
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options.embed) {
+          options.embeds = [options.embed]
+        }
+    }
+
     if (options instanceof MessagePayload) messagePayload = options;
     else messagePayload = MessagePayload.create(this, options);
 
@@ -134,8 +150,22 @@ class InteractionResponses {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async editReply(options) {
+  async editReply(content, options) {
     if (!this.deferred && !this.replied) throw new Error('INTERACTION_NOT_REPLIED');
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options.embed) {
+          options.embeds = [options.embed]
+        }
+    }
     const message = await this.webhook.editMessage('@original', options);
     this.replied = true;
     return message;
@@ -161,8 +191,22 @@ class InteractionResponses {
    * @param {string|MessagePayload|InteractionReplyOptions} options The options for the reply
    * @returns {Promise<Message|APIMessage>}
    */
-  followUp(options) {
+  followUp(content, options) {
     if (!this.deferred && !this.replied) return Promise.reject(new Error('INTERACTION_NOT_REPLIED'));
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options.embed) {
+          options.embeds = [options.embed]
+        }
+    }
     return this.webhook.send(options);
   }
 
@@ -202,10 +246,24 @@ class InteractionResponses {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async update(options) {
+  async update(content, options) {
     if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
 
     let messagePayload;
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options.embed) {
+          options.embeds = [options.embed]
+        }
+    }
     if (options instanceof MessagePayload) messagePayload = options;
     else messagePayload = MessagePayload.create(this, options);
 
