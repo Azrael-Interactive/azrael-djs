@@ -1,7 +1,7 @@
 <p align="center">
 
   <a href="https://azrael.gg" target="_blank">
-    <img alt="adjs-logo" height="70" alt="Azrael-DJS Logo" src="https://cdn.azrael.gg/uploads/branding/banners/azrael-djs.png"/>
+    <img alt="adjs-logo" height="200" alt="Azrael-DJS Logo" src="https://cdn.azrael.gg/uploads/branding/banners/azrael-djs.png"/>
   </a>
 </p>
 
