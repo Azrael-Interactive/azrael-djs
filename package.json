@@ -1,6 +1,6 @@
 {
 	"name": "azrael-djs",
-	"version": "2.0.0-dev",
+	"version": "2.0.0",
 	"description": "A powerful library for interacting with the Discord API",
 	"main": "./src/index",
 	"dependencies": {
