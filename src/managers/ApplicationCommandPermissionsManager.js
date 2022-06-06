@@ -279,16 +279,16 @@ class ApplicationCommandPermissionsManager extends BaseManager {
     let resolvedIds = [];
     if (Array.isArray(users)) {
       users.forEach(user => {
-        const userID = this.client.users.resolveID(user);
-        if (!userID) throw new TypeError('INVALID_ELEMENT', 'Array', 'users', user);
-        resolvedIds.push(userID);
+        const userId = this.client.users.resolveID(user);
+        if (!userId) throw new TypeError('INVALID_ELEMENT', 'Array', 'users', user);
+        resolvedIds.push(userId);
       });
     } else if (users) {
-      const userID = this.client.users.resolveID(users);
-      if (!userID) {
+      const userId = this.client.users.resolveID(users);
+      if (!userId) {
         throw new TypeError('INVALID_TYPE', 'users', 'Array or UserResolvable');
       }
-      resolvedIds.push(userID);
+      resolvedIds.push(userId);
     }
 
     if (Array.isArray(roles)) {

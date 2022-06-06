@@ -120,8 +120,8 @@ class MessageManager extends CachedManager {
    * @returns {Promise<Message>}
    */
   async edit(message, options) {
-    const messageID = this.resolveID(message);
-    if (!messageID) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
+    const messageId = this.resolveID(message);
+    if (!messageId) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
     const { data, files } = await (options instanceof MessagePayload
       ? options
@@ -129,9 +129,9 @@ class MessageManager extends CachedManager {
     )
       .resolveData()
       .resolveFiles();
-    const d = await this.client.api.channels[this.channel.id].messages[messageID].patch({ data, files });
+    const d = await this.client.api.channels[this.channel.id].messages[messageId].patch({ data, files });
 
-    const existing = this.cache.get(messageID);
+    const existing = this.cache.get(messageId);
     if (existing) {
       const clone = existing._clone();
       clone._patch(d);
@@ -156,25 +156,27 @@ class MessageManager extends CachedManager {
   /**
    * Pins a message to the channel's pinned messages, even if it's not cached.
    * @param {MessageResolvable} message The message to pin
+   * @param {string} [reason] Reason for pinning
    * @returns {Promise<void>}
    */
-  async pin(message) {
+  async pin(message, reason) {
     message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
-    await this.client.api.channels(this.channel.id).pins(message).put();
+    await this.client.api.channels(this.channel.id).pins(message).put({ reason });
   }
 
   /**
    * Unpins a message from the channel's pinned messages, even if it's not cached.
    * @param {MessageResolvable} message The message to unpin
+   * @param {string} [reason] Reason for unpinning
    * @returns {Promise<void>}
    */
-  async unpin(message) {
+  async unpin(message, reason) {
     message = this.resolveID(message);
     if (!message) throw new TypeError('INVALID_TYPE', 'message', 'MessageResolvable');
 
-    await this.client.api.channels(this.channel.id).pins(message).delete();
+    await this.client.api.channels(this.channel.id).pins(message).delete({ reason });
   }
 
   /**
@@ -210,13 +212,13 @@ class MessageManager extends CachedManager {
     await this.client.api.channels(this.channel.id).messages(message).delete();
   }
 
-  async _fetchId(messageID, cache, force) {
+  async _fetchId(messageId, cache, force) {
     if (!force) {
-      const existing = this.cache.get(messageID);
+      const existing = this.cache.get(messageId);
       if (existing && !existing.partial) return existing;
     }
 
-    const data = await this.client.api.channels[this.channel.id].messages[messageID].get();
+    const data = await this.client.api.channels[this.channel.id].messages[messageId].get();
     return this._add(data, cache);
   }
 

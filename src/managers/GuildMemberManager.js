@@ -89,10 +89,10 @@ class GuildMemberManager extends CachedManager {
    * @returns {Promise<GuildMember|null>}
    */
   async add(user, options) {
-    const userID = this.client.users.resolveID(user);
-    if (!userID) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
+    const userId = this.client.users.resolveID(user);
+    if (!userId) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
     if (!options.force) {
-      const cachedUser = this.cache.get(userID);
+      const cachedUser = this.cache.get(userId);
       if (cachedUser) return cachedUser;
     }
     const resolvedOptions = {
@@ -113,9 +113,9 @@ class GuildMemberManager extends CachedManager {
       }
       resolvedOptions.roles = resolvedRoles;
     }
-    const data = await this.client.api.guilds(this.guild.id).members(userID).put({ data: resolvedOptions });
+    const data = await this.client.api.guilds(this.guild.id).members(userId).put({ data: resolvedOptions });
     // Data is an empty buffer if the member is already part of the guild.
-    return data instanceof Buffer ? (options.fetchWhenExisting === false ? null : this.fetch(userID)) : this._add(data);
+    return data instanceof Buffer ? (options.fetchWhenExisting === false ? null : this.fetch(userId)) : this._add(data);
   }
 
   /**
@@ -353,7 +353,7 @@ class GuildMemberManager extends CachedManager {
    * @example
    * // Kick a user by id (or with a user/guild member object)
    * guild.members.kick('84484653687267328')
-   *   .then(banInfo => console.log(`Kicked ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`))
+   *   .then(kickInfo => console.log(`Kicked ${kickInfo.user?.tag ?? kickInfo.tag ?? kickInfo}`))
    *   .catch(console.error);
    */
   async kick(user, reason) {
@@ -376,7 +376,7 @@ class GuildMemberManager extends CachedManager {
    * @example
    * // Ban a user by id (or with a user/guild member object)
    * guild.members.ban('84484653687267328')
-   *   .then(kickInfo => console.log(`Banned ${kickInfo.user?.tag ?? kickInfo.tag ?? kickInfo}`))
+   *   .then(banInfo => console.log(`Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`))
    *   .catch(console.error);
    */
   ban(user, options = { days: 0 }) {
@@ -387,7 +387,7 @@ class GuildMemberManager extends CachedManager {
    * Unbans a user from the guild. Internally calls the {@link GuildBanManager#remove} method.
    * @param {UserResolvable} user The user to unban
    * @param {string} [reason] Reason for unbanning user
-   * @returns {Promise<User>} The user that was unbanned
+   * @returns {Promise<?User>} The user that was unbanned
    * @example
    * // Unban a user by id (or with a user/guild member object)
    * guild.members.unban('84484653687267328')

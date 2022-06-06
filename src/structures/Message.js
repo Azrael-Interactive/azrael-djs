@@ -255,9 +255,9 @@ class Message extends Base {
        * The id of the application of the interaction that sent this message, if any
        * @type {?Snowflake}
        */
-      this.applicationId = data.application_id;
+      this.applicationID = data.application_id;
     } else {
-      this.applicationId ??= null;
+      this.applicationID ??= null;
     }
 
     if ('activity' in data) {
@@ -305,7 +305,7 @@ class Message extends Base {
      * @typedef {Object} MessageReference
      * @property {Snowflake} channelID The channel's id the message was referenced
      * @property {?Snowflake} guildID The guild's id the message was referenced
-     * @property {?Snowflake} messageID The message's id that was referenced
+     * @property {?Snowflake} messageId The message's id that was referenced
      */
 
     if ('message_reference' in data) {
@@ -316,7 +316,7 @@ class Message extends Base {
       this.reference = {
         channelID: data.message_reference.channel_id,
         guildID: data.message_reference.guild_id,
-        messageID: data.message_reference.message_id,
+        messageId: data.message_reference.message_id,
       };
     } else {
       this.reference ??= null;
@@ -383,7 +383,7 @@ class Message extends Base {
 
   /**
    * The channel that the message was sent in
-   * @type {TextChannel|DMChannel|NewsChannel|ThreadChannel}
+   * @type {TextBasedChannel}
    * @readonly
    */
   get channel() {
@@ -646,10 +646,10 @@ class Message extends Base {
    */
   async fetchReference() {
     if (!this.reference) throw new Error('MESSAGE_REFERENCE_MISSING');
-    const { channelID, messageID } = this.reference;
+    const { channelID, messageId } = this.reference;
     const channel = this.client.channels.resolve(channelID);
     if (!channel) throw new Error('GUILD_CHANNEL_RESOLVE');
-    const message = await channel.messages.fetch(messageID);
+    const message = await channel.messages.fetch(messageId);
     return message;
   }
 
@@ -698,6 +698,7 @@ class Message extends Base {
    *   .catch(console.error);
    */
   edit(content, options) {
+    if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
     if (!options) options = {};
     if (typeof content == "string") {
         options.content = content
@@ -712,7 +713,6 @@ class Message extends Base {
           options.embeds = [options.embed]
         }
     }
-    if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
     return this.channel.messages.edit(this, options);
   }
 
@@ -734,6 +734,7 @@ class Message extends Base {
 
   /**
    * Pins this message to the channel's pinned messages.
+   * @param {string} [reason] Reason for pinning
    * @returns {Promise<Message>}
    * @example
    * // Pin a message
@@ -741,14 +742,15 @@ class Message extends Base {
    *   .then(console.log)
    *   .catch(console.error)
    */
-  async pin() {
+  async pin(reason) {
     if (!this.channel) throw new Error('CHANNEL_NOT_CACHED');
-    await this.channel.messages.pin(this.id);
+    await this.channel.messages.pin(this.id, reason);
     return this;
   }
 
   /**
    * Unpins this message from the channel's pinned messages.
+   * @param {string} [reason] Reason for unpinning
    * @returns {Promise<Message>}
    * @example
    * // Unpin a message
@@ -756,9 +758,9 @@ class Message extends Base {
    *   .then(console.log)
    *   .catch(console.error)
    */
-  async unpin() {
+  async unpin(reason) {
     if (!this.channel) throw new Error('CHANNEL_NOT_CACHED');
-    await this.channel.messages.unpin(this.id);
+    await this.channel.messages.unpin(this.id, reason);
     return this;
   }
 
@@ -827,7 +829,8 @@ class Message extends Base {
    */
   reply(content, options) {
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
-    
+    let data;
+
     if (!options) options = {};
     if (typeof content == "string") {
         options.content = content
@@ -842,7 +845,6 @@ class Message extends Base {
           options.embeds = [options.embed]
         }
     }
-    let data;
 
     if (options instanceof MessagePayload) {
       data = options;
@@ -909,7 +911,7 @@ class Message extends Base {
    */
   fetchWebhook() {
     if (!this.webhookID) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
-    if (this.webhookID === this.applicationId) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
+    if (this.webhookID === this.applicationID) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
     return this.client.fetchWebhook(this.webhookID);
   }
 

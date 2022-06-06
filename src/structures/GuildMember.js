@@ -14,7 +14,7 @@ const Permissions = require('../util/Permissions');
  * @internal
  */
 const deletedGuildMembers = new WeakSet();
-let deprecationEmittedForDeleted = false;
+let deprecationEmittedForDeleted = true;
 
 /**
  * Represents a member of a guild on Discord.
@@ -263,6 +263,20 @@ class GuildMember extends Base {
   }
 
   /**
+   * Checks if any of this member's roles have a permission.
+   * @param {PermissionResolvable} permission Permission(s) to check for
+   * @param {Object} [options] Options
+   * @param {boolean} [options.checkAdmin=true] Whether to allow the administrator permission to override
+   * @param {boolean} [options.checkOwner=true] Whether to allow being the guild's owner to override
+   * @returns {boolean}
+   */
+   hasPermission(permission, { checkAdmin = true, checkOwner = true } = {}) {
+    if (checkOwner && this.user.id === this.guild.ownerID) return true;
+    const permissions = new Permissions(this.roles.cache.map(role => role.permissions));
+    return permissions.has(permission, checkAdmin);
+   }
+
+  /**
    * Whether the client user is above this user in the hierarchy, according to role position and guild ownership.
    * This is a prerequisite for many moderative actions.
    * @type {boolean}
@@ -300,7 +314,11 @@ class GuildMember extends Base {
    * @readonly
    */
   get moderatable() {
-    return this.manageable && (this.guild.me?.permissions.has(Permissions.FLAGS.MODERATE_MEMBERS) ?? false);
+    return (
+      !this.permissions.has(Permissions.FLAGS.ADMINISTRATOR) &&
+      this.manageable &&
+      (this.guild.me?.permissions.has(Permissions.FLAGS.MODERATE_MEMBERS) ?? false)
+    );
   }
 
   /**
@@ -322,20 +340,6 @@ class GuildMember extends Base {
     if (!channel) throw new Error('GUILD_CHANNEL_RESOLVE');
     return channel.permissionsFor(this);
   }
-
-  /**
-   * Checks if any of this member's roles have a permission.
-   * @param {PermissionResolvable} permission Permission(s) to check for
-   * @param {Object} [options] Options
-   * @param {boolean} [options.checkAdmin=true] Whether to allow the administrator permission to override
-   * @param {boolean} [options.checkOwner=true] Whether to allow being the guild's owner to override
-   * @returns {boolean}
-   */
-   hasPermission(permission, { checkAdmin = true, checkOwner = true } = {}) {
-    if (checkOwner && this.user.id === this.guild.ownerID) return true;
-    const permissions = new Permissions(this.roles.cache.map(role => role.permissions));
-    return permissions.has(permission, checkAdmin);
-   }
 
   /**
    * Edits this member.
@@ -475,7 +479,7 @@ class GuildMember extends Base {
   toJSON() {
     const json = super.toJSON({
       guild: 'guildID',
-      user: 'userID',
+      user: 'userId',
       displayName: true,
       roles: true,
     });
