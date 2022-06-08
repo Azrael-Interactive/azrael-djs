@@ -116,6 +116,7 @@ class Webhook {
    * @property {string} [avatarURL] Avatar URL override for the message
    * @property {Snowflake} [threadId] The id of the thread in the channel to send to.
    * <info>For interaction webhooks, this property is ignored</info>
+   * @property {MessageFlags} [flags] Which flags to set for the message. Only `SUPPRESS_EMBEDS` can be set.
    */
 
   /**
@@ -190,8 +191,14 @@ class Webhook {
         options.content = content
     } else if (typeof content == "object" && content?.type == "rich") {
         options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
     } else {
         options = content
+        if (options.embed) {
+          options.embeds = [options.embed]
+        }
     }
 
     if (options instanceof MessagePayload) {

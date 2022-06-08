@@ -33,12 +33,12 @@ class UserManager extends CachedManager {
 
   /**
    * The DM between the client's user and a user
-   * @param {Snowflake} userID The user id
+   * @param {Snowflake} userId The user id
    * @returns {?DMChannel}
    * @private
    */
-  dmChannel(userID) {
-    return this.client.channels.cache.find(c => c.type === 'DM' && c.recipient.id === userID) ?? null;
+  dmChannel(userId) {
+    return this.client.channels.cache.find(c => c.type === 'DM' && c.recipient.id === userId) ?? null;
   }
 
   /**

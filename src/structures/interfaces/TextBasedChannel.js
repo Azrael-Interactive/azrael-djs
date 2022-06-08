@@ -73,6 +73,7 @@ class TextBasedChannel {
    * @typedef {BaseMessageOptions} MessageOptions
    * @property {ReplyOptions} [reply] The options for replying to a message
    * @property {StickerResolvable[]} [stickers=[]] Stickers to send in the message
+   * @property {MessageFlags} [flags] Which flags to set for the message. Only `SUPPRESS_EMBEDS` can be set.
    */
 
   /**
@@ -128,7 +129,7 @@ class TextBasedChannel {
    * channel.send({
    *   files: [{
    *     attachment: 'entire/path/to/file.jpg',
-   *     name: 'file.jpg'
+   *     name: 'file.jpg',
    *     description: 'A description of the file'
    *   }]
    * })
@@ -147,7 +148,7 @@ class TextBasedChannel {
    *   ],
    *   files: [{
    *     attachment: 'entire/path/to/file.jpg',
-   *     name: 'file.jpg'
+   *     name: 'file.jpg',
    *     description: 'A description of the file'
    *   }]
    * })
@@ -157,7 +158,14 @@ class TextBasedChannel {
   async send(content, options) {
     const User = require('../User');
     const { GuildMember } = require('../GuildMember');
-	
+
+    if (this instanceof User || this instanceof GuildMember) {
+      const dm = await this.createDM();
+      return dm.send(options);
+    }
+
+    let messagePayload;
+
     if (!options) options = {};
     if (typeof content == "string") {
         options.content = content
@@ -172,12 +180,6 @@ class TextBasedChannel {
           options.embeds = [options.embed]
         }
     }
-    if (this instanceof User || this instanceof GuildMember) {
-      const dm = await this.createDM();
-      return dm.send(options);
-    }
-
-    let messagePayload;
 
     if (options instanceof MessagePayload) {
       messagePayload = options.resolveData();
@@ -250,7 +252,7 @@ class TextBasedChannel {
   }
 
   /**
-   * Creates a button interaction collector.
+   * Creates a component interaction collector.
    * @param {MessageComponentCollectorOptions} [options={}] Options to send to the collector
    * @returns {InteractionCollector}
    * @example
@@ -306,23 +308,23 @@ class TextBasedChannel {
    */
   async bulkDelete(messages, filterOld = false) {
     if (Array.isArray(messages) || messages instanceof Collection) {
-      let messageIDs = messages instanceof Collection ? [...messages.keys()] : messages.map(m => m.id ?? m);
+      let messageIds = messages instanceof Collection ? [...messages.keys()] : messages.map(m => m.id ?? m);
       if (filterOld) {
-        messageIDs = messageIDs.filter(id => Date.now() - SnowflakeUtil.timestampFrom(id) < 1_209_600_000);
+        messageIds = messageIds.filter(id => Date.now() - SnowflakeUtil.timestampFrom(id) < 1_209_600_000);
       }
-      if (messageIDs.length === 0) return new Collection();
-      if (messageIDs.length === 1) {
-        await this.client.api.channels(this.id).messages(messageIDs[0]).delete();
+      if (messageIds.length === 0) return new Collection();
+      if (messageIds.length === 1) {
+        await this.client.api.channels(this.id).messages(messageIds[0]).delete();
         const message = this.client.actions.MessageDelete.getMessage(
           {
-            message_id: messageIDs[0],
+            message_id: messageIds[0],
           },
           this,
         );
         return message ? new Collection([[message.id, message]]) : new Collection();
       }
-      await this.client.api.channels[this.id].messages['bulk-delete'].post({ data: { messages: messageIDs } });
-      return messageIDs.reduce(
+      await this.client.api.channels[this.id].messages['bulk-delete'].post({ data: { messages: messageIds } });
+      return messageIds.reduce(
         (col, id) =>
           col.set(
             id,
@@ -343,6 +345,64 @@ class TextBasedChannel {
     throw new TypeError('MESSAGE_BULK_DELETE_TYPE');
   }
 
+  /**
+   * Fetches all webhooks for the channel.
+   * @returns {Promise<Collection<Snowflake, Webhook>>}
+   * @example
+   * // Fetch webhooks
+   * channel.fetchWebhooks()
+   *   .then(hooks => console.log(`This channel has ${hooks.size} hooks`))
+   *   .catch(console.error);
+   */
+  fetchWebhooks() {
+    return this.guild.channels.fetchWebhooks(this.id);
+  }
+
+  /**
+   * Options used to create a {@link Webhook} in a guild text-based channel.
+   * @typedef {Object} ChannelWebhookCreateOptions
+   * @property {?(BufferResolvable|Base64Resolvable)} [avatar] Avatar for the webhook
+   * @property {string} [reason] Reason for creating the webhook
+   */
+
+  /**
+   * Creates a webhook for the channel.
+   * @param {string} name The name of the webhook
+   * @param {ChannelWebhookCreateOptions} [options] Options for creating the webhook
+   * @returns {Promise<Webhook>} Returns the created Webhook
+   * @example
+   * // Create a webhook for the current channel
+   * channel.createWebhook('Snek', {
+   *   avatar: 'https://i.imgur.com/mI8XcpG.jpg',
+   *   reason: 'Needed a cool new Webhook'
+   * })
+   *   .then(console.log)
+   *   .catch(console.error)
+   */
+  createWebhook(name, options = {}) {
+    return this.guild.channels.createWebhook(this.id, name, options);
+  }
+
+  /**
+   * Sets the rate limit per user (slowmode) for this channel.
+   * @param {number} rateLimitPerUser The new rate limit in seconds
+   * @param {string} [reason] Reason for changing the channel's rate limit
+   * @returns {Promise<this>}
+   */
+  setRateLimitPerUser(rateLimitPerUser, reason) {
+    return this.edit({ rateLimitPerUser }, reason);
+  }
+
+  /**
+   * Sets whether this channel is flagged as NSFW.
+   * @param {boolean} [nsfw=true] Whether the channel should be considered NSFW
+   * @param {string} [reason] Reason for changing the channel's NSFW flag
+   * @returns {Promise<this>}
+   */
+  setNSFW(nsfw = true, reason) {
+    return this.edit({ nsfw }, reason);
+  }
+
   static applyToClass(structure, full = false, ignore = []) {
     const props = ['send'];
     if (full) {
@@ -355,6 +415,10 @@ class TextBasedChannel {
         'awaitMessages',
         'createMessageComponentCollector',
         'awaitMessageComponent',
+        'fetchWebhooks',
+        'createWebhook',
+        'setRateLimitPerUser',
+        'setNSFW',
       );
     }
     for (const prop of props) {

@@ -107,14 +107,14 @@ class MessageReaction {
   }
 
   toJSON() {
-    return Util.flatten(this, { emoji: 'emojiId', message: 'messageID' });
+    return Util.flatten(this, { emoji: 'emojiId', message: 'messageId' });
   }
 
   _add(user) {
     if (this.partial) return;
     this.users.cache.set(user.id, user);
     if (!this.me || user.id !== this.message.client.user.id || this.count === 0) this.count++;
-    this.me ??= user.id === this.message.client.user.id;
+    this.me ||= user.id === this.message.client.user.id;
   }
 
   _remove(user) {

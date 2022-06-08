@@ -42,7 +42,7 @@ class Presence extends Base {
      * The presence's user id
      * @type {Snowflake}
      */
-    this.userID = data.user.id;
+    this.userId = data.user.id;
 
     /**
      * The guild this presence is in
@@ -59,7 +59,7 @@ class Presence extends Base {
    * @readonly
    */
   get user() {
-    return this.client.users.resolve(this.userID);
+    return this.client.users.resolve(this.userId);
   }
 
   /**
@@ -68,7 +68,7 @@ class Presence extends Base {
    * @readonly
    */
   get member() {
-    return this.guild.members.resolve(this.userID);
+    return this.guild.members.resolve(this.userId);
   }
 
   _patch(data) {
@@ -192,7 +192,7 @@ class Activity {
      * The id of the application associated with this activity
      * @type {?Snowflake}
      */
-    this.applicationId = data.application_id ?? null;
+    this.applicationID = data.application_id ?? null;
 
     /**
      * Represents timestamps of an activity
@@ -351,13 +351,21 @@ class RichPresenceAssets {
    * @returns {?string}
    */
   smallImageURL({ format, size } = {}) {
-    return (
-      this.smallImage &&
-      this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationId, this.smallImage, {
-        format,
-        size,
-      })
-    );
+    if (!this.smallImage) return null;
+    if (this.smallImage.includes(':')) {
+      const [platform, id] = this.smallImage.split(':');
+      switch (platform) {
+        case 'mp':
+          return `https://media.discordapp.net/${id}`;
+        default:
+          return null;
+      }
+    }
+
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.smallImage, {
+      format,
+      size,
+    });
   }
 
   /**
@@ -367,12 +375,21 @@ class RichPresenceAssets {
    */
   largeImageURL({ format, size } = {}) {
     if (!this.largeImage) return null;
-    if (/^spotify:/.test(this.largeImage)) {
-      return `https://i.scdn.co/image/${this.largeImage.slice(8)}`;
-    } else if (/^twitch:/.test(this.largeImage)) {
-      return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${this.largeImage.slice(7)}.png`;
+    if (this.largeImage.includes(':')) {
+      const [platform, id] = this.largeImage.split(':');
+      switch (platform) {
+        case 'mp':
+          return `https://media.discordapp.net/${id}`;
+        case 'spotify':
+          return `https://i.scdn.co/image/${id}`;
+        case 'twitch':
+          return `https://static-cdn.jtvnw.net/previews-ttv/live_user_${id}.png`;
+        default:
+          return null;
+      }
     }
-    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationId, this.largeImage, {
+
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.largeImage, {
       format,
       size,
     });

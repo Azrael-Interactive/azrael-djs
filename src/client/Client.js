@@ -544,10 +544,10 @@ class Client extends BaseClient {
    * @private
    */
   _validateOptions(options = this.options) {
-    if (typeof options.intents === 'undefined' && typeof options.ws.intents === 'undefined') {
+    if (typeof options.intents === 'undefined') {
       throw new TypeError('CLIENT_MISSING_INTENTS');
     } else {
-      options.intents = Intents.resolve(options.intents ?? options.ws.intents);
+      options.intents = Intents.resolve(options.intents);
     }
     if (typeof options.shardCount !== 'number' || isNaN(options.shardCount) || options.shardCount < 1) {
       throw new TypeError('CLIENT_INVALID_OPTION', 'shardCount', 'a number greater than or equal to 1');

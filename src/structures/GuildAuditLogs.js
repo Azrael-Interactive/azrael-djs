@@ -434,7 +434,7 @@ class GuildAuditLogsEntry {
       case Actions.MESSAGE_UNPIN:
         this.extra = {
           channel: guild.client.channels.cache.get(data.options.channel_id) ?? { id: data.options.channel_id },
-          messageID: data.options.message_id,
+          messageId: data.options.message_id,
         };
         break;
 
