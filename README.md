@@ -1,35 +1,24 @@
-<div align="center">
-  <br />
-  <p>
-    <a href="https://discord.js.org"><img src="https://discord.js.org/static/logo.svg" width="546" alt="discord.js" /></a>
-  </p>
-  <br />
-  <p>
-    <a href="https://discord.gg/djs"><img src="https://img.shields.io/discord/222078108977594368?color=5865F2&logo=discord&logoColor=white" alt="Discord server" /></a>
-    <a href="https://www.npmjs.com/package/discord.js"><img src="https://img.shields.io/npm/v/discord.js.svg?maxAge=3600" alt="npm version" /></a>
-    <a href="https://www.npmjs.com/package/discord.js"><img src="https://img.shields.io/npm/dt/discord.js.svg?maxAge=3600" alt="npm downloads" /></a>
-    <a href="https://github.com/discordjs/discord.js/actions"><img src="https://github.com/discordjs/discord.js/workflows/Testing/badge.svg" alt="Tests status" /></a>
-  </p>
-</div>
+<p align="center">
 
-## About
+  <a href="https://azrael.gg" target="_blank">
+    <img alt="adjs-logo" height="300" alt="Azrael-DJS Logo" src="https://cdn.azrael.gg/uploads/branding/banners/azrael-djs.png"/>
+  </a>
+</p>
 
-discord.js is a powerful [Node.js](https://nodejs.org) module that allows you to easily interact with the
-[Discord API](https://discord.com/developers/docs/intro).
+Azrael-DJS is a powerful [Node.js](https://nodejs.org/) module built off of [Discord.js v12](https://discord.js.org/#/docs/discord.js/v12/general/welcome) that allows you to easily interact with the [Discord API](https://discord.com/developers/docs/intro).
 
 - Object-oriented
 - Predictable abstractions
 - Performant
 - 100% coverage of the Discord API
+- Native Interactions Support
 
-## Installation
 
-**Node.js 16.6.0 or newer is required.**  
+# Installation
 
+**Node.js 16.9.0 or newer is required.**
 ```sh-session
-npm install discord.js
-yarn add discord.js
-pnpm add discord.js
+npm install azrael-djs
 ```
 
 ### Optional packages
@@ -38,59 +27,21 @@ pnpm add discord.js
 - [erlpack](https://github.com/discord/erlpack) for significantly faster WebSocket data (de)serialisation (`npm install discord/erlpack`)
 - [bufferutil](https://www.npmjs.com/package/bufferutil) for a much faster WebSocket connection (`npm install bufferutil`)
 - [utf-8-validate](https://www.npmjs.com/package/utf-8-validate) in combination with `bufferutil` for much faster WebSocket processing (`npm install utf-8-validate`)
-- [@discordjs/voice](https://github.com/discordjs/voice) for interacting with the Discord Voice API (`npm install @discordjs/voice`)
+- [@discordjs/voice](https://www.npmjs.com/package/@discordjs/voice) for interacting with the Discord Voice API (`npm install @discordjs/voice`)
 
-## Example usage
+### Example usage
 
-Install all required dependencies:
-```sh-session
-npm install discord.js @discordjs/rest discord-api-types
-yarn add discord.js @discordjs/rest discord-api-types
-pnpm add discord.js @discordjs/rest discord-api-types
-```
-
-Register a slash command against the Discord API:
 ```js
-const { REST } = require('@discordjs/rest');
-const { Routes } = require('discord-api-types/v9');
-
-const commands = [{
-  name: 'ping',
-  description: 'Replies with Pong!'
-}]; 
-
-const rest = new REST({ version: '9' }).setToken('token');
-
-(async () => {
-  try {
-    console.log('Started refreshing application (/) commands.');
-
-    await rest.put(
-      Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID),
-      { body: commands },
-    );
-
-    console.log('Successfully reloaded application (/) commands.');
-  } catch (error) {
-    console.error(error);
-  }
-})();
-```
-
-Afterwards we can create a quite simple example bot:
-```js
-const { Client, Intents } = require('discord.js');
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const Discord = require('azrael-djs');
+const client = new Discord.Client();
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-
-  if (interaction.commandName === 'ping') {
-    await interaction.reply('Pong!');
+client.on('message', msg => {
+  if (msg.content === 'ping') {
+    msg.reply('pong');
   }
 });
 
@@ -98,28 +49,30 @@ client.login('token');
 ```
 
 ## Links
+- [Website](https://azrael.gg)
+- Documentation [Discord.js v12 Features](https://discord.js.org/#/docs/discord.js/v12/general/welcome) ::: [Discord.js v13 Features](https://discord.js.org/#/docs/discord.js/v13/general/welcome)
+- Guide [Discord.js v12 Guide](https://v12.discordjs.guide/) ::: [Discord.js v13 Guide](https://discordjs.guide/additional-info/changes-in-v13.html)
+- [Discord API Server](https://discord.gg/discord-api)
+- [Discord Developers Server](https://discord.gg/discord-developers)
+- [Azrael Github](https://github.com/Azrael-Interactive)
+- [Azrael-DJS NPM](https://npmjs.org/azrael-djs)
 
-- [Website](https://discord.js.org/) ([source](https://github.com/discordjs/website))
-- [Documentation](https://discord.js.org/#/docs)
-- [Guide](https://discordjs.guide/) ([source](https://github.com/discordjs/guide))
-  See also the [Update Guide](https://discordjs.guide/additional-info/changes-in-v13.html), including updated and removed items in the library.
-- [discord.js Discord server](https://discord.gg/djs)
-- [Discord API Discord server](https://discord.gg/discord-api)
-- [GitHub](https://github.com/discordjs/discord.js)
-- [npm](https://www.npmjs.com/package/discord.js)
-- [Related libraries](https://discord.com/developers/docs/topics/community-resources#libraries)
+## Create a bug report
 
-### Extensions
+If you see an error message or run into an issue, please [create bug report](https://github.com/Azrael-Interactive/azrael-djs/issues/new). This effort is valued and it will help all Azrael-DJS users.
 
-- [RPC](https://www.npmjs.com/package/discord-rpc) ([source](https://github.com/discordjs/RPC))
 
-## Contributing
+# Contributing
 
-Before creating an issue, please ensure that it hasn't already been reported/suggested, and double-check the
-[documentation](https://discord.js.org/#/docs).  
-See [the contribution guide](https://github.com/discordjs/discord.js/blob/main/.github/CONTRIBUTING.md) if you'd like to submit a PR.
+Azrael-DJS is an open-source project. We are committed to a fully transparent development process and appreciate highly any contributions. Whether you are helping us fix bugs, proposing new features, or spreading the word - we would love to have you as part of the Azrael-DJS community.
 
-## Help
+# Contributors ✨
 
-If you don't understand something in the documentation, you are experiencing problems, or you just need a gentle
-nudge in the right direction, please don't hesitate to join our official [discord.js Server](https://discord.gg/djs).
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+💻[TheCuteFoxxy](https://thecutefoxxy.com)\
+💻[Airbus A330-200](https://github.com)
+
+# Source Credit
+Azrael-DJS is built off of the [Discord.js](https://discord.js.org) source code and modified for public use.
+
