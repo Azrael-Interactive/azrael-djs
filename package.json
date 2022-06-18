@@ -1,6 +1,6 @@
 {
   "name": "azraael-djs",
-  "version": "2.1.0",
+  "version": "2.1.0-dev",
   "description": "A powerful library for interacting with the Discord API",
   "scripts": {
     "test": "npm run lint && npm run docs:test && npm run lint:typings && npm run test:typescript",
@@ -56,6 +56,17 @@
     "@types/node-fetch": "^2.6.1",
     "@types/ws": "^8.5.3",
     "discord-api-types": "^0.33.3",
+	"name": "azrael-djs",
+	"version": "2.1.0-dev",
+	"description": "A powerful library for interacting with the Discord API",
+	"main": "./src/index",
+	"dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "@discordjs/collection": "^0.4.0",
+    "@sapphire/async-queue": "^1.1.9",
+    "@types/node-fetch": "^2.5.12",
+    "@types/ws": "^8.2.2",
+    "discord-api-types": "^0.26.0",
     "form-data": "^4.0.0",
     "node-fetch": "^2.6.1",
     "ws": "^8.7.0"
