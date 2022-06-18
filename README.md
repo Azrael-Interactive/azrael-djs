@@ -75,4 +75,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 # Source Credit
 Azrael-DJS is built off of the [Discord.js](https://discord.js.org) source code and modified for public use.
-
