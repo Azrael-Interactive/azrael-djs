@@ -1,6 +1,6 @@
 {
   "name": "azraael-djs",
-  "version": "2.1.1-dev",
+  "version": "2.1.0-dev",
   "description": "A powerful library for interacting with the Discord API",
   "scripts": {
     "test": "npm run lint && npm run docs:test && npm run lint:typings && npm run test:typescript",
