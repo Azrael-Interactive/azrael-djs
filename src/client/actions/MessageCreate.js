@@ -4,7 +4,7 @@ const process = require('node:process');
 const Action = require('./Action');
 const { Events } = require('../../util/Constants');
 
-let deprecationEmitted = false;
+let deprecationEmitted = true;
 
 class MessageCreateAction extends Action {
   handle(data) {
