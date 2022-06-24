@@ -24,6 +24,12 @@ class VoiceChannel extends BaseGuildVoiceChannel {
      */
     this.messages = new MessageManager(this);
 
+    /**
+     * If the guild considers this channel NSFW
+     * @type {boolean}
+     */
+     this.nsfw = Boolean(data.nsfw);
+
     this._patch(data);
   }
 
