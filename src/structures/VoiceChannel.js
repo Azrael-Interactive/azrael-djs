@@ -65,6 +65,10 @@ class VoiceChannel extends BaseGuildVoiceChannel {
        */
       this.rateLimitPerUser = data.rate_limit_per_user;
     }
+    
+    if ('nsfw' in data) {
+      this.nsfw = data.nsfw;
+    }
   }
 
   /**
