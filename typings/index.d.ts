@@ -3,13 +3,16 @@ import {
   bold,
   channelMention,
   codeBlock,
+  ContextMenuCommandBuilder,
   formatEmoji,
   hideLinkEmbed,
   hyperlink,
   inlineCode,
   italic,
+  JSONEncodable,
   quote,
   roleMention,
+  SlashCommandBuilder,
   spoiler,
   strikethrough,
   time,
@@ -49,6 +52,7 @@ import {
   APIUser,
   GatewayVoiceServerUpdateDispatchData,
   GatewayVoiceStateUpdateDispatchData,
+  MessageActivityType,
   RESTPostAPIApplicationCommandsJSONBody,
   Snowflake,
   LocalizationMap,
@@ -223,10 +227,13 @@ export class ApplicationCommand<PermissionsFetchType = {}> extends Base {
   public applicationID: Snowflake;
   public readonly createdAt: Date;
   public readonly createdTimestamp: number;
+  /** @deprecated Use {@link defaultMemberPermissions} and {@link dmPermission} instead. */
   public defaultPermission: boolean;
+  public defaultMemberPermissions: Readonly<Permissions> | null;
   public description: string;
   public descriptionLocalizations: LocalizationMap | null;
   public descriptionLocalized: string | null;
+  public dmPermission: boolean | null;
   public guild: Guild | null;
   public guildID: Snowflake | null;
   public readonly manager: ApplicationCommandManager;
@@ -245,14 +252,19 @@ export class ApplicationCommand<PermissionsFetchType = {}> extends Base {
   public type: ApplicationCommandType;
   public version: Snowflake;
   public delete(): Promise<ApplicationCommand<PermissionsFetchType>>;
-  public edit(data: ApplicationCommandData): Promise<ApplicationCommand<PermissionsFetchType>>;
+  public edit(data: Partial<ApplicationCommandData>): Promise<ApplicationCommand<PermissionsFetchType>>;
   public setName(name: string): Promise<ApplicationCommand<PermissionsFetchType>>;
   public setNameLocalizations(nameLocalizations: LocalizationMap): Promise<ApplicationCommand<PermissionsFetchType>>;
   public setDescription(description: string): Promise<ApplicationCommand<PermissionsFetchType>>;
   public setDescriptionLocalizations(
     descriptionLocalizations: LocalizationMap,
   ): Promise<ApplicationCommand<PermissionsFetchType>>;
+  /** @deprecated Use {@link setDefaultMemberPermissions} and {@link setDMPermission} instead. */
   public setDefaultPermission(defaultPermission?: boolean): Promise<ApplicationCommand<PermissionsFetchType>>;
+  public setDefaultMemberPermissions(
+    defaultMemberPermissions: PermissionResolvable | null,
+  ): Promise<ApplicationCommand<PermissionsFetchType>>;
+  public setDMPermission(dmPermission?: boolean): Promise<ApplicationCommand<PermissionsFetchType>>;
   public setOptions(options: ApplicationCommandOptionData[]): Promise<ApplicationCommand<PermissionsFetchType>>;
   public equals(
     command: ApplicationCommand | ApplicationCommandData | RawApplicationCommandData,
@@ -1045,8 +1057,8 @@ export class GuildAuditLogs<T extends GuildAuditLogsResolvable = 'ALL'> {
 
 export class GuildAuditLogsEntry<
   TActionRaw extends GuildAuditLogsResolvable = 'ALL',
-  TAction = TActionRaw extends keyof GuildAuditLogsIDs
-    ? GuildAuditLogsIDs[TActionRaw]
+  TAction = TActionRaw extends keyof GuildAuditLogsIds
+    ? GuildAuditLogsIds[TActionRaw]
     : TActionRaw extends null
     ? 'ALL'
     : TActionRaw,
@@ -1383,6 +1395,7 @@ export class Interaction<Cached extends CacheType = CacheType> extends Base {
   public type: InteractionType;
   public user: User;
   public version: number;
+  public appPermissions: Readonly<Permissions> | null;
   public memberPermissions: CacheTypeReducer<Cached, Readonly<Permissions>>;
   public locale: string;
   public guildLocale: CacheTypeReducer<Cached, string, string, string>;
@@ -1658,7 +1671,7 @@ export class MessageButton extends BaseMessageComponent {
   public style: MessageButtonStyle | null;
   public type: 'BUTTON';
   public url: string | null;
-  public setCustomID(customID: string): this;
+  public setCustomId(customID: string): this;
   public setDisabled(disabled?: boolean): this;
   public setEmoji(emoji: EmojiIdentifierResolvable): this;
   public setLabel(label: string): this;
@@ -1864,7 +1877,7 @@ export class MessageSelectMenu extends BaseMessageComponent {
   public type: 'SELECT_MENU';
   public addOptions(...options: MessageSelectOptionData[] | MessageSelectOptionData[][]): this;
   public setOptions(...options: MessageSelectOptionData[] | MessageSelectOptionData[][]): this;
-  public setCustomID(customID: string): this;
+  public setCustomId(customID: string): this;
   public setDisabled(disabled?: boolean): this;
   public setMaxValues(maxValues: number): this;
   public setMinValues(minValues: number): this;
@@ -1894,7 +1907,7 @@ export class Modal {
       | (Required<BaseMessageComponentOptions> & MessageActionRowOptions<ModalActionRowComponentResolvable>)
     )[]
   ): this;
-  public setCustomID(customID: string): this;
+  public setCustomId(customID: string): this;
   public spliceComponents(
     index: number,
     deleteCount: number,
@@ -2123,8 +2136,8 @@ export class SelectMenuInteraction<Cached extends CacheType = CacheType> extends
 }
 
 export interface ShardEventTypes {
-  spawn: [child: ChildProcess];
-  death: [child: ChildProcess];
+  spawn: [process: ChildProcess | Worker];
+  death: [process: ChildProcess | Worker];
   disconnect: [];
   ready: [];
   reconnecting: [];
@@ -2198,7 +2211,7 @@ export class ShardClientUtil {
   public send(message: unknown): Promise<void>;
 
   public static singleton(client: Client, mode: ShardingManagerMode): ShardClientUtil;
-  public static shardIDForGuildID(guildID: Snowflake, shardCount: number): number;
+  public static shardIDForGuildId(guildID: Snowflake, shardCount: number): number;
 }
 
 export class ShardingManager extends EventEmitter {
@@ -2444,7 +2457,7 @@ export class TextInputComponent extends BaseMessageComponent {
   public placeholder: string | null;
   public style: TextInputStyle;
   public value: string | null;
-  public setCustomID(customID: string): this;
+  public setCustomId(customID: string): this;
   public setLabel(label: string): this;
   public setRequired(required?: boolean): this;
   public setMaxLength(maxLength: number): this;
@@ -2775,6 +2788,7 @@ export interface WebSocketShardEvents {
   ready: [];
   resumed: [];
   invalidSession: [];
+  destroyed: [];
   close: [event: CloseEvent];
   allReady: [unavailableGuilds?: Set<Snowflake>];
 }
@@ -3025,6 +3039,7 @@ export const Constants: {
   GuildScheduledEventStatuses: EnumHolder<typeof GuildScheduledEventStatuses>;
   GuildScheduledEventPrivacyLevels: EnumHolder<typeof GuildScheduledEventPrivacyLevels>;
   VideoQualityModes: EnumHolder<typeof VideoQualityModes>;
+  SweeperKeys: SweeperKey[];
 };
 
 export const version: string;
@@ -3054,7 +3069,11 @@ export abstract class CachedManager<K, Holds, R> extends DataManager<K, Holds, R
   private _add(data: unknown, cache?: boolean, { id, extras }?: { id: K; extras: unknown[] }): Holds;
 }
 
-export type ApplicationCommandDataResolvable = ApplicationCommandData | RESTPostAPIApplicationCommandsJSONBody;
+export type ApplicationCommandDataResolvable =
+  | ApplicationCommandData
+  | RESTPostAPIApplicationCommandsJSONBody
+  | SlashCommandBuilder
+  | ContextMenuCommandBuilder;
 
 export class ApplicationCommandManager<
   ApplicationCommandScope = ApplicationCommand<{ guild: GuildResolvable }>,
@@ -3074,11 +3093,11 @@ export class ApplicationCommandManager<
   public delete(command: ApplicationCommandResolvable, guildID?: Snowflake): Promise<ApplicationCommandScope | null>;
   public edit(
     command: ApplicationCommandResolvable,
-    data: ApplicationCommandDataResolvable,
+    data: Partial<ApplicationCommandDataResolvable>,
   ): Promise<ApplicationCommandScope>;
   public edit(
     command: ApplicationCommandResolvable,
-    data: ApplicationCommandDataResolvable,
+    data: Partial<ApplicationCommandDataResolvable>,
     guildID: Snowflake,
   ): Promise<ApplicationCommand>;
   public fetch(
@@ -3096,9 +3115,7 @@ export class ApplicationCommandManager<
     commands: ApplicationCommandDataResolvable[],
     guildID: Snowflake,
   ): Promise<Collection<Snowflake, ApplicationCommand>>;
-  private static transformCommand(
-    command: ApplicationCommandData,
-  ): Omit<APIApplicationCommand, 'id' | 'application_id' | 'guild_id'>;
+  private static transformCommand(command: ApplicationCommandDataResolvable): RESTPostAPIApplicationCommandsJSONBody;
 }
 
 export class ApplicationCommandPermissionsManager<
@@ -3106,19 +3123,19 @@ export class ApplicationCommandPermissionsManager<
   FetchSingleOptions,
   FullPermissionsOptions,
   GuildType,
-  CommandIDType,
+  CommandIdType,
 > extends BaseManager {
   private constructor(manager: ApplicationCommandManager | GuildApplicationCommandManager | ApplicationCommand);
   private manager: ApplicationCommandManager | GuildApplicationCommandManager | ApplicationCommand;
 
   public client: Client;
-  public commandID: CommandIDType;
+  public commandID: CommandIdType;
   public guild: GuildType;
   public guildID: Snowflake | null;
   public add(
     options: FetchSingleOptions & { permissions: ApplicationCommandPermissionData[] },
   ): Promise<ApplicationCommandPermissions[]>;
-  public has(options: FetchSingleOptions & { permissionID: UserResolvable | RoleResolvable }): Promise<boolean>;
+  public has(options: FetchSingleOptions & { permissionId: UserResolvable | RoleResolvable }): Promise<boolean>;
   public fetch(options: FetchSingleOptions): Promise<ApplicationCommandPermissions[]>;
   public fetch(options: BaseOptions): Promise<Collection<Snowflake, ApplicationCommandPermissions[]>>;
   public remove(
@@ -3150,7 +3167,7 @@ export class ApplicationCommandPermissionsManager<
 
 export class BaseGuildEmojiManager extends CachedManager<Snowflake, GuildEmoji, EmojiResolvable> {
   protected constructor(client: Client, iterable?: Iterable<RawGuildEmojiData>);
-  public resolveIdentifier(emoji: EmojiIdentifierResolvable): string | null;
+  public resolveIDentifier(emoji: EmojiIdentifierResolvable): string | null;
 }
 
 export class ChannelManager extends CachedManager<Snowflake, AnyChannel, ChannelResolvable> {
@@ -3167,7 +3184,7 @@ export class GuildApplicationCommandManager extends ApplicationCommandManager<Ap
   public delete(command: ApplicationCommandResolvable): Promise<ApplicationCommand | null>;
   public edit(
     command: ApplicationCommandResolvable,
-    data: ApplicationCommandDataResolvable,
+    data: Partial<ApplicationCommandDataResolvable>,
   ): Promise<ApplicationCommand>;
   public fetch(id: Snowflake, options?: FetchGuildApplicationCommandFetchOptions): Promise<ApplicationCommand>;
   public fetch(options: FetchGuildApplicationCommandFetchOptions): Promise<Collection<Snowflake, ApplicationCommand>>;
@@ -3267,7 +3284,7 @@ export class GuildMemberManager extends CachedManager<Snowflake, GuildMember, Gu
   ): Promise<GuildMember | null>;
   public add(user: UserResolvable, options: AddGuildMemberOptions): Promise<GuildMember>;
   public ban(user: UserResolvable, options?: BanOptions): Promise<GuildMember | User | Snowflake>;
-  public edit(user: UserResolvable, data: GuildMemberEditData, reason?: string): Promise<void>;
+  public edit(user: UserResolvable, data: GuildMemberEditData, reason?: string): Promise<GuildMember>;
   public fetch(
     options: UserResolvable | FetchMemberOptions | (FetchMembersOptions & { user: UserResolvable }),
   ): Promise<GuildMember>;
@@ -3675,7 +3692,7 @@ export interface APIErrors {
   MAXIMUM_SERVER_MEMBERS: 30019;
   MAXIMUM_NUMBER_OF_SERVER_CATEGORIES: 30030;
   GUILD_ALREADY_HAS_TEMPLATE: 30031;
-  MAXIMUM_THREAD_PARICIPANTS: 30033;
+  MAXIMUM_THREAD_PARTICIPANTS: 30033;
   MAXIMUM_NON_GUILD_MEMBERS_BANS: 30035;
   MAXIMUM_BAN_FETCHES: 30037;
   MAXIMUM_NUMBER_OF_UNCOMPLETED_GUILD_SCHEDULED_EVENTS_REACHED: 30038;
@@ -3723,10 +3740,11 @@ export interface APIErrors {
   INVALID_FILE_UPLOADED: 50046;
   CANNOT_SELF_REDEEM_GIFT: 50054;
   INVALID_GUILD: 50055;
+  INVALID_MESSAGE_TYPE: 50068;
   PAYMENT_SOURCE_REQUIRED: 50070;
   CANNOT_DELETE_COMMUNITY_REQUIRED_CHANNEL: 50074;
   INVALID_STICKER_SENT: 50081;
-  INVALID_THREAD_ARCHIVE_STATE: 50083;
+  INVALID_OPERATION_ON_ARCHIVED_THREAD: 50083;
   INVALID_THREAD_NOTIFICATION_SETTINGS: 50084;
   PARAMETER_EARLIER_THAN_CREATION: 50085;
   GUILD_NOT_AVAILABLE_IN_LOCATION: 50095;
@@ -3771,7 +3789,10 @@ export interface ApplicationAsset {
 export interface BaseApplicationCommandData {
   name: string;
   nameLocalizations?: LocalizationMap;
+  /** @deprecated Use {@link defaultMemberPermissions} and {@link dmPermission} instead. */
   defaultPermission?: boolean;
+  defaultMemberPermissions?: PermissionResolvable | null;
+  dmPermission?: boolean;
 }
 
 export type CommandOptionDataTypeResolvable = ApplicationCommandOptionType | ApplicationCommandOptionTypes;
@@ -3858,7 +3879,7 @@ export interface ApplicationCommandChoicesData extends Omit<BaseApplicationComma
 }
 
 export interface ApplicationCommandChoicesOption extends Omit<BaseApplicationCommandOptionsData, 'autocomplete'> {
-  type: Exclude<CommandOptionChoiceResolvableType, ApplicationCommandOptionTypes>;
+  type: CommandOptionChoiceResolvableType;
   choices?: ApplicationCommandOptionChoiceData[];
   autocomplete?: false;
 }
@@ -3871,10 +3892,24 @@ export interface ApplicationCommandNumericOptionData extends ApplicationCommandC
   max_value?: number;
 }
 
+export interface ApplicationCommandStringOptionData extends ApplicationCommandChoicesData {
+  type: ApplicationCommandOptionTypes.STRING;
+  minLength?: number;
+  min_length?: number;
+  maxLength?: number;
+  max_length?: number;
+}
+
 export interface ApplicationCommandNumericOption extends ApplicationCommandChoicesOption {
-  type: Exclude<CommandOptionNumericResolvableType, ApplicationCommandOptionTypes>;
+  type: CommandOptionNumericResolvableType;
   minValue?: number;
   maxValue?: number;
+}
+
+export interface ApplicationCommandStringOption extends ApplicationCommandChoicesOption {
+  type: ApplicationCommandOptionTypes.STRING;
+  minLength?: number;
+  maxLength?: number;
 }
 
 export interface ApplicationCommandSubGroupData extends Omit<BaseApplicationCommandOptionsData, 'required'> {
@@ -3895,6 +3930,7 @@ export interface ApplicationCommandSubCommandData extends Omit<BaseApplicationCo
     | ApplicationCommandChannelOptionData
     | ApplicationCommandAutocompleteOption
     | ApplicationCommandNumericOptionData
+    | ApplicationCommandStringOptionData
   )[];
 }
 
@@ -3918,6 +3954,7 @@ export type ApplicationCommandOptionData =
   | ApplicationCommandChoicesData
   | ApplicationCommandAutocompleteOption
   | ApplicationCommandNumericOptionData
+  | ApplicationCommandStringOptionData
   | ApplicationCommandSubCommandData;
 
 export type ApplicationCommandOption =
@@ -3926,6 +3963,7 @@ export type ApplicationCommandOption =
   | ApplicationCommandChannelOption
   | ApplicationCommandChoicesOption
   | ApplicationCommandNumericOption
+  | ApplicationCommandStringOption
   | ApplicationCommandSubCommand;
 
 export interface ApplicationCommandOptionChoiceData {
@@ -4419,8 +4457,6 @@ export interface ConstantsEvents {
   GUILD_CREATE: 'guildCreate';
   GUILD_DELETE: 'guildDelete';
   GUILD_UPDATE: 'guildUpdate';
-  INVITE_CREATE: 'inviteCreate';
-  INVITE_DELETE: 'inviteDelete';
   GUILD_UNAVAILABLE: 'guildUnavailable';
   GUILD_MEMBER_ADD: 'guildMemberAdd';
   GUILD_MEMBER_REMOVE: 'guildMemberRemove';
@@ -4430,6 +4466,8 @@ export interface ConstantsEvents {
   GUILD_INTEGRATIONS_UPDATE: 'guildIntegrationsUpdate';
   GUILD_ROLE_CREATE: 'roleCreate';
   GUILD_ROLE_DELETE: 'roleDelete';
+  INVITE_CREATE: 'inviteCreate';
+  INVITE_DELETE: 'inviteDelete';
   GUILD_ROLE_UPDATE: 'roleUpdate';
   GUILD_EMOJI_CREATE: 'emojiCreate';
   GUILD_EMOJI_DELETE: 'emojiDelete';
@@ -4506,6 +4544,7 @@ export interface ConstantsShardEvents {
   INVALID_SESSION: 'invalidSession';
   READY: 'ready';
   RESUMED: 'resumed';
+  ALL_READY: 'allReady';
 }
 
 export interface ConstantsStatus {
@@ -4515,6 +4554,9 @@ export interface ConstantsStatus {
   IDLE: 3;
   NEARLY: 4;
   DISCONNECTED: 5;
+  WAITING_FOR_GUILDS: 6;
+  IDENTIFYING: 7;
+  RESUMING: 8;
 }
 
 export interface CreateGuildScheduledEventInviteURLOptions extends CreateInviteOptions {
@@ -4761,7 +4803,7 @@ interface GuildAuditLogsTypes {
   THREAD_DELETE: ['THREAD', 'DELETE'];
 }
 
-export interface GuildAuditLogsIDs {
+export interface GuildAuditLogsIds {
   1: 'GUILD_UPDATE';
   10: 'CHANNEL_CREATE';
   11: 'CHANNEL_UPDATE';
@@ -4811,7 +4853,7 @@ export interface GuildAuditLogsIDs {
   112: 'THREAD_DELETE';
 }
 
-export type GuildAuditLogsActions = { [Key in keyof GuildAuditLogsIDs as GuildAuditLogsIDs[Key]]: Key } & { ALL: null };
+export type GuildAuditLogsActions = { [Key in keyof GuildAuditLogsIds as GuildAuditLogsIds[Key]]: Key } & { ALL: null };
 
 export type GuildAuditLogsAction = keyof GuildAuditLogsActions;
 
@@ -4866,7 +4908,7 @@ export interface GuildAuditLogsFetchOptions<T extends GuildAuditLogsResolvable> 
   type?: T;
 }
 
-export type GuildAuditLogsResolvable = keyof GuildAuditLogsIDs | GuildAuditLogsAction | null;
+export type GuildAuditLogsResolvable = keyof GuildAuditLogsIds | GuildAuditLogsAction | null;
 
 export type GuildAuditLogsTarget = GuildAuditLogsTypes[keyof GuildAuditLogsTypes][0] | 'ALL' | 'UNKNOWN';
 
@@ -5261,7 +5303,7 @@ export interface MessageActionRowOptions<
 
 export interface MessageActivity {
   partyID: string;
-  type: number;
+  type: MessageActivityType;
 }
 
 export interface BaseButtonOptions extends BaseMessageComponentOptions {
@@ -5970,9 +6012,9 @@ export type VoiceBasedChannelTypes = VoiceBasedChannel['type'];
 
 export type VoiceChannelResolvable = Snowflake | VoiceChannel;
 
-export type WebhookClientData = WebhookClientDataIDWithToken | WebhookClientDataURL;
+export type WebhookClientData = WebhookClientDataIdWithToken | WebhookClientDataURL;
 
-export interface WebhookClientDataIDWithToken {
+export interface WebhookClientDataIdWithToken {
   id: Snowflake;
   token: string;
 }
