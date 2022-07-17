@@ -142,8 +142,9 @@ class PermissionOverwriteManager extends CachedManager {
    *   .catch(console.error);
    */
   edit(userOrRole, options, overwriteOptions) {
-    userOrRole = this.channel.guild.roles.resolveID(userOrRole) ?? this.client.users.resolveID(userOrRole);
-    const existing = this.cache.get(userOrRole);
+    const existing = this.cache.get(
+      this.channel.guild.roles.resolveID(userOrRole) ?? this.client.users.resolveID(userOrRole),
+    );
     return this.upsert(userOrRole, options, overwriteOptions, existing);
   }
 
