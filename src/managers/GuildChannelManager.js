@@ -257,7 +257,7 @@ class GuildChannelManager extends CachedManager {
           );
         }
       } else if (channel.parent) {
-        permission_overwrites = this.parent.permissionOverwrites.cache.map(o =>
+        permission_overwrites = channel.parent.permissionOverwrites.cache.map(o =>
           PermissionOverwrites.resolve(o, this.guild),
         );
       }
@@ -403,7 +403,7 @@ class GuildChannelManager extends CachedManager {
       id: this.client.channels.resolveID(r.channel),
       position: r.position,
       lock_permissions: r.lockPermissions,
-      parent_id: typeof r.parent !== 'undefined' ? this.channels.resolveID(r.parent) : undefined,
+      parent_id: typeof r.parent !== 'undefined' ? this.resolveID(r.parent) : undefined,
     }));
 
     await this.client.api.guilds(this.guild.id).channels.patch({ data: channelPositions });
