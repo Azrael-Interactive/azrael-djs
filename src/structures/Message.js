@@ -804,9 +804,12 @@ class Message extends Base {
    *   .then(msg => console.log(`Deleted message from ${msg.author.username}`))
    *   .catch(console.error);
    */
-  async delete() {
+  async delete(opts) {
     if (!this.channel) throw new Error('CHANNEL_NOT_CACHED');
-    await this.channel.messages.delete(this.id);
+    if (!opts?.timeout) opts = { timeout: 0 };
+    setTimeout(async () => {
+      await this.channel.messages.delete(this.id);
+    }, opts.timeout);
     return this;
   }
 
