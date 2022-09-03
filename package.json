@@ -1,5 +1,5 @@
 {
-  "name": "azraal-djs",
+  "name": "azrael-djs",
   "version": "2.2.1.1",
   "description": "A powerful library for interacting with the Discord API",
   "main": "./src/index.js",
