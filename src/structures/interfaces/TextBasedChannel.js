@@ -176,7 +176,7 @@ class TextBasedChannel {
         options.embeds = [content?.embed]
     } else {
         options = content
-        if (options.embed) {
+        if (options?.embed) {
           options.embeds = [options.embed]
         }
     }

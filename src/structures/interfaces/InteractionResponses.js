@@ -92,7 +92,6 @@ class InteractionResponses {
    */
   async reply(content, options) {
     if (this.deferred || this.replied) throw new Error('INTERACTION_ALREADY_REPLIED');
-    this.ephemeral = options.ephemeral ?? false;
 
     let messagePayload;
 
@@ -110,6 +109,8 @@ class InteractionResponses {
           options.embeds = [options.embed]
         }
     }
+
+    this.ephemeral = options.ephemeral ?? false;
 
     if (options instanceof MessagePayload) messagePayload = options;
     else messagePayload = MessagePayload.create(this, options);
