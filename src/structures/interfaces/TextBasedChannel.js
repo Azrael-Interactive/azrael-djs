@@ -159,11 +159,6 @@ class TextBasedChannel {
     const User = require('../User');
     const { GuildMember } = require('../GuildMember');
 
-    if (this instanceof User || this instanceof GuildMember) {
-      const dm = await this.createDM();
-      return dm.send(options);
-    }
-
     let messagePayload;
 
     if (!options) options = {};
@@ -179,6 +174,11 @@ class TextBasedChannel {
         if (options?.embed) {
           options.embeds = [options.embed]
         }
+    }
+
+    if (this instanceof User || this instanceof GuildMember) {
+      const dm = await this.createDM();
+      return dm.send(options);
     }
 
     if (options instanceof MessagePayload) {
