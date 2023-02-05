@@ -31,12 +31,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/Digital-Dimensions/azrael-djs.git"
+    "url": "https://github.com/Digital-Dimensions-LLC/azrael-djs.git"
   },
   "bugs": {
-    "url": "https://github.com/Digital-Dimensions/azrael-djs/issues"
+    "url": "https://github.com/Digital-Dimensions-LLC/azrael-djs/issues"
   },
-  "homepage": "https://github.com/Digital-Dimensions/azrael-djs",
+  "homepage": "https://github.com/Digital-Dimensions-LLC/azrael-djs",
   "dependencies": {
     "@discordjs/builders": "^0.16.0",
     "@discordjs/collection": "^0.7.0",
