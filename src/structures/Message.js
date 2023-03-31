@@ -728,8 +728,22 @@ class Message extends Base {
    *   .then(msg => console.log(`Updated the content of a message to ${msg.content}`))
    *   .catch(console.error);
    */
-  edit(options) {
+  edit(content, options) {
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options.embed) {
+          options.embeds = [options.embed]
+        }
+    }
     return this.channel.messages.edit(this, options);
   }
 
@@ -844,9 +858,24 @@ class Message extends Base {
    *   .then(() => console.log(`Replied to message "${message.content}"`))
    *   .catch(console.error);
    */
-  reply(options) {
+  reply(content, options) {
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
     let data;
+
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options?.embed) {
+          options.embeds = [options.embed]
+        }
+    }
 
     if (options instanceof MessagePayload) {
       data = options;
