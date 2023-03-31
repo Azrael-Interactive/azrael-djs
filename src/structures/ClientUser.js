@@ -105,7 +105,7 @@ class ClientUser extends User {
    * @property {PresenceStatusData} [status] Status of the user
    * @property {boolean} [afk] Whether the user is AFK
    * @property {ActivitiesOptions[]} [activities] Activity the user is playing
-   * @property {number|number[]} [shardID] Shard id(s) to have the activity set on
+   * @property {number|number[]} [shardId] Shard id(s) to have the activity set on
    */
 
   /**
@@ -132,14 +132,14 @@ class ClientUser extends User {
   /**
    * Sets the status of the client user.
    * @param {PresenceStatusData} status Status to change to
-   * @param {number|number[]} [shardID] Shard id(s) to have the activity set on
+   * @param {number|number[]} [shardId] Shard id(s) to have the activity set on
    * @returns {ClientPresence}
    * @example
    * // Set the client user's status
    * client.user.setStatus('idle');
    */
-  setStatus(status, shardID) {
-    return this.setPresence({ status, shardID });
+  setStatus(status, shardId) {
+    return this.setPresence({ status, shardId });
   }
 
   /**
@@ -148,7 +148,7 @@ class ClientUser extends User {
    * @property {string} [name] Name of the activity
    * @property {string} [url] Twitch / YouTube stream URL
    * @property {ActivityType|number} [type] Type of the activity
-   * @property {number|number[]} [shardID] Shard Id(s) to have the activity set on
+   * @property {number|number[]} [shardId] Shard Id(s) to have the activity set on
    */
 
   /**
@@ -161,20 +161,20 @@ class ClientUser extends User {
    * client.user.setActivity('discord.js', { type: 'WATCHING' });
    */
   setActivity(name, options = {}) {
-    if (!name) return this.setPresence({ activities: [], shardID: options.shardID });
+    if (!name) return this.setPresence({ activities: [], shardId: options.shardId });
 
     const activity = Object.assign({}, options, typeof name === 'object' ? name : { name });
-    return this.setPresence({ activities: [activity], shardID: activity.shardID });
+    return this.setPresence({ activities: [activity], shardId: activity.shardId });
   }
 
   /**
    * Sets/removes the AFK flag for the client user.
    * @param {boolean} [afk=true] Whether or not the user is AFK
-   * @param {number|number[]} [shardID] Shard Id(s) to have the AFK flag set on
+   * @param {number|number[]} [shardId] Shard Id(s) to have the AFK flag set on
    * @returns {ClientPresence}
    */
-  setAFK(afk = true, shardID) {
-    return this.setPresence({ afk, shardID });
+  setAFK(afk = true, shardId) {
+    return this.setPresence({ afk, shardId });
   }
 }
 

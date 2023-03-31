@@ -9,7 +9,7 @@ const Util = require('../util/Util');
 /**
  * Activity sent in a message.
  * @typedef {Object} MessageActivity
- * @property {string} [partyID] Id of the party represented in activity
+ * @property {string} [partyId] Id of the party represented in activity
  * @property {MessageActivityType} type Type of activity sent
  */
 
@@ -197,7 +197,7 @@ class Activity {
      * The id of the application associated with this activity
      * @type {?Snowflake}
      */
-    this.applicationID = data.application_id ?? null;
+    this.applicationId = data.application_id ?? null;
 
     /**
      * Represents timestamps of an activity
@@ -264,7 +264,7 @@ class Activity {
      * The game's or Spotify session's id
      * @type {?string}
      */
-    this.sessionID = data.session_id ?? null;
+    this.sessionId = data.session_id ?? null;
 
     /**
      * The labels of the buttons of this rich presence
@@ -276,7 +276,7 @@ class Activity {
      * Creation date of the activity
      * @type {number}
      */
-    this.createdTimestamp = new Date(data.created_at).getTime();
+    this.createdTimestamp = data.created_at;
   }
 
   /**
@@ -292,7 +292,9 @@ class Activity {
         this.type === activity.type &&
         this.url === activity.url &&
         this.state === activity.state &&
-        this.details === activity.details)
+        this.details === activity.details &&
+        this.emoji?.id === activity.emoji?.id &&
+        this.emoji?.name === activity.emoji?.name)
     );
   }
 
@@ -367,7 +369,7 @@ class RichPresenceAssets {
       }
     }
 
-    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.smallImage, {
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationId, this.smallImage, {
       format,
       size,
     });
@@ -394,7 +396,7 @@ class RichPresenceAssets {
       }
     }
 
-    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.largeImage, {
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationId, this.largeImage, {
       format,
       size,
     });

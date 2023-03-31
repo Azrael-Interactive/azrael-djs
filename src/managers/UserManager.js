@@ -1,6 +1,7 @@
 'use strict';
 
 const CachedManager = require('./CachedManager');
+const { Error } = require('../errors');
 const { GuildMember } = require('../structures/GuildMember');
 const { Message } = require('../structures/Message');
 const ThreadMember = require('../structures/ThreadMember');
@@ -48,7 +49,7 @@ class UserManager extends CachedManager {
    * @returns {Promise<DMChannel>}
    */
   async createDM(user, { cache = true, force = false } = {}) {
-    const id = this.resolveID(user);
+    const id = this.resolveId(user);
 
     if (!force) {
       const dmChannel = this.dmChannel(id);
@@ -69,7 +70,7 @@ class UserManager extends CachedManager {
    * @returns {Promise<DMChannel>}
    */
   async deleteDM(user) {
-    const id = this.resolveID(user);
+    const id = this.resolveId(user);
     const dmChannel = this.dmChannel(id);
     if (!dmChannel) throw new Error('USER_NO_DM_CHANNEL');
     await this.client.api.channels(dmChannel.id).delete();
@@ -84,7 +85,7 @@ class UserManager extends CachedManager {
    * @returns {Promise<User>}
    */
   async fetch(user, { cache = true, force = false } = {}) {
-    const id = this.resolveID(user);
+    const id = this.resolveId(user);
     if (!force) {
       const existing = this.cache.get(id);
       if (existing && !existing.partial) return existing;
@@ -130,11 +131,11 @@ class UserManager extends CachedManager {
    * @param {UserResolvable} user The UserResolvable to identify
    * @returns {?Snowflake}
    */
-  resolveID(user) {
+  resolveId(user) {
     if (user instanceof ThreadMember) return user.id;
     if (user instanceof GuildMember) return user.user.id;
     if (user instanceof Message) return user.author.id;
-    return super.resolveID(user);
+    return super.resolveId(user);
   }
 }
 

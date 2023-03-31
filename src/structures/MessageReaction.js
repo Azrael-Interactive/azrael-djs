@@ -57,7 +57,7 @@ class MessageReaction {
    */
   async remove() {
     await this.client.api
-      .channels(this.message.channelID)
+      .channels(this.message.channelId)
       .messages(this.message.id)
       .reactions(this._emoji.identifier)
       .delete();

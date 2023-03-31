@@ -39,7 +39,7 @@ class DMChannel extends Channel {
        * The channel's last message id, if one was sent
        * @type {?Snowflake}
        */
-      this.lastMessageID = data.last_message_id;
+      this.lastMessageId = data.last_message_id;
     }
 
     if ('last_pin_timestamp' in data) {
@@ -59,7 +59,7 @@ class DMChannel extends Channel {
    * @readonly
    */
   get partial() {
-    return typeof this.lastMessageID === 'undefined';
+    return typeof this.lastMessageId === 'undefined';
   }
 
   /**
@@ -88,7 +88,7 @@ class DMChannel extends Channel {
   get lastMessage() {}
   get lastPinAt() {}
   send() {}
-  startTyping() {}
+  sendTyping() {}
   createMessageCollector() {}
   awaitMessages() {}
   createMessageComponentCollector() {}

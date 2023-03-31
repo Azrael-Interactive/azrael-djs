@@ -67,15 +67,15 @@ class Webhook {
        * The guild the webhook belongs to
        * @type {Snowflake}
        */
-      this.guildID = data.guild_id;
+      this.guildId = data.guild_id;
     }
 
     if ('channel_id' in data) {
       /**
-       * The channel the webhook belongs to
+       * The id of the channel the webhook belongs to
        * @type {Snowflake}
        */
-      this.channelID = data.channel_id;
+      this.channelId = data.channel_id;
     }
 
     if ('user' in data) {
@@ -116,6 +116,7 @@ class Webhook {
    * @property {string} [avatarURL] Avatar URL override for the message
    * @property {Snowflake} [threadId] The id of the thread in the channel to send to.
    * <info>For interaction webhooks, this property is ignored</info>
+   * @property {string} [threadName] Name of the thread to create (only available if webhook is in a forum channel)
    * @property {MessageFlags} [flags] Which flags to set for the message. Only `SUPPRESS_EMBEDS` can be set.
    */
 
@@ -181,25 +182,10 @@ class Webhook {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async send(content, options) {
+  async send(options) {
     if (!this.token) throw new Error('WEBHOOK_TOKEN_UNAVAILABLE');
 
     let messagePayload;
-
-    if (!options) options = {};
-    if (typeof content == "string") {
-        options.content = content
-    } else if (typeof content == "object" && content?.type == "rich") {
-        options.embeds = [content]
-    } else if (typeof content == "object" && typeof content?.embed == "object") {
-        options = content
-        options.embeds = [content?.embed]
-    } else {
-        options = content
-        if (options.embed) {
-          options.embeds = [options.embed]
-        }
-    }
 
     if (options instanceof MessagePayload) {
       messagePayload = options.resolveData();
@@ -273,7 +259,7 @@ class Webhook {
 
     this.name = data.name;
     this.avatar = data.avatar;
-    this.channelID = data.channel_id;
+    this.channelId = data.channel_id;
     return this;
   }
 
@@ -388,6 +374,15 @@ class Webhook {
         },
         auth: false,
       });
+  }
+
+  /**
+   * The channel the webhook belongs to
+   * @type {?(TextChannel|VoiceChannel|NewsChannel|ForumChannel)}
+   * @readonly
+   */
+  get channel() {
+    return this.client.channels.resolve(this.channelId);
   }
 
   /**

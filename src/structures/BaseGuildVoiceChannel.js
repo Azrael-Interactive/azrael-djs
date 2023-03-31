@@ -45,7 +45,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
   get members() {
     const coll = new Collection();
     for (const state of this.guild.voiceStates.cache.values()) {
-      if (state.channelID === this.id && state.member) {
+      if (state.channelId === this.id && state.member) {
         coll.set(state.id, state.member);
       }
     }
@@ -75,7 +75,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
     if (permissions.has(Permissions.FLAGS.ADMINISTRATOR, false)) return true;
 
     return (
-      this.guild.me.communicationDisabledUntilTimestamp < Date.now() &&
+      this.guild.members.me.communicationDisabledUntilTimestamp < Date.now() &&
       permissions.has(Permissions.FLAGS.CONNECT, false)
     );
   }
@@ -117,7 +117,7 @@ class BaseGuildVoiceChannel extends GuildChannel {
    * @returns {Promise<Collection<string, Invite>>}
    */
   fetchInvites(cache = true) {
-    return this.guild.invites.fetch({ channelID: this.id, cache });
+    return this.guild.invites.fetch({ channelId: this.id, cache });
   }
 }
 

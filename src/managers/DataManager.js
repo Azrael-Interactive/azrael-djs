@@ -47,7 +47,7 @@ class DataManager extends BaseManager {
    * @param {string|Object} idOrInstance The id or instance of something in this Manager
    * @returns {?Snowflake}
    */
-  resolveID(idOrInstance) {
+  resolveId(idOrInstance) {
     if (idOrInstance instanceof this.holds) return idOrInstance.id;
     if (typeof idOrInstance === 'string') return idOrInstance;
     return null;

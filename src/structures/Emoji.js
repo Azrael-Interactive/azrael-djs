@@ -131,7 +131,7 @@ class Emoji extends Base {
 
   toJSON() {
     return super.toJSON({
-      guild: 'guildID',
+      guild: 'guildId',
       createdTimestamp: true,
       url: true,
       identifier: true,

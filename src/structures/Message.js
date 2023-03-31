@@ -14,7 +14,7 @@ const ReactionCollector = require('./ReactionCollector');
 const { Sticker } = require('./Sticker');
 const { Error } = require('../errors');
 const ReactionManager = require('../managers/ReactionManager');
-const { InteractionTypes, MessageTypes, SystemMessageTypes } = require('../util/Constants');
+const { InteractionTypes, MessageTypes, SystemMessageTypes, MaxBulkDeletableMessageAge } = require('../util/Constants');
 const MessageFlags = require('../util/MessageFlags');
 const Permissions = require('../util/Permissions');
 const SnowflakeUtil = require('../util/SnowflakeUtil');
@@ -40,13 +40,13 @@ class Message extends Base {
      * The id of the channel the message was sent in
      * @type {Snowflake}
      */
-    this.channelID = data.channel_id;
+    this.channelId = data.channel_id;
 
     /**
      * The id of the guild the message was sent in, if any
      * @type {?Snowflake}
      */
-    this.guildID = data.guild_id ?? this.channel?.guild?.id ?? null;
+    this.guildId = data.guild_id ?? this.channel?.guild?.id ?? null;
 
     this._patch(data);
   }
@@ -57,6 +57,17 @@ class Message extends Base {
      * @type {Snowflake}
      */
     this.id = data.id;
+
+    if ('position' in data) {
+      /**
+       * A generally increasing integer (there may be gaps or duplicates) that represents
+       * the approximate position of the message in a thread.
+       * @type {?number}
+       */
+      this.position = data.position;
+    } else {
+      this.position ??= null;
+    }
 
     /**
      * The timestamp the message was sent at
@@ -235,9 +246,9 @@ class Message extends Base {
        * The id of the webhook that sent the message, if applicable
        * @type {?Snowflake}
        */
-      this.webhookID = data.webhook_id;
+      this.webhookId = data.webhook_id;
     } else {
-      this.webhookID ??= null;
+      this.webhookId ??= null;
     }
 
     if ('application' in data) {
@@ -255,9 +266,9 @@ class Message extends Base {
        * The id of the application of the interaction that sent this message, if any
        * @type {?Snowflake}
        */
-      this.applicationID = data.application_id;
+      this.applicationId = data.application_id;
     } else {
-      this.applicationID ??= null;
+      this.applicationId ??= null;
     }
 
     if ('activity' in data) {
@@ -266,7 +277,7 @@ class Message extends Base {
        * @type {?MessageActivity}
        */
       this.activity = {
-        partyID: data.activity.party_id,
+        partyId: data.activity.party_id,
         type: data.activity.type,
       };
     } else {
@@ -303,8 +314,8 @@ class Message extends Base {
      * * THREAD_STARTER_MESSAGE
      * @see {@link https://discord.com/developers/docs/resources/channel#message-types}
      * @typedef {Object} MessageReference
-     * @property {Snowflake} channelID The channel's id the message was referenced
-     * @property {?Snowflake} guildID The guild's id the message was referenced
+     * @property {Snowflake} channelId The channel's id the message was referenced
+     * @property {?Snowflake} guildId The guild's id the message was referenced
      * @property {?Snowflake} messageId The message's id that was referenced
      */
 
@@ -314,8 +325,8 @@ class Message extends Base {
        * @type {?MessageReference}
        */
       this.reference = {
-        channelID: data.message_reference.channel_id,
-        guildID: data.message_reference.guild_id,
+        channelId: data.message_reference.channel_id,
+        guildId: data.message_reference.guild_id,
         messageId: data.message_reference.message_id,
       };
     } else {
@@ -388,7 +399,7 @@ class Message extends Base {
    * @readonly
    */
   get channel() {
-    return this.client.channels.resolve(this.channelID);
+    return this.client.channels.resolve(this.channelId);
   }
 
   /**
@@ -434,7 +445,7 @@ class Message extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildID) ?? this.channel?.guild ?? null;
+    return this.client.guilds.resolve(this.guildId) ?? this.channel?.guild ?? null;
   }
 
   /**
@@ -463,7 +474,7 @@ class Message extends Base {
    * @readonly
    */
   get url() {
-    return `https://discord.com/channels/${this.guildID ?? '@me'}/${this.channelID}/${this.id}`;
+    return `https://discord.com/channels/${this.guildId ?? '@me'}/${this.channelId}/${this.id}`;
   }
 
   /**
@@ -621,7 +632,26 @@ class Message extends Base {
     return Boolean(
       this.author.id === this.client.user.id ||
         (permissions.has(Permissions.FLAGS.MANAGE_MESSAGES, false) &&
-          this.guild.me.communicationDisabledUntilTimestamp < Date.now()),
+          this.guild.members.me.communicationDisabledUntilTimestamp < Date.now()),
+    );
+  }
+
+  /**
+   * Whether the message is bulk deletable by the client user
+   * @type {boolean}
+   * @readonly
+   * @example
+   * // Filter for bulk deletable messages
+   * channel.bulkDelete(messages.filter(message => message.bulkDeletable));
+   */
+  get bulkDeletable() {
+    const permissions = this.channel?.permissionsFor(this.client.user);
+    return (
+      (this.inGuild() &&
+        Date.now() - this.createdTimestamp < MaxBulkDeletableMessageAge &&
+        this.deletable &&
+        permissions?.has(Permissions.FLAGS.MANAGE_MESSAGES, false)) ??
+      false
     );
   }
 
@@ -647,8 +677,8 @@ class Message extends Base {
    */
   async fetchReference() {
     if (!this.reference) throw new Error('MESSAGE_REFERENCE_MISSING');
-    const { channelID, messageId } = this.reference;
-    const channel = this.client.channels.resolve(channelID);
+    const { channelId, messageId } = this.reference;
+    const channel = this.client.channels.resolve(channelId);
     if (!channel) throw new Error('GUILD_CHANNEL_RESOLVE');
     const message = await channel.messages.fetch(messageId);
     return message;
@@ -698,22 +728,8 @@ class Message extends Base {
    *   .then(msg => console.log(`Updated the content of a message to ${msg.content}`))
    *   .catch(console.error);
    */
-  edit(content, options) {
+  edit(options) {
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
-    if (!options) options = {};
-    if (typeof content == "string") {
-        options.content = content
-    } else if (typeof content == "object" && content?.type == "rich") {
-        options.embeds = [content]
-    } else if (typeof content == "object" && typeof content?.embed == "object") {
-        options = content
-        options.embeds = [content?.embed]
-    } else {
-        options = content
-        if (options.embed) {
-          options.embeds = [options.embed]
-        }
-    }
     return this.channel.messages.edit(this, options);
   }
 
@@ -786,9 +802,9 @@ class Message extends Base {
 
     return this.client.actions.MessageReactionAdd.handle(
       {
-        user: this.client.user,
-        channel: this.channel,
-        message: this,
+        [this.client.actions.injectedUser]: this.client.user,
+        [this.client.actions.injectedChannel]: this.channel,
+        [this.client.actions.injectedMessage]: this,
         emoji: Util.resolvePartialEmoji(emoji),
       },
       true,
@@ -804,12 +820,9 @@ class Message extends Base {
    *   .then(msg => console.log(`Deleted message from ${msg.author.username}`))
    *   .catch(console.error);
    */
-  async delete(opts) {
+  async delete() {
     if (!this.channel) throw new Error('CHANNEL_NOT_CACHED');
-    if (!opts?.timeout) opts = { timeout: 0 };
-    setTimeout(async () => {
-      await this.channel.messages.delete(this.id);
-    }, opts.timeout);
+    await this.channel.messages.delete(this.id);
     return this;
   }
 
@@ -831,24 +844,9 @@ class Message extends Base {
    *   .then(() => console.log(`Replied to message "${message.content}"`))
    *   .catch(console.error);
    */
-  reply(content, options) {
+  reply(options) {
     if (!this.channel) return Promise.reject(new Error('CHANNEL_NOT_CACHED'));
     let data;
-
-    if (!options) options = {};
-    if (typeof content == "string") {
-        options.content = content
-    } else if (typeof content == "object" && content?.type == "rich") {
-        options.embeds = [content]
-    } else if (typeof content == "object" && typeof content?.embed == "object") {
-        options = content
-        options.embeds = [content?.embed]
-    } else {
-        options = content
-        if (options?.embed) {
-          options.embeds = [options.embed]
-        }
-    }
 
     if (options instanceof MessagePayload) {
       data = options;
@@ -868,9 +866,10 @@ class Message extends Base {
    * archived. This can be:
    * * `60` (1 hour)
    * * `1440` (1 day)
-   * * `4320` (3 days) <warn>This is only available when the guild has the `THREE_DAY_THREAD_ARCHIVE` feature.</warn>
-   * * `10080` (7 days) <warn>This is only available when the guild has the `SEVEN_DAY_THREAD_ARCHIVE` feature.</warn>
-   * * `'MAX'` Based on the guild's features
+   * * `4320` (3 days)
+   * * `10080` (7 days)
+   * * `'MAX'` (7 days)
+   * <warn>This option is deprecated and will be removed in the next major version.</warn>
    * @typedef {number|string} ThreadAutoArchiveDuration
    */
 
@@ -886,7 +885,7 @@ class Message extends Base {
 
   /**
    * Create a new public thread from this message
-   * @see ThreadManager#create
+   * @see GuildTextThreadManager#create
    * @param {StartThreadOptions} [options] Options for starting a thread on this message
    * @returns {Promise<ThreadChannel>}
    */
@@ -914,9 +913,9 @@ class Message extends Base {
    * @returns {Promise<?Webhook>}
    */
   fetchWebhook() {
-    if (!this.webhookID) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
-    if (this.webhookID === this.applicationID) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
-    return this.client.fetchWebhook(this.webhookID);
+    if (!this.webhookId) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
+    if (this.webhookId === this.applicationId) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
+    return this.client.fetchWebhook(this.webhookId);
   }
 
   /**
@@ -990,7 +989,7 @@ class Message extends Base {
    * @returns {boolean}
    */
   inGuild() {
-    return Boolean(this.guildID);
+    return Boolean(this.guildId);
   }
 
   /**
@@ -1006,10 +1005,10 @@ class Message extends Base {
 
   toJSON() {
     return super.toJSON({
-      channel: 'channelID',
+      channel: 'channelId',
       author: 'authorId',
       groupActivityApplication: 'groupActivityApplicationId',
-      guild: 'guildID',
+      guild: 'guildId',
       cleanContent: true,
       member: false,
       reactions: false,

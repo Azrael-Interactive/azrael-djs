@@ -11,7 +11,7 @@ const SelectMenuInteraction = require('../../structures/SelectMenuInteraction');
 const UserContextMenuInteraction = require('../../structures/UserContextMenuInteraction');
 const { Events, InteractionTypes, MessageComponentTypes, ApplicationCommandTypes } = require('../../util/Constants');
 
-let deprecationEmitted = true;
+let deprecationEmitted = false;
 
 class InteractionCreateAction extends Action {
   handle(data) {

@@ -38,7 +38,7 @@ class PresenceManager extends CachedManager {
   resolve(presence) {
     const presenceResolvable = super.resolve(presence);
     if (presenceResolvable) return presenceResolvable;
-    const UserResolvable = this.client.users.resolveID(presence);
+    const UserResolvable = this.client.users.resolveId(presence);
     return super.resolve(UserResolvable);
   }
 
@@ -47,10 +47,10 @@ class PresenceManager extends CachedManager {
    * @param {PresenceResolvable} presence The presence resolvable to resolve
    * @returns {?Snowflake}
    */
-  resolveID(presence) {
-    const presenceResolvable = super.resolveID(presence);
+  resolveId(presence) {
+    const presenceResolvable = super.resolveId(presence);
     if (presenceResolvable) return presenceResolvable;
-    const userResolvable = this.client.users.resolveID(presence);
+    const userResolvable = this.client.users.resolveId(presence);
     return this.cache.has(userResolvable) ? userResolvable : null;
   }
 }

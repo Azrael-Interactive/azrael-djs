@@ -14,6 +14,7 @@ const Permissions = require('../util/Permissions');
  * - {@link NewsChannel}
  * - {@link StoreChannel}
  * - {@link StageChannel}
+ * - {@link ForumChannel}
  * @extends {Channel}
  * @abstract
  */
@@ -31,9 +32,9 @@ class GuildChannel extends Channel {
      * The id of the guild the channel is in
      * @type {Snowflake}
      */
-    this.guildID = guild?.id ?? data.guild_id;
+    this.guildId = guild?.id ?? data.guild_id;
 
-    this.parentID = this.parentID ?? null;
+    this.parentId = this.parentId ?? null;
     /**
      * A manager of permission overwrites that belong to this channel
      * @type {PermissionOverwriteManager}
@@ -63,7 +64,7 @@ class GuildChannel extends Channel {
     }
 
     if ('guild_id' in data) {
-      this.guildID = data.guild_id;
+      this.guildId = data.guild_id;
     }
 
     if ('parent_id' in data) {
@@ -71,7 +72,7 @@ class GuildChannel extends Channel {
        * The id of the category parent of this channel
        * @type {?Snowflake}
        */
-      this.parentID = data.parent_id;
+      this.parentId = data.parent_id;
     }
 
     if ('permission_overwrites' in data) {
@@ -94,7 +95,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get parent() {
-    return this.guild.channels.resolve(this.parentID);
+    return this.guild.channels.resolve(this.parentId);
   }
 
   /**
@@ -195,7 +196,7 @@ class GuildChannel extends Channel {
    * @private
    */
   memberPermissions(member, checkAdmin) {
-    if (checkAdmin && member.id === this.guild.ownerID) return new Permissions(Permissions.ALL).freeze();
+    if (checkAdmin && member.id === this.guild.ownerId) return new Permissions(Permissions.ALL).freeze();
 
     const roles = member.roles.cache;
     const permissions = new Permissions(roles.map(role => role.permissions));
@@ -399,7 +400,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get deletable() {
-    return this.manageable && this.guild.rulesChannelID !== this.id && this.guild.publicUpdatesChannelID !== this.id;
+    return this.manageable && this.guild.rulesChannelId !== this.id && this.guild.publicUpdatesChannelId !== this.id;
   }
 
   /**
@@ -408,13 +409,13 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get manageable() {
-    if (this.client.user.id === this.guild.ownerID) return true;
+    if (this.client.user.id === this.guild.ownerId) return true;
     const permissions = this.permissionsFor(this.client.user);
     if (!permissions) return false;
 
     // This flag allows managing even if timed out
     if (permissions.has(Permissions.FLAGS.ADMINISTRATOR, false)) return true;
-    if (this.guild.me.communicationDisabledUntilTimestamp > Date.now()) return false;
+    if (this.guild.members.me.communicationDisabledUntilTimestamp > Date.now()) return false;
 
     const bitfield = VoiceBasedChannelTypes.includes(this.type)
       ? Permissions.FLAGS.MANAGE_CHANNELS | Permissions.FLAGS.CONNECT
@@ -428,7 +429,7 @@ class GuildChannel extends Channel {
    * @readonly
    */
   get viewable() {
-    if (this.client.user.id === this.guild.ownerID) return true;
+    if (this.client.user.id === this.guild.ownerId) return true;
     const permissions = this.permissionsFor(this.client.user);
     if (!permissions) return false;
     return permissions.has(Permissions.FLAGS.VIEW_CHANNEL, false);

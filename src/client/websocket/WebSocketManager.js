@@ -31,7 +31,7 @@ const UNRESUMABLE_CLOSE_CODES = [
  * The WebSocket manager for this client.
  * <info>This class forwards raw dispatch events,
  * read more about it here {@link https://discord.com/developers/docs/topics/gateway}</info>
- * @extends EventEmitter
+ * @extends {EventEmitter}
  */
 class WebSocketManager extends EventEmitter {
   constructor(client) {
@@ -204,7 +204,7 @@ class WebSocketManager extends EventEmitter {
 
         if (UNRESUMABLE_CLOSE_CODES.includes(event.code)) {
           // These event codes cannot be resumed
-          shard.sessionID = null;
+          shard.sessionId = null;
         }
 
         /**
@@ -216,7 +216,7 @@ class WebSocketManager extends EventEmitter {
 
         this.shardQueue.add(shard);
 
-        if (shard.sessionID) this.debug(`Session id is present, attempting an immediate reconnect...`, shard);
+        if (shard.sessionId) this.debug(`Session id is present, attempting an immediate reconnect...`, shard);
         this.reconnect();
       });
 

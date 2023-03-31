@@ -82,7 +82,7 @@ class ShardingManager extends EventEmitter {
       if (this.shardList.length < 1) throw new RangeError('CLIENT_INVALID_OPTION', 'shardList', 'at least 1 id.');
       if (
         this.shardList.some(
-          shardID => typeof shardID !== 'number' || isNaN(shardID) || !Number.isInteger(shardID) || shardID < 0,
+          shardId => typeof shardId !== 'number' || isNaN(shardId) || !Number.isInteger(shardId) || shardId < 0,
         )
       ) {
         throw new TypeError('CLIENT_INVALID_OPTION', 'shardList', 'an array of positive integers.');
@@ -203,18 +203,18 @@ class ShardingManager extends EventEmitter {
       this.totalShards = amount;
     }
 
-    if (this.shardList.some(shardID => shardID >= amount)) {
+    if (this.shardList.some(shardId => shardId >= amount)) {
       throw new RangeError(
         'CLIENT_INVALID_OPTION',
         'Amount of shards',
-        'bigger than the highest shardID in the shardList option.',
+        'bigger than the highest shardId in the shardList option.',
       );
     }
 
     // Spawn the shards
-    for (const shardID of this.shardList) {
+    for (const shardId of this.shardList) {
       const promises = [];
-      const shard = this.createShard(shardID);
+      const shard = this.createShard(shardId);
       promises.push(shard.spawn(timeout));
       if (delay > 0 && this.shards.size !== this.shardList.length) promises.push(sleep(delay));
       await Promise.all(promises); // eslint-disable-line no-await-in-loop

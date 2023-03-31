@@ -4,6 +4,7 @@ const Base = require('./Base');
 
 /**
  * Represents a WidgetMember.
+ * @extends {Base}
  */
 class WidgetMember extends Base {
   /**
@@ -79,7 +80,7 @@ class WidgetMember extends Base {
      * The id of the voice channel the member is in, if any
      * @type {?Snowflake}
      */
-    this.channelID = data.channel_id ?? null;
+    this.channelId = data.channel_id ?? null;
 
     /**
      * The avatar URL of the member.

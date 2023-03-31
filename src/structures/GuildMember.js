@@ -6,6 +6,7 @@ const VoiceState = require('./VoiceState');
 const TextBasedChannel = require('./interfaces/TextBasedChannel');
 const { Error } = require('../errors');
 const GuildMemberRoleManager = require('../managers/GuildMemberRoleManager');
+const GuildMemberFlags = require('../util/GuildMemberFlags');
 const Permissions = require('../util/Permissions');
 
 /**
@@ -14,7 +15,7 @@ const Permissions = require('../util/Permissions');
  * @internal
  */
 const deletedGuildMembers = new WeakSet();
-let deprecationEmittedForDeleted = true;
+let deprecationEmittedForDeleted = false;
 
 /**
  * Represents a member of a guild on Discord.
@@ -94,6 +95,15 @@ class GuildMember extends Base {
     if ('communication_disabled_until' in data) {
       this.communicationDisabledUntilTimestamp =
         data.communication_disabled_until && Date.parse(data.communication_disabled_until);
+    }
+    if ('flags' in data) {
+      /**
+       * The flags of this member
+       * @type {Readonly<GuildMemberFlags>}
+       */
+      this.flags = new GuildMemberFlags(data.flags).freeze();
+    } else {
+      this.flags ??= new GuildMemberFlags().freeze();
     }
   }
 
@@ -258,23 +268,9 @@ class GuildMember extends Base {
    * @readonly
    */
   get permissions() {
-    if (this.user.id === this.guild.ownerID) return new Permissions(Permissions.ALL).freeze();
+    if (this.user.id === this.guild.ownerId) return new Permissions(Permissions.ALL).freeze();
     return new Permissions(this.roles.cache.map(role => role.permissions)).freeze();
   }
-
-  /**
-   * Checks if any of this member's roles have a permission.
-   * @param {PermissionResolvable} permission Permission(s) to check for
-   * @param {Object} [options] Options
-   * @param {boolean} [options.checkAdmin=true] Whether to allow the administrator permission to override
-   * @param {boolean} [options.checkOwner=true] Whether to allow being the guild's owner to override
-   * @returns {boolean}
-   */
-   hasPermission(permission, { checkAdmin = true, checkOwner = true } = {}) {
-    if (checkOwner && this.user.id === this.guild.ownerID) return true;
-    const permissions = new Permissions(this.roles.cache.map(role => role.permissions));
-    return permissions.has(permission, checkAdmin);
-   }
 
   /**
    * Whether the client user is above this user in the hierarchy, according to role position and guild ownership.
@@ -283,11 +279,11 @@ class GuildMember extends Base {
    * @readonly
    */
   get manageable() {
-    if (this.user.id === this.guild.ownerID) return false;
+    if (this.user.id === this.guild.ownerId) return false;
     if (this.user.id === this.client.user.id) return false;
-    if (this.client.user.id === this.guild.ownerID) return true;
-    if (!this.guild.me) throw new Error('GUILD_UNCACHED_ME');
-    return this.guild.me.roles.highest.comparePositionTo(this.roles.highest) > 0;
+    if (this.client.user.id === this.guild.ownerId) return true;
+    if (!this.guild.members.me) throw new Error('GUILD_UNCACHED_ME');
+    return this.guild.members.me.roles.highest.comparePositionTo(this.roles.highest) > 0;
   }
 
   /**
@@ -296,7 +292,7 @@ class GuildMember extends Base {
    * @readonly
    */
   get kickable() {
-    return this.manageable && this.guild.me.permissions.has(Permissions.FLAGS.KICK_MEMBERS);
+    return this.manageable && this.guild.members.me.permissions.has(Permissions.FLAGS.KICK_MEMBERS);
   }
 
   /**
@@ -305,7 +301,7 @@ class GuildMember extends Base {
    * @readonly
    */
   get bannable() {
-    return this.manageable && this.guild.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS);
+    return this.manageable && this.guild.members.me.permissions.has(Permissions.FLAGS.BAN_MEMBERS);
   }
 
   /**
@@ -317,7 +313,7 @@ class GuildMember extends Base {
     return (
       !this.permissions.has(Permissions.FLAGS.ADMINISTRATOR) &&
       this.manageable &&
-      (this.guild.me?.permissions.has(Permissions.FLAGS.MODERATE_MEMBERS) ?? false)
+      (this.guild.members.me?.permissions.has(Permissions.FLAGS.MODERATE_MEMBERS) ?? false)
     );
   }
 
@@ -362,6 +358,16 @@ class GuildMember extends Base {
   }
 
   /**
+   * Sets the flags for this member.
+   * @param {GuildMemberFlagsResolvable} flags The flags to set
+   * @param {string} [reason] Reason for setting the flags
+   * @returns {Promise<GuildMember>}
+   */
+  setFlags(flags, reason) {
+    return this.edit({ flags, reason });
+  }
+
+  /**
    * Creates a DM channel between the client and this member.
    * @param {boolean} [force=false] Whether to skip the cache check and request the API
    * @returns {Promise<DMChannel>}
@@ -392,8 +398,8 @@ class GuildMember extends Base {
    * @param {BanOptions} [options] Options for the ban
    * @returns {Promise<GuildMember>}
    * @example
-   * // ban a guild member
-   * guildMember.ban({ days: 7, reason: 'They deserved it' })
+   * // Ban a guild member, deleting a week's worth of messages
+   * guildMember.ban({ deleteMessageSeconds: 60 * 60 * 24 * 7, reason: 'They deserved it' })
    *   .then(console.log)
    *   .catch(console.error);
    */
@@ -460,6 +466,7 @@ class GuildMember extends Base {
       this.avatar === member.avatar &&
       this.pending === member.pending &&
       this.communicationDisabledUntilTimestamp === member.communicationDisabledUntilTimestamp &&
+      this.flags.equals(member.flags) &&
       (this._roles === member._roles ||
         (this._roles.length === member._roles.length && this._roles.every((role, i) => role === member._roles[i])))
     );
@@ -478,7 +485,7 @@ class GuildMember extends Base {
 
   toJSON() {
     const json = super.toJSON({
-      guild: 'guildID',
+      guild: 'guildId',
       user: 'userId',
       displayName: true,
       roles: true,

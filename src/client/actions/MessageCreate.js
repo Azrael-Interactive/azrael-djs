@@ -4,7 +4,7 @@ const process = require('node:process');
 const Action = require('./Action');
 const { Events } = require('../../util/Constants');
 
-let deprecationEmitted = true;
+let deprecationEmitted = false;
 
 class MessageCreateAction extends Action {
   handle(data) {
@@ -16,7 +16,7 @@ class MessageCreateAction extends Action {
       const existing = channel.messages.cache.get(data.id);
       if (existing) return { message: existing };
       const message = channel.messages._add(data);
-      channel.lastMessageID = data.id;
+      channel.lastMessageId = data.id;
 
       /**
        * Emitted whenever a message is created.

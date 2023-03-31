@@ -21,9 +21,9 @@ class ClientVoiceManager {
      */
     this.adapters = new Map();
 
-    client.on(Events.SHARD_DISCONNECT, (_, shardID) => {
-      for (const [guildID, adapter] of this.adapters.entries()) {
-        if (client.guilds.cache.get(guildID)?.shardID === shardID) {
+    client.on(Events.SHARD_DISCONNECT, (_, shardId) => {
+      for (const [guildId, adapter] of this.adapters.entries()) {
+        if (client.guilds.cache.get(guildId)?.shardId === shardId) {
           adapter.destroy();
         }
       }

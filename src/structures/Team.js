@@ -45,9 +45,9 @@ class Team extends Base {
        * The Team's owner id
        * @type {?Snowflake}
        */
-      this.ownerID = data.owner_user_id;
+      this.ownerId = data.owner_user_id;
     } else {
-      this.ownerID ??= null;
+      this.ownerId ??= null;
     }
     /**
      * The Team's members
@@ -67,7 +67,7 @@ class Team extends Base {
    * @readonly
    */
   get owner() {
-    return this.members.get(this.ownerID) ?? null;
+    return this.members.get(this.ownerId) ?? null;
   }
 
   /**

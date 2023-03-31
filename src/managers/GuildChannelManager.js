@@ -9,10 +9,17 @@ const GuildChannel = require('../structures/GuildChannel');
 const PermissionOverwrites = require('../structures/PermissionOverwrites');
 const ThreadChannel = require('../structures/ThreadChannel');
 const Webhook = require('../structures/Webhook');
-const { ThreadChannelTypes, ChannelTypes, VideoQualityModes } = require('../util/Constants');
+const ChannelFlags = require('../util/ChannelFlags');
+const {
+  ThreadChannelTypes,
+  ChannelTypes,
+  VideoQualityModes,
+  SortOrderTypes,
+  ForumLayoutTypes,
+} = require('../util/Constants');
 const DataResolver = require('../util/DataResolver');
 const Util = require('../util/Util');
-const { resolveAutoArchiveMaxLimit } = require('../util/Util');
+const { resolveAutoArchiveMaxLimit, transformGuildForumTag, transformGuildDefaultReaction } = require('../util/Util');
 
 let cacheWarningEmitted = false;
 let storeChannelDeprecationEmitted = false;
@@ -92,9 +99,9 @@ class GuildChannelManager extends CachedManager {
    * @param {GuildChannelResolvable} channel The GuildChannel resolvable to resolve
    * @returns {?Snowflake}
    */
-  resolveID(channel) {
-    if (channel instanceof ThreadChannel) return super.resolveID(channel.id);
-    return super.resolveID(channel);
+  resolveId(channel) {
+    if (channel instanceof ThreadChannel) return super.resolveId(channel.id);
+    return super.resolveId(channel);
   }
 
   /**
@@ -138,12 +145,24 @@ class GuildChannelManager extends CachedManager {
       position,
       rateLimitPerUser,
       rtcRegion,
+      videoQualityMode,
+      availableTags,
+      defaultReactionEmoji,
+      defaultSortOrder,
+      defaultForumLayout,
       reason,
     } = {},
   ) {
-    parent &&= this.client.channels.resolveID(parent);
+    parent &&= this.client.channels.resolveId(parent);
     permissionOverwrites &&= permissionOverwrites.map(o => PermissionOverwrites.resolve(o, this.guild));
     const intType = typeof type === 'number' ? type : ChannelTypes[type] ?? ChannelTypes.GUILD_TEXT;
+
+    const videoMode = typeof videoQualityMode === 'number' ? videoQualityMode : VideoQualityModes[videoQualityMode];
+
+    const sortMode = typeof defaultSortOrder === 'number' ? defaultSortOrder : SortOrderTypes[defaultSortOrder];
+
+    const layoutMode =
+      typeof defaultForumLayout === 'number' ? defaultForumLayout : ForumLayoutTypes[defaultForumLayout];
 
     if (intType === ChannelTypes.GUILD_STORE && !storeChannelDeprecationEmitted) {
       storeChannelDeprecationEmitted = true;
@@ -167,6 +186,11 @@ class GuildChannelManager extends CachedManager {
         permission_overwrites: permissionOverwrites,
         rate_limit_per_user: rateLimitPerUser,
         rtc_region: rtcRegion,
+        video_quality_mode: videoMode,
+        available_tags: availableTags?.map(availableTag => transformGuildForumTag(availableTag)),
+        default_reaction_emoji: defaultReactionEmoji && transformGuildDefaultReaction(defaultReactionEmoji),
+        default_sort_order: sortMode,
+        default_forum_layout: layoutMode,
       },
       reason,
     });
@@ -189,7 +213,7 @@ class GuildChannelManager extends CachedManager {
    *   .catch(console.error)
    */
   async createWebhook(channel, name, { avatar, reason } = {}) {
-    const id = this.resolveID(channel);
+    const id = this.resolveId(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
     if (typeof avatar === 'string' && !avatar.startsWith('data:')) {
       avatar = await DataResolver.resolveImage(avatar);
@@ -202,6 +226,24 @@ class GuildChannelManager extends CachedManager {
       reason,
     });
     return new Webhook(this.client, data);
+  }
+
+  /**
+   * Adds the target channel to a channel's followers.
+   * @param {NewsChannel|Snowflake} channel The channel to follow
+   * @param {TextChannelResolvable} targetChannel The channel where published announcements will be posted at
+   * @param {string} [reason] Reason for creating the webhook
+   * @returns {Promise<Snowflake>} Returns created target webhook id.
+   */
+  async addFollower(channel, targetChannel, reason) {
+    const channelId = this.resolveId(channel);
+    const targetChannelId = this.resolveId(targetChannel);
+    if (!channelId || !targetChannelId) throw new Error('GUILD_CHANNEL_RESOLVE');
+    const { webhook_id } = await this.client.api.channels[channelId].followers.post({
+      data: { webhook_channel_id: targetChannelId },
+      reason,
+    });
+    return webhook_id;
   }
 
   /**
@@ -224,6 +266,11 @@ class GuildChannelManager extends CachedManager {
    * The default auto archive duration for all new threads in this channel
    * @property {?string} [rtcRegion] The RTC region of the channel
    * @property {?VideoQualityMode|number} [videoQualityMode] The camera video quality mode of the channel
+   * @property {ChannelFlagsResolvable} [flags] The flags to set on the channel
+   * @property {GuildForumTagData[]} [availableTags] The tags to set as available in a forum channel
+   * @property {?DefaultReactionEmoji} [defaultReactionEmoji] The emoji to set as the default reaction emoji
+   * @property {number} [defaultThreadRateLimitPerUser] The rate limit per user (slowmode) to set on forum posts
+   * @property {?SortOrderType} [defaultSortOrder] The default sort order mode to set on the channel
    */
 
   /**
@@ -242,7 +289,7 @@ class GuildChannelManager extends CachedManager {
     channel = this.resolve(channel);
     if (!channel) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
 
-    const parent = data.parent && this.client.channels.resolveID(data.parent);
+    const parent = data.parent && this.client.channels.resolveId(data.parent);
 
     if (typeof data.position !== 'undefined') await this.setPosition(channel, data.position, { reason });
 
@@ -274,7 +321,7 @@ class GuildChannelManager extends CachedManager {
         nsfw: data.nsfw,
         bitrate: data.bitrate ?? channel.bitrate,
         user_limit: data.userLimit ?? channel.userLimit,
-        rtc_region: data.rtcRegion ?? channel.rtcRegion,
+        rtc_region: 'rtcRegion' in data ? data.rtcRegion : channel.rtcRegion,
         video_quality_mode:
           typeof data.videoQualityMode === 'string' ? VideoQualityModes[data.videoQualityMode] : data.videoQualityMode,
         parent_id: parent,
@@ -282,6 +329,12 @@ class GuildChannelManager extends CachedManager {
         rate_limit_per_user: data.rateLimitPerUser,
         default_auto_archive_duration: defaultAutoArchiveDuration,
         permission_overwrites,
+        available_tags: data.availableTags?.map(availableTag => transformGuildForumTag(availableTag)),
+        default_reaction_emoji: data.defaultReactionEmoji && transformGuildDefaultReaction(data.defaultReactionEmoji),
+        default_thread_rate_limit_per_user: data.defaultThreadRateLimitPerUser,
+        flags: 'flags' in data ? ChannelFlags.resolve(data.flags) : undefined,
+        default_sort_order:
+          typeof data.defaultSortOrder === 'string' ? SortOrderTypes[data.defaultSortOrder] : data.defaultSortOrder,
       },
       reason,
     });
@@ -324,7 +377,7 @@ class GuildChannelManager extends CachedManager {
    * Obtains one or more guild channels from Discord, or the channel cache if they're already available.
    * @param {Snowflake} [id] The channel's id
    * @param {BaseFetchOptions} [options] Additional options for this fetch
-   * @returns {Promise<?GuildChannel|Collection<Snowflake, GuildChannel>>}
+   * @returns {Promise<?GuildChannel|ThreadChannel|Collection<Snowflake, ?GuildChannel>>}
    * @example
    * // Fetch all channels from the guild (excluding threads)
    * message.guild.channels.fetch()
@@ -366,7 +419,7 @@ class GuildChannelManager extends CachedManager {
    *   .catch(console.error);
    */
   async fetchWebhooks(channel) {
-    const id = this.resolveID(channel);
+    const id = this.resolveId(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
     const data = await this.client.api.channels[id].webhooks.get();
     return data.reduce((hooks, hook) => hooks.set(hook.id, new Webhook(this.client, hook)), new Collection());
@@ -394,16 +447,16 @@ class GuildChannelManager extends CachedManager {
    * @param {ChannelPosition[]} channelPositions Channel positions to update
    * @returns {Promise<Guild>}
    * @example
-   * guild.channels.setPositions([{ channel: channelID, position: newChannelIndex }])
+   * guild.channels.setPositions([{ channel: channelId, position: newChannelIndex }])
    *   .then(guild => console.log(`Updated channel positions for ${guild}`))
    *   .catch(console.error);
    */
   async setPositions(channelPositions) {
     channelPositions = channelPositions.map(r => ({
-      id: this.client.channels.resolveID(r.channel),
+      id: this.client.channels.resolveId(r.channel),
       position: r.position,
       lock_permissions: r.lockPermissions,
-      parent_id: typeof r.parent !== 'undefined' ? this.resolveID(r.parent) : undefined,
+      parent_id: typeof r.parent !== 'undefined' ? this.resolveId(r.parent) : undefined,
     }));
 
     await this.client.api.guilds(this.guild.id).channels.patch({ data: channelPositions });
@@ -440,7 +493,7 @@ class GuildChannelManager extends CachedManager {
    *   .catch(console.error);
    */
   async delete(channel, reason) {
-    const id = this.resolveID(channel);
+    const id = this.resolveId(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
     await this.client.api.channels(id).delete({ reason });
   }

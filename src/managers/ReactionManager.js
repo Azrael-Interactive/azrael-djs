@@ -32,6 +32,7 @@ class ReactionManager extends CachedManager {
    * Data that can be resolved to a MessageReaction object. This can be:
    * * A MessageReaction
    * * A Snowflake
+   * * The Unicode representation of an emoji
    * @typedef {MessageReaction|Snowflake} MessageReactionResolvable
    */
 
@@ -46,7 +47,7 @@ class ReactionManager extends CachedManager {
 
   /**
    * Resolves a {@link MessageReactionResolvable} to a {@link MessageReaction} id.
-   * @method resolveID
+   * @method resolveId
    * @memberof ReactionManager
    * @instance
    * @param {MessageReactionResolvable} reaction The MessageReaction to resolve
@@ -58,7 +59,7 @@ class ReactionManager extends CachedManager {
    * @returns {Promise<Message>}
    */
   async removeAll() {
-    await this.client.api.channels(this.message.channelID).messages(this.message.id).reactions.delete();
+    await this.client.api.channels(this.message.channelId).messages(this.message.id).reactions.delete();
     return this.message;
   }
 }

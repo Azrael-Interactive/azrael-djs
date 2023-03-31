@@ -81,7 +81,7 @@ class ChannelManager extends CachedManager {
 
   /**
    * Resolves a ChannelResolvable to a channel id string.
-   * @method resolveID
+   * @method resolveId
    * @memberof ChannelManager
    * @instance
    * @param {ChannelResolvable} channel The channel resolvable to resolve

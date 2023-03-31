@@ -1,3 +1,4 @@
+/* eslint-disable newline-per-chained-call */
 'use strict';
 
 const { Buffer } = require('node:buffer');
@@ -9,6 +10,8 @@ const BaseGuildVoiceChannel = require('../structures/BaseGuildVoiceChannel');
 const { GuildMember } = require('../structures/GuildMember');
 const { Role } = require('../structures/Role');
 const { Events, Opcodes } = require('../util/Constants');
+const { PartialTypes } = require('../util/Constants');
+const GuildMemberFlags = require('../util/GuildMemberFlags');
 const SnowflakeUtil = require('../util/SnowflakeUtil');
 
 /**
@@ -51,7 +54,7 @@ class GuildMemberManager extends CachedManager {
   resolve(member) {
     const memberResolvable = super.resolve(member);
     if (memberResolvable) return memberResolvable;
-    const userResolvable = this.client.users.resolveID(member);
+    const userResolvable = this.client.users.resolveId(member);
     if (userResolvable) return super.resolve(userResolvable);
     return null;
   }
@@ -61,10 +64,10 @@ class GuildMemberManager extends CachedManager {
    * @param {GuildMemberResolvable} member The user that is part of the guild
    * @returns {?Snowflake}
    */
-  resolveID(member) {
-    const memberResolvable = super.resolveID(member);
+  resolveId(member) {
+    const memberResolvable = super.resolveId(member);
     if (memberResolvable) return memberResolvable;
-    const userResolvable = this.client.users.resolveID(member);
+    const userResolvable = this.client.users.resolveId(member);
     return this.cache.has(userResolvable) ? userResolvable : null;
   }
 
@@ -89,7 +92,7 @@ class GuildMemberManager extends CachedManager {
    * @returns {Promise<GuildMember|null>}
    */
   async add(user, options) {
-    const userId = this.client.users.resolveID(user);
+    const userId = this.client.users.resolveId(user);
     if (!userId) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
     if (!options.force) {
       const cachedUser = this.cache.get(userId);
@@ -107,7 +110,7 @@ class GuildMemberManager extends CachedManager {
       }
       const resolvedRoles = [];
       for (const role of options.roles.values()) {
-        const resolvedRole = this.guild.roles.resolveID(role);
+        const resolvedRole = this.guild.roles.resolveId(role);
         if (!resolvedRole) throw new TypeError('INVALID_ELEMENT', 'Array or Collection', 'options.roles', role);
         resolvedRoles.push(resolvedRole);
       }
@@ -116,6 +119,20 @@ class GuildMemberManager extends CachedManager {
     const data = await this.client.api.guilds(this.guild.id).members(userId).put({ data: resolvedOptions });
     // Data is an empty buffer if the member is already part of the guild.
     return data instanceof Buffer ? (options.fetchWhenExisting === false ? null : this.fetch(userId)) : this._add(data);
+  }
+
+  /**
+   * The client user as a GuildMember of this guild
+   * @type {?GuildMember}
+   * @readonly
+   */
+  get me() {
+    return (
+      this.resolve(this.client.user.id) ??
+      (this.client.options.partials.includes(PartialTypes.GUILD_MEMBER)
+        ? this._add({ user: { id: this.client.user.id } }, true)
+        : null)
+    );
   }
 
   /**
@@ -175,18 +192,27 @@ class GuildMemberManager extends CachedManager {
    */
   fetch(options) {
     if (!options) return this._fetchMany();
-    const user = this.client.users.resolveID(options);
+    const user = this.client.users.resolveId(options);
     if (user) return this._fetchSingle({ user, cache: true });
     if (options.user) {
       if (Array.isArray(options.user)) {
-        options.user = options.user.map(u => this.client.users.resolveID(u));
+        options.user = options.user.map(u => this.client.users.resolveId(u));
         return this._fetchMany(options);
       } else {
-        options.user = this.client.users.resolveID(options.user);
+        options.user = this.client.users.resolveId(options.user);
       }
       if (!options.limit && !options.withPresences) return this._fetchSingle(options);
     }
     return this._fetchMany(options);
+  }
+
+  /**
+   * Fetches the client user as a GuildMember of the guild.
+   * @param {BaseFetchOptions} [options] The options for fetching the member
+   * @returns {Promise<GuildMember>}
+   */
+  fetchMe(options) {
+    return this.fetch({ ...options, user: this.client.user.id });
   }
 
   /**
@@ -236,6 +262,7 @@ class GuildMemberManager extends CachedManager {
    * (if they are connected to voice), or `null` if you want to disconnect them from voice
    * @property {DateResolvable|null} [communicationDisabledUntil] The date or timestamp
    * for the member's communication to be disabled until. Provide `null` to enable communication again.
+   * @property {GuildMemberFlagsResolvable} [flags] The flags to set for the member
    */
 
   /**
@@ -247,7 +274,7 @@ class GuildMemberManager extends CachedManager {
    * @returns {Promise<GuildMember>}
    */
   async edit(user, data, reason) {
-    const id = this.client.users.resolveID(user);
+    const id = this.client.users.resolveId(user);
     if (!id) throw new TypeError('INVALID_TYPE', 'user', 'UserResolvable');
 
     // Clone the data object for immutability
@@ -267,6 +294,8 @@ class GuildMemberManager extends CachedManager {
 
     _data.communication_disabled_until =
       _data.communicationDisabledUntil && new Date(_data.communicationDisabledUntil).toISOString();
+
+    _data.flags = _data.flags && GuildMemberFlags.resolve(_data.flags);
 
     let endpoint = this.client.api.guilds(this.guild.id);
     if (id === this.client.user.id) {
@@ -322,7 +351,7 @@ class GuildMemberManager extends CachedManager {
     const resolvedRoles = [];
 
     for (const role of roles) {
-      const resolvedRole = this.guild.roles.resolveID(role);
+      const resolvedRole = this.guild.roles.resolveId(role);
       if (!resolvedRole) {
         throw new TypeError('INVALID_ELEMENT', 'Array', 'options.roles', role);
       }
@@ -357,7 +386,7 @@ class GuildMemberManager extends CachedManager {
    *   .catch(console.error);
    */
   async kick(user, reason) {
-    const id = this.client.users.resolveID(user);
+    const id = this.client.users.resolveId(user);
     if (!id) return Promise.reject(new TypeError('INVALID_TYPE', 'user', 'UserResolvable'));
 
     await this.client.api.guilds(this.guild.id).members(id).delete({ reason });
@@ -379,7 +408,7 @@ class GuildMemberManager extends CachedManager {
    *   .then(banInfo => console.log(`Banned ${banInfo.user?.tag ?? banInfo.tag ?? banInfo}`))
    *   .catch(console.error);
    */
-  ban(user, options = { days: 0 }) {
+  ban(user, options) {
     return this.guild.bans.create(user, options);
   }
 
@@ -406,6 +435,38 @@ class GuildMemberManager extends CachedManager {
 
     const data = await this.client.api.guilds(this.guild.id).members(user).get();
     return this._add(data, cache);
+  }
+
+  /**
+   * Adds a role to a member.
+   * @param {GuildMemberResolvable} user The user to add the role from
+   * @param {RoleResolvable} role The role to add
+   * @param {string} [reason] Reason for adding the role
+   * @returns {Promise<GuildMember|User|Snowflake>}
+   */
+  async addRole(user, role, reason) {
+    const userId = this.guild.members.resolveId(user);
+    const roleId = this.guild.roles.resolveId(role);
+
+    await this.client.api.guilds(this.guild.id).members(userId).roles(roleId).put({ reason });
+
+    return this.resolve(user) ?? this.client.users.resolve(user) ?? userId;
+  }
+
+  /**
+   * Removes a role from a member.
+   * @param {UserResolvable} user The user to remove the role from
+   * @param {RoleResolvable} role The role to remove
+   * @param {string} [reason] Reason for removing the role
+   * @returns {Promise<GuildMember|User|Snowflake>}
+   */
+  async removeRole(user, role, reason) {
+    const userId = this.guild.members.resolveId(user);
+    const roleId = this.guild.roles.resolveId(role);
+
+    await this.client.api.guilds(this.guild.id).members(userId).roles(roleId).delete({ reason });
+
+    return this.resolve(user) ?? this.client.users.resolve(user) ?? userId;
   }
 
   _fetchMany({

@@ -174,7 +174,7 @@ class Invite extends Base {
        * The channel's id this invite is for
        * @type {Snowflake}
        */
-      this.channelID = data.channel_id;
+      this.channelId = data.channel_id;
       this.channel = this.client.channels.cache.get(data.channel_id);
     }
 
@@ -184,7 +184,7 @@ class Invite extends Base {
        * @type {Channel}
        */
       this.channel ??= this.client.channels._add(data.channel, this.guild, { cache: false });
-      this.channelID ??= data.channel.id;
+      this.channelId ??= data.channel.id;
     }
 
     if ('created_at' in data) {
@@ -241,10 +241,10 @@ class Invite extends Base {
   get deletable() {
     const guild = this.guild;
     if (!guild || !this.client.guilds.cache.has(guild.id)) return false;
-    if (!guild.me) throw new Error('GUILD_UNCACHED_ME');
+    if (!guild.members.me) throw new Error('GUILD_UNCACHED_ME');
     return (
       this.channel.permissionsFor(this.client.user).has(Permissions.FLAGS.MANAGE_CHANNELS, false) ||
-      guild.me.permissions.has(Permissions.FLAGS.MANAGE_GUILD)
+      guild.members.me.permissions.has(Permissions.FLAGS.MANAGE_GUILD)
     );
   }
 
@@ -307,9 +307,9 @@ class Invite extends Base {
       presenceCount: false,
       memberCount: false,
       uses: false,
-      channel: 'channelID',
+      channel: 'channelId',
       inviter: 'inviterId',
-      guild: 'guildID',
+      guild: 'guildId',
     });
   }
 

@@ -37,6 +37,24 @@ class ThreadMemberManager extends CachedManager {
   }
 
   /**
+   * Fetches the client user as a ThreadMember of the thread.
+   * @param {BaseFetchOptions} [options] The options for fetching the member
+   * @returns {Promise<ThreadMember>}
+   */
+  fetchMe(options) {
+    return this.fetch(this.client.user.id, options);
+  }
+
+  /**
+   * The client user as a ThreadMember of this ThreadChannel
+   * @type {?ThreadMember}
+   * @readonly
+   */
+  get me() {
+    return this.resolve(this.client.user.id);
+  }
+
+  /**
    * Data that resolves to give a ThreadMember object. This can be:
    * * A ThreadMember object
    * * A User resolvable
@@ -51,7 +69,7 @@ class ThreadMemberManager extends CachedManager {
   resolve(member) {
     const memberResolvable = super.resolve(member);
     if (memberResolvable) return memberResolvable;
-    const userResolvable = this.client.users.resolveID(member);
+    const userResolvable = this.client.users.resolveId(member);
     if (userResolvable) return super.resolve(userResolvable);
     return null;
   }
@@ -61,10 +79,10 @@ class ThreadMemberManager extends CachedManager {
    * @param {ThreadMemberResolvable} member The user that is part of the guild
    * @returns {?Snowflake}
    */
-  resolveID(member) {
-    const memberResolvable = super.resolveID(member);
+  resolveId(member) {
+    const memberResolvable = super.resolveId(member);
     if (memberResolvable) return memberResolvable;
-    const userResolvable = this.client.users.resolveID(member);
+    const userResolvable = this.client.users.resolveId(member);
     return this.cache.has(userResolvable) ? userResolvable : null;
   }
 
@@ -75,7 +93,7 @@ class ThreadMemberManager extends CachedManager {
    * @returns {Promise<Snowflake>}
    */
   async add(member, reason) {
-    const id = member === '@me' ? member : this.client.users.resolveID(member);
+    const id = member === '@me' ? member : this.client.users.resolveId(member);
     if (!id) throw new TypeError('INVALID_TYPE', 'member', 'UserResolvable');
     await this.client.api.channels(this.thread.id, 'thread-members', id).put({ reason });
     return id;
@@ -116,7 +134,7 @@ class ThreadMemberManager extends CachedManager {
    * @returns {Promise<ThreadMember|Collection<Snowflake, ThreadMember>>}
    */
   fetch(member, { cache = true, force = false } = {}) {
-    const id = this.resolveID(member);
+    const id = this.resolveId(member);
     return id ? this._fetchOne(id, cache, force) : this._fetchMany(member ?? cache);
   }
 }

@@ -97,6 +97,7 @@ import {
   InteractionResponseFields,
   GuildBan,
   GuildBanManager,
+  ForumChannel,
 } from '.';
 import type { ApplicationCommandOptionTypes } from './enums';
 import { expectAssignable, expectDeprecated, expectNotAssignable, expectNotType, expectType } from 'tsd';
@@ -140,12 +141,12 @@ client.on('ready', async () => {
     await client.application!.commands.fetch(),
   );
   expectType<Collection<string, ApplicationCommand<{ guild: GuildResolvable }>>>(
-    await client.application!.commands.fetch({ guildID: testGuildId }),
+    await client.application!.commands.fetch({ guildId: testGuildId }),
   );
 
   // Test command manager methods
   const globalCommand = await client.application?.commands.fetch(globalCommandId);
-  const guildCommandFromGlobal = await client.application?.commands.fetch(guildCommandId, { guildID: testGuildId });
+  const guildCommandFromGlobal = await client.application?.commands.fetch(guildCommandId, { guildId: testGuildId });
   const guildCommandFromGuild = await client.guilds.cache.get(testGuildId)?.commands.fetch(guildCommandId);
 
   await client.application?.commands.create(slashCommandBuilder);
@@ -164,7 +165,7 @@ client.on('ready', async () => {
   await guildCommandFromGlobal?.edit({ dmPermission: false });
 
   // @ts-expect-error
-  await client.guilds.cache.get(testGuildId)?.commands.fetch(guildCommandId, { guildID: testGuildId });
+  await client.guilds.cache.get(testGuildId)?.commands.fetch(guildCommandId, { guildId: testGuildId });
 
   // Test command permissions
   const globalPermissionsManager = client.application?.commands.permissions;
@@ -693,8 +694,8 @@ client.on('messageCreate', async message => {
 });
 
 client.on('interaction', async interaction => {
-  expectType<Snowflake | null>(interaction.guildID);
-  expectType<Snowflake | null>(interaction.channelID);
+  expectType<Snowflake | null>(interaction.guildId);
+  expectType<Snowflake | null>(interaction.channelId);
   expectType<GuildMember | APIInteractionGuildMember | null>(interaction.member);
 
   if (!interaction.isCommand()) return;
@@ -716,7 +717,7 @@ client.on('interaction', async interaction => {
   await interaction.reply({ content: 'Hi!', components: [button] });
 
   if (interaction.isMessageComponent()) {
-    expectType<Snowflake>(interaction.channelID);
+    expectType<Snowflake>(interaction.channelId);
   }
 });
 
@@ -808,9 +809,9 @@ expectDeprecated(categoryChannel.createChannel('Store', { type: 'GUILD_STORE' })
 expectDeprecated(guild.channels.create('Store', { type: 'GUILD_STORE' }));
 
 notPropertyOf(user, 'lastMessage');
-notPropertyOf(user, 'lastMessageID');
+notPropertyOf(user, 'lastMessageId');
 notPropertyOf(guildMember, 'lastMessage');
-notPropertyOf(guildMember, 'lastMessageID');
+notPropertyOf(guildMember, 'lastMessageId');
 
 // Test collector event parameters
 declare const messageCollector: MessageCollector;
@@ -897,7 +898,7 @@ declare const categoryChannel: CategoryChannel;
 
 declare const guildChannelManager: GuildChannelManager;
 {
-  type AnyChannel = TextChannel | VoiceChannel | CategoryChannel | NewsChannel | StoreChannel | StageChannel;
+  type AnyChannel = TextChannel | VoiceChannel | CategoryChannel | NewsChannel | StoreChannel | StageChannel | ForumChannel;
 
   expectType<Promise<TextChannel>>(guildChannelManager.create('name'));
   expectType<Promise<TextChannel>>(guildChannelManager.create('name', {}));
@@ -908,9 +909,9 @@ declare const guildChannelManager: GuildChannelManager;
   expectType<Promise<StoreChannel>>(guildChannelManager.create('name', { type: 'GUILD_STORE' }));
   expectType<Promise<StageChannel>>(guildChannelManager.create('name', { type: 'GUILD_STAGE_VOICE' }));
 
-  expectType<Promise<Collection<Snowflake, AnyChannel>>>(guildChannelManager.fetch());
-  expectType<Promise<Collection<Snowflake, AnyChannel>>>(guildChannelManager.fetch(undefined, {}));
-  expectType<Promise<AnyChannel | null>>(guildChannelManager.fetch('0'));
+  expectType<Promise<Collection<Snowflake, AnyChannel | null>>>(guildChannelManager.fetch());
+  expectType<Promise<Collection<Snowflake, AnyChannel | null>>>(guildChannelManager.fetch(undefined, {}));
+  expectType<Promise<GuildBasedChannel | null>>(guildChannelManager.fetch('0'));
 }
 
 declare const roleManager: RoleManager;
@@ -942,7 +943,7 @@ expectType<PartialUser>(typing.user);
 if (typing.user.partial) expectType<null>(typing.user.username);
 
 expectType<TextBasedChannel>(typing.channel);
-if (typing.channel.partial) expectType<undefined>(typing.channel.lastMessageID);
+if (typing.channel.partial) expectType<undefined>(typing.channel.lastMessageId);
 
 expectType<GuildMember | null>(typing.member);
 expectType<Guild | null>(typing.guild);
@@ -991,9 +992,9 @@ expectDeprecated(sticker.deleted);
 declare const interaction: Interaction;
 declare const booleanValue: boolean;
 if (interaction.inGuild()) {
-  expectType<Snowflake>(interaction.guildID);
+  expectType<Snowflake>(interaction.guildId);
 } else {
-  expectType<Snowflake | null>(interaction.guildID);
+  expectType<Snowflake | null>(interaction.guildId);
 }
 
 client.on('interactionCreate', interaction => {
@@ -1028,7 +1029,7 @@ client.on('interactionCreate', async interaction => {
   } else {
     expectType<APIInteractionGuildMember | GuildMember | null>(interaction.member);
     expectNotAssignable<Interaction<'cached'>>(interaction);
-    expectType<string | null>(interaction.guildID);
+    expectType<string | null>(interaction.guildId);
   }
 
   if (interaction.isContextMenu()) {
@@ -1333,10 +1334,10 @@ expectType<
   | 'GUILD_VOICE'
 >(TextBasedChannelTypes);
 expectType<StageChannel | VoiceChannel>(VoiceBasedChannel);
-expectType<CategoryChannel | NewsChannel | StageChannel | StoreChannel | TextChannel | ThreadChannel | VoiceChannel>(
+expectType<CategoryChannel | NewsChannel | StageChannel | StoreChannel | TextChannel | ThreadChannel | VoiceChannel | ForumChannel>(
   GuildBasedChannel,
 );
-expectType<CategoryChannel | NewsChannel | StageChannel | StoreChannel | TextChannel | VoiceChannel>(
+expectType<CategoryChannel | NewsChannel | StageChannel | StoreChannel | TextChannel | VoiceChannel | ForumChannel>(
   NonThreadGuildBasedChannel,
 );
 expectType<NewsChannel | TextChannel | ThreadChannel | VoiceChannel>(GuildTextBasedChannel);

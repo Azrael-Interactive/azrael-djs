@@ -44,7 +44,7 @@ class GuildEmojiRoleManager extends DataManager {
 
     const resolvedRoles = [];
     for (const role of roleOrRoles.values()) {
-      const resolvedRole = this.guild.roles.resolveID(role);
+      const resolvedRole = this.guild.roles.resolveId(role);
       if (!resolvedRole) {
         return Promise.reject(new TypeError('INVALID_ELEMENT', 'Array or Collection', 'roles', role));
       }
@@ -65,7 +65,7 @@ class GuildEmojiRoleManager extends DataManager {
 
     const resolvedRoleIds = [];
     for (const role of roleOrRoles.values()) {
-      const roleId = this.guild.roles.resolveID(role);
+      const roleId = this.guild.roles.resolveId(role);
       if (!roleId) {
         return Promise.reject(new TypeError('INVALID_ELEMENT', 'Array or Collection', 'roles', role));
       }

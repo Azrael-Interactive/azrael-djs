@@ -37,19 +37,19 @@ class Interaction extends Base {
      * The application's id
      * @type {Snowflake}
      */
-    this.applicationID = data.application_id;
+    this.applicationId = data.application_id;
 
     /**
      * The id of the channel this interaction was sent in
      * @type {?Snowflake}
      */
-    this.channelID = data.channel_id ?? null;
+    this.channelId = data.channel_id ?? null;
 
     /**
      * The id of the guild this interaction was sent in
      * @type {?Snowflake}
      */
-    this.guildID = data.guild_id ?? null;
+    this.guildId = data.guild_id ?? null;
 
     /**
      * The user which sent this interaction
@@ -154,7 +154,7 @@ class Interaction extends Base {
    * @readonly
    */
   get channel() {
-    return this.client.channels.cache.get(this.channelID) ?? null;
+    return this.client.channels.cache.get(this.channelId) ?? null;
   }
 
   /**
@@ -163,7 +163,7 @@ class Interaction extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.cache.get(this.guildID) ?? null;
+    return this.client.guilds.cache.get(this.guildId) ?? null;
   }
 
   /**
@@ -171,7 +171,7 @@ class Interaction extends Base {
    * @returns {boolean}
    */
   inGuild() {
-    return Boolean(this.guildID && this.member);
+    return Boolean(this.guildId && this.member);
   }
 
   /**
@@ -187,7 +187,7 @@ class Interaction extends Base {
    * @returns {boolean}
    */
   inRawGuild() {
-    return Boolean(this.guildID && !this.guild && this.member);
+    return Boolean(this.guildId && !this.guild && this.member);
   }
 
   /**

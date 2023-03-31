@@ -53,7 +53,7 @@ class GuildTemplate extends Base {
        * The id of the user that created this template
        * @type {Snowflake}
        */
-      this.creatorID = data.creator_id;
+      this.creatorId = data.creator_id;
     }
 
     if ('creator' in data) {
@@ -85,7 +85,7 @@ class GuildTemplate extends Base {
        * The id of the guild that this template belongs to
        * @type {Snowflake}
        */
-      this.guildID = data.source_guild_id;
+      this.guildId = data.source_guild_id;
     }
 
     if ('serialized_source_guild' in data) {
@@ -157,7 +157,7 @@ class GuildTemplate extends Base {
    * @returns {Promise<GuildTemplate>}
    */
   async edit({ name, description } = {}) {
-    const data = await this.client.api.guilds(this.guildID).templates(this.code).patch({ data: { name, description } });
+    const data = await this.client.api.guilds(this.guildId).templates(this.code).patch({ data: { name, description } });
     return this._patch(data);
   }
 
@@ -166,7 +166,7 @@ class GuildTemplate extends Base {
    * @returns {Promise<GuildTemplate>}
    */
   async delete() {
-    await this.client.api.guilds(this.guildID).templates(this.code).delete();
+    await this.client.api.guilds(this.guildId).templates(this.code).delete();
     return this;
   }
 
@@ -175,7 +175,7 @@ class GuildTemplate extends Base {
    * @returns {Promise<GuildTemplate>}
    */
   async sync() {
-    const data = await this.client.api.guilds(this.guildID).templates(this.code).put();
+    const data = await this.client.api.guilds(this.guildId).templates(this.code).put();
     return this._patch(data);
   }
 
@@ -203,7 +203,7 @@ class GuildTemplate extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildID);
+    return this.client.guilds.resolve(this.guildId);
   }
 
   /**

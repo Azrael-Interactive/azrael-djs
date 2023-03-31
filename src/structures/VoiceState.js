@@ -5,6 +5,7 @@ const { Error, TypeError } = require('../errors');
 
 /**
  * Represents the voice state for a Guild Member.
+ * @extends {Base}
  */
 class VoiceState extends Base {
   constructor(guild, data) {
@@ -78,9 +79,9 @@ class VoiceState extends Base {
        * The session id for this member's connection
        * @type {?string}
        */
-      this.sessionID = data.session_id;
+      this.sessionId = data.session_id;
     } else {
-      this.sessionID ??= null;
+      this.sessionId ??= null;
     }
 
     // The self_stream is property is omitted if false, check for another property
@@ -100,9 +101,9 @@ class VoiceState extends Base {
        * The {@link VoiceChannel} or {@link StageChannel} id the member is in
        * @type {?Snowflake}
        */
-      this.channelID = data.channel_id;
+      this.channelId = data.channel_id;
     } else {
-      this.channelID ??= null;
+      this.channelId ??= null;
     }
 
     if ('suppress' in data) {
@@ -141,7 +142,7 @@ class VoiceState extends Base {
    * @readonly
    */
   get channel() {
-    return this.guild.channels.cache.get(this.channelID) ?? null;
+    return this.guild.channels.cache.get(this.channelId) ?? null;
   }
 
   /**
@@ -208,10 +209,10 @@ class VoiceState extends Base {
    * @param {boolean} [request=true] Whether or not the client is requesting to become a speaker.
    * @example
    * // Making the client request to speak in a stage channel (raise its hand)
-   * guild.me.voice.setRequestToSpeak(true);
+   * guild.members.me.voice.setRequestToSpeak(true);
    * @example
    * // Making the client cancel a request to speak
-   * guild.me.voice.setRequestToSpeak(false);
+   * guild.members.me.voice.setRequestToSpeak(false);
    * @returns {Promise<void>}
    */
   async setRequestToSpeak(request = true) {
@@ -221,7 +222,7 @@ class VoiceState extends Base {
 
     await this.client.api.guilds(this.guild.id, 'voice-states', '@me').patch({
       data: {
-        channel_id: this.channelID,
+        channel_id: this.channelId,
         request_to_speak_timestamp: request ? new Date().toISOString() : null,
       },
     });
@@ -232,10 +233,10 @@ class VoiceState extends Base {
    * @param {boolean} [suppressed=true] Whether or not the user should be suppressed.
    * @example
    * // Making the client a speaker
-   * guild.me.voice.setSuppressed(false);
+   * guild.members.me.voice.setSuppressed(false);
    * @example
    * // Making the client an audience member
-   * guild.me.voice.setSuppressed(true);
+   * guild.members.me.voice.setSuppressed(true);
    * @example
    * // Inviting another user to speak
    * voiceState.setSuppressed(false);
@@ -253,7 +254,7 @@ class VoiceState extends Base {
 
     await this.client.api.guilds(this.guild.id, 'voice-states', target).patch({
       data: {
-        channel_id: this.channelID,
+        channel_id: this.channelId,
         suppress: suppressed,
       },
     });
@@ -266,8 +267,8 @@ class VoiceState extends Base {
       serverMute: true,
       selfDeaf: true,
       selfMute: true,
-      sessionID: true,
-      channelID: 'channel',
+      sessionId: true,
+      channelId: 'channel',
     });
   }
 }

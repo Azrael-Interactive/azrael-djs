@@ -8,20 +8,20 @@ const Base = require('./Base');
  * @extends {Base}
  */
 class InviteStageInstance extends Base {
-  constructor(client, data, channelID, guildID) {
+  constructor(client, data, channelId, guildId) {
     super(client);
 
     /**
      * The id of the stage channel this invite is for
      * @type {Snowflake}
      */
-    this.channelID = channelID;
+    this.channelId = channelId;
 
     /**
      * The stage channel's guild id
      * @type {Snowflake}
      */
-    this.guildID = guildID;
+    this.guildId = guildId;
 
     /**
      * The members speaking in the stage channel
@@ -70,7 +70,7 @@ class InviteStageInstance extends Base {
    * @readonly
    */
   get channel() {
-    return this.client.channels.resolve(this.channelID);
+    return this.client.channels.resolve(this.channelId);
   }
 
   /**
@@ -79,7 +79,7 @@ class InviteStageInstance extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildID);
+    return this.client.guilds.resolve(this.guildId);
   }
 }
 

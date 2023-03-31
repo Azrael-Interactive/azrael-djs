@@ -2,6 +2,7 @@
 
 const CommandInteractionOptionResolver = require('./CommandInteractionOptionResolver');
 const Interaction = require('./Interaction');
+const { Error } = require('../errors');
 const { InteractionResponseTypes, ApplicationCommandOptionTypes } = require('../util/Constants');
 
 /**
@@ -15,7 +16,7 @@ class AutocompleteInteraction extends Interaction {
     /**
      * The id of the channel this interaction was sent in
      * @type {Snowflake}
-     * @name AutocompleteInteraction#channelID
+     * @name AutocompleteInteraction#channelId
      */
 
     /**

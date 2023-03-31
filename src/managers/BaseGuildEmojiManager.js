@@ -43,16 +43,16 @@ class BaseGuildEmojiManager extends CachedManager {
    * @param {EmojiResolvable} emoji The Emoji resolvable to identify
    * @returns {?Snowflake}
    */
-  resolveID(emoji) {
+  resolveId(emoji) {
     if (emoji instanceof ReactionEmoji) return emoji.id;
-    return super.resolveID(emoji);
+    return super.resolveId(emoji);
   }
 
   /**
    * Data that can be resolved to give an emoji identifier. This can be:
-   * * The unicode representation of an emoji
-   * * The `<a:name:id>`, `<:name:id>`, `a:name:id` or `name:id` emoji identifier string of an emoji
    * * An EmojiResolvable
+   * * The `<a:name:id>`, `<:name:id>`, `a:name:id` or `name:id` emoji identifier string of an emoji
+   * * The Unicode representation of an emoji
    * @typedef {string|EmojiResolvable} EmojiIdentifierResolvable
    */
 
@@ -61,7 +61,7 @@ class BaseGuildEmojiManager extends CachedManager {
    * @param {EmojiIdentifierResolvable} emoji The emoji resolvable to resolve
    * @returns {?string}
    */
-  resolveIDentifier(emoji) {
+  resolveIdentifier(emoji) {
     const emojiResolvable = this.resolve(emoji);
     if (emojiResolvable) return emojiResolvable.identifier;
     if (emoji instanceof ReactionEmoji) return emoji.identifier;

@@ -11,7 +11,7 @@ const SnowflakeUtil = require('../util/SnowflakeUtil');
  * @extends {Base}
  */
 class ApplicationCommand extends Base {
-  constructor(client, data, guild, guildID) {
+  constructor(client, data, guild, guildId) {
     super(client);
 
     /**
@@ -24,7 +24,7 @@ class ApplicationCommand extends Base {
      * The parent application's id
      * @type {Snowflake}
      */
-    this.applicationID = data.application_id;
+    this.applicationId = data.application_id;
 
     /**
      * The guild this command is part of
@@ -37,7 +37,7 @@ class ApplicationCommand extends Base {
      * was fetched from the `ApplicationCommandManager`
      * @type {?Snowflake}
      */
-    this.guildID = guild?.id ?? guildID ?? null;
+    this.guildId = guild?.id ?? guildId ?? null;
 
     /**
      * The manager for permissions of this command on its guild or arbitrary guilds when the command is global
@@ -242,7 +242,6 @@ class ApplicationCommand extends Base {
   /**
    * Edits this application command.
    * @param {Partial<ApplicationCommandData>} data The data to update the command with
-   * @param {ApplicationCommandData} data The data to update the command with
    * @returns {Promise<ApplicationCommand>}
    * @example
    * // Edit the description of this command
@@ -253,7 +252,7 @@ class ApplicationCommand extends Base {
    *   .catch(console.error);
    */
   edit(data) {
-    return this.manager.edit(this, data, this.guildID);
+    return this.manager.edit(this, data, this.guildId);
   }
 
   /**
@@ -325,7 +324,7 @@ class ApplicationCommand extends Base {
    * @param {?PermissionResolvable} defaultMemberPermissions The default member permissions required to run this command
    * @returns {Promise<ApplicationCommand>}
    */
-   setDefaultMemberPermissions(defaultMemberPermissions) {
+  setDefaultMemberPermissions(defaultMemberPermissions) {
     return this.edit({ defaultMemberPermissions });
   }
 
@@ -357,7 +356,7 @@ class ApplicationCommand extends Base {
    *   .catch(console.error);
    */
   delete() {
-    return this.manager.delete(this, this.guildID);
+    return this.manager.delete(this, this.guildId);
   }
 
   /**
@@ -383,9 +382,8 @@ class ApplicationCommand extends Base {
     }
 
     if ('defaultMemberPermissions' in command) {
-      defaultMemberPermissions = command.defaultMemberPermissions
-        ? new Permissions(command.defaultMemberPermissions).bitfield
-        : null;
+      defaultMemberPermissions =
+        command.defaultMemberPermissions !== null ? new Permissions(command.defaultMemberPermissions).bitfield : null;
     }
 
     // Check top level parameters

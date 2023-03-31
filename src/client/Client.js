@@ -432,7 +432,7 @@ class Client extends BaseClient {
    * @returns {Promise<GuildPreview>}
    */
   async fetchGuildPreview(guild) {
-    const id = this.guilds.resolveID(guild);
+    const id = this.guilds.resolveId(guild);
     if (!id) throw new TypeError('INVALID_TYPE', 'guild', 'GuildResolvable');
     const data = await this.api.guilds(id).preview.get();
     return new GuildPreview(this, data);
@@ -444,7 +444,7 @@ class Client extends BaseClient {
    * @returns {Promise<Widget>}
    */
   async fetchGuildWidget(guild) {
-    const id = this.guilds.resolveID(guild);
+    const id = this.guilds.resolveId(guild);
     if (!id) throw new TypeError('INVALID_TYPE', 'guild', 'GuildResolvable');
     const data = await this.api.guilds(id, 'widget.json').get();
     return new Widget(this, data);
@@ -513,9 +513,9 @@ class Client extends BaseClient {
     }
 
     if (options.guild) {
-      const guildID = this.guilds.resolveID(options.guild);
-      if (!guildID) throw new TypeError('INVALID_TYPE', 'options.guild', 'GuildResolvable');
-      query.set('guild_id', guildID);
+      const guildId = this.guilds.resolveId(options.guild);
+      if (!guildId) throw new TypeError('INVALID_TYPE', 'options.guild', 'GuildResolvable');
+      query.set('guild_id', guildId);
     }
 
     return `${this.options.http.api}${this.api.oauth2.authorize}?${query}`;

@@ -142,9 +142,11 @@ class MessagePayload {
 
     let username;
     let avatarURL;
+    let threadName;
     if (isWebhook) {
       username = this.options.username ?? this.target.name;
       if (this.options.avatarURL) avatarURL = this.options.avatarURL;
+      if (this.options.threadName) threadName = this.options.threadName;
     }
 
     let flags;
@@ -175,7 +177,7 @@ class MessagePayload {
     let message_reference;
     if (typeof this.options.reply === 'object') {
       const reference = this.options.reply.messageReference;
-      const message_id = this.isMessage ? reference.id ?? reference : this.target.messages.resolveID(reference);
+      const message_id = this.isMessage ? reference.id ?? reference : this.target.messages.resolveId(reference);
       if (message_id) {
         message_reference = {
           message_id,
@@ -208,6 +210,7 @@ class MessagePayload {
       message_reference,
       attachments: this.options.attachments,
       sticker_ids: this.options.stickers?.map(sticker => sticker.id ?? sticker),
+      thread_name: threadName,
     };
     return this;
   }

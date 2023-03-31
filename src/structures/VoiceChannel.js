@@ -28,7 +28,7 @@ class VoiceChannel extends BaseGuildVoiceChannel {
      * If the guild considers this channel NSFW
      * @type {boolean}
      */
-     this.nsfw = Boolean(data.nsfw);
+    this.nsfw = Boolean(data.nsfw);
 
     this._patch(data);
   }
@@ -51,7 +51,7 @@ class VoiceChannel extends BaseGuildVoiceChannel {
        * The last message id sent in the channel, if one was sent
        * @type {?Snowflake}
        */
-      this.lastMessageID = data.last_message_id;
+      this.lastMessageId = data.last_message_id;
     }
 
     if ('messages' in data) {
@@ -65,7 +65,7 @@ class VoiceChannel extends BaseGuildVoiceChannel {
        */
       this.rateLimitPerUser = data.rate_limit_per_user;
     }
-    
+
     if ('nsfw' in data) {
       this.nsfw = data.nsfw;
     }
@@ -113,7 +113,8 @@ class VoiceChannel extends BaseGuildVoiceChannel {
     if (permissions.has(Permissions.FLAGS.ADMINISTRATOR, false)) return true;
 
     return (
-      this.guild.me.communicationDisabledUntilTimestamp < Date.now() && permissions.has(Permissions.FLAGS.SPEAK, false)
+      this.guild.members.me.communicationDisabledUntilTimestamp < Date.now() &&
+      permissions.has(Permissions.FLAGS.SPEAK, false)
     );
   }
 
@@ -161,7 +162,7 @@ class VoiceChannel extends BaseGuildVoiceChannel {
   /* eslint-disable no-empty-function */
   get lastMessage() {}
   send() {}
-  startTyping() {}
+  sendTyping() {}
   createMessageCollector() {}
   awaitMessages() {}
   createMessageComponentCollector() {}

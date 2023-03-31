@@ -2,6 +2,7 @@
 
 const process = require('node:process');
 const Base = require('./Base');
+const { Error } = require('../errors');
 const { StickerFormatTypes, StickerTypes } = require('../util/Constants');
 const SnowflakeUtil = require('../util/SnowflakeUtil');
 
@@ -102,9 +103,9 @@ class Sticker extends Base {
        * The id of the guild that owns this sticker
        * @type {?Snowflake}
        */
-      this.guildID = sticker.guild_id;
+      this.guildId = sticker.guild_id;
     } else {
-      this.guildID ??= null;
+      this.guildId ??= null;
     }
 
     if ('user' in sticker) {
@@ -191,7 +192,7 @@ class Sticker extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildID);
+    return this.client.guilds.resolve(this.guildId);
   }
 
   /**
@@ -227,7 +228,7 @@ class Sticker extends Base {
    */
   async fetchUser() {
     if (this.partial) await this.fetch();
-    if (!this.guildID) throw new Error('NOT_GUILD_STICKER');
+    if (!this.guildId) throw new Error('NOT_GUILD_STICKER');
     return this.guild.stickers.fetchUser(this);
   }
 
@@ -286,7 +287,7 @@ class Sticker extends Base {
         other.tags.length === this.tags.length &&
         other.tags.every(tag => this.tags.includes(tag)) &&
         other.available === this.available &&
-        other.guildID === this.guildID &&
+        other.guildId === this.guildId &&
         other.sortValue === this.sortValue
       );
     } else {
