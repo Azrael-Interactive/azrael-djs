@@ -10,7 +10,6 @@ const Integration = require('./Integration');
 const Webhook = require('./Webhook');
 const WelcomeScreen = require('./WelcomeScreen');
 const { Error } = require('../errors');
-const AutoModerationRuleManager = require('../managers/AutoModerationRuleManager');
 const GuildApplicationCommandManager = require('../managers/GuildApplicationCommandManager');
 const GuildBanManager = require('../managers/GuildBanManager');
 const GuildChannelManager = require('../managers/GuildChannelManager');
@@ -26,6 +25,7 @@ const VoiceStateManager = require('../managers/VoiceStateManager');
 const {
   ChannelTypes,
   DefaultMessageNotificationLevels,
+  PartialTypes,
   VerificationLevels,
   ExplicitContentFilterLevels,
   Status,
@@ -39,7 +39,6 @@ const Util = require('../util/Util');
 let deprecationEmittedForSetChannelPositions = false;
 let deprecationEmittedForSetRolePositions = false;
 let deprecationEmittedForDeleted = false;
-let deprecationEmittedForMe = false;
 
 /**
  * @type {WeakSet<Guild>}
@@ -118,12 +117,6 @@ class Guild extends AnonymousGuild {
      */
     this.scheduledEvents = new GuildScheduledEventManager(this);
 
-    /**
-     * A manager of the auto moderation rules of this guild.
-     * @type {AutoModerationRuleManager}
-     */
-    this.autoModerationRules = new AutoModerationRuleManager(this);
-
     if (!data) return;
     if (data.unavailable) {
       /**
@@ -182,7 +175,15 @@ class Guild extends AnonymousGuild {
     return this.client.ws.shards.get(this.shardID);
   }
 
-  member(user) {
+  /**
+   * Returns the GuildMember form of a User object, if the user is present in the guild.
+   * @param {UserResolvable} user The user that you want to obtain the GuildMember of
+   * @returns {?GuildMember}
+   * @example
+   * // Get the guild member of a user
+   * const member = guild.member(message.author);
+   */
+   member(user) {
     return this.members.resolve(user);
   }
 
@@ -232,15 +233,11 @@ class Guild extends AnonymousGuild {
     /**
      * An array of enabled guild features, here are the possible values:
      * * ANIMATED_ICON
-     * * AUTO_MODERATION
      * * BANNER
      * * COMMERCE
      * * COMMUNITY
-     * * CREATOR_MONETIZABLE_PROVISIONAL
-     * * CREATOR_STORE_PAGE
      * * DISCOVERABLE
      * * FEATURABLE
-     * * INVITES_DISABLED
      * * INVITE_SPLASH
      * * MEMBER_VERIFICATION_GATE_ENABLED
      * * NEWS
@@ -252,15 +249,11 @@ class Guild extends AnonymousGuild {
      * * WELCOME_SCREEN_ENABLED
      * * TICKETED_EVENTS_ENABLED
      * * MONETIZATION_ENABLED
-     * <warn>`MONETIZATION_ENABLED` has been replaced.
-     * See [this pull request](https://github.com/discord/discord-api-docs/pull/5724) for more information.</warn>
      * * MORE_STICKERS
      * * THREE_DAY_THREAD_ARCHIVE
      * * SEVEN_DAY_THREAD_ARCHIVE
      * * PRIVATE_THREADS
      * * ROLE_ICONS
-     * * ROLE_SUBSCRIPTIONS_AVAILABLE_FOR_PURCHASE
-     * * ROLE_SUBSCRIPTIONS_ENABLED
      * @typedef {string} Features
      * @see {@link https://discord.com/developers/docs/resources/guild#guild-object-guild-features}
      */
@@ -286,7 +279,7 @@ class Guild extends AnonymousGuild {
        * The id of the voice channel where AFK members are moved
        * @type {?Snowflake}
        */
-      this.afkchannelID = data.afk_channel_id;
+      this.afkChannelID = data.afk_channel_id;
     }
 
     if ('system_channel_id' in data) {
@@ -380,16 +373,6 @@ class Guild extends AnonymousGuild {
       this.maximumPresences = data.max_presences ?? 25_000;
     } else {
       this.maximumPresences ??= null;
-    }
-
-    if ('max_video_channel_users' in data) {
-      /**
-       * The maximum amount of users allowed in a video channel.
-       * @type {?number}
-       */
-      this.maxVideoChannelUsers = data.max_video_channel_users;
-    } else {
-      this.maxVideoChannelUsers ??= null;
     }
 
     if ('approximate_member_count' in data) {
@@ -567,7 +550,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get afkChannel() {
-    return this.client.channels.resolve(this.afkchannelID);
+    return this.client.channels.resolve(this.afkChannelID);
   }
 
   /**
@@ -581,7 +564,7 @@ class Guild extends AnonymousGuild {
 
   /**
    * Widget channel for this guild
-   * @type {?(TextChannel|NewsChannel|VoiceChannel|StageChannel|ForumChannel)}
+   * @type {?TextChannel}
    * @readonly
    */
   get widgetChannel() {
@@ -609,16 +592,15 @@ class Guild extends AnonymousGuild {
   /**
    * The client user as a GuildMember of this guild
    * @type {?GuildMember}
-   * @deprecated Use {@link GuildMemberManager#me} instead.
    * @readonly
    */
   get me() {
-    if (!deprecationEmittedForMe) {
-      process.emitWarning('Guild#me is deprecated. Use Guild#members#me instead.', 'DeprecationWarning');
-      deprecationEmittedForMe = true;
-    }
-
-    return this.members.me;
+    return (
+      this.members.resolve(this.client.user.id) ??
+      (this.client.options.partials.includes(PartialTypes.GUILD_MEMBER)
+        ? this.members._add({ user: { id: this.client.user.id } }, true)
+        : null)
+    );
   }
 
   /**
@@ -795,8 +777,7 @@ class Guild extends AnonymousGuild {
   /**
    * Options used to fetch audit logs.
    * @typedef {Object} GuildAuditLogsFetchOptions
-   * @property {Snowflake|GuildAuditLogsEntry} [before] Consider only entries before this entry
-   * @property {Snowflake|GuildAuditLogsEntry} [after] Consider only entries after this entry
+   * @property {Snowflake|GuildAuditLogsEntry} [before] Only return entries before this entry
    * @property {number} [limit] The number of entries to return
    * @property {UserResolvable} [user] Only return entries for actions made by this user
    * @property {AuditLogAction|number} [type] Only return entries for this action type
@@ -812,17 +793,18 @@ class Guild extends AnonymousGuild {
    *   .then(audit => console.log(audit.entries.first()))
    *   .catch(console.error);
    */
-  async fetchAuditLogs({ before, after, limit, user, type } = {}) {
+  async fetchAuditLogs(options = {}) {
+    if (options.before && options.before instanceof GuildAuditLogs.Entry) options.before = options.before.id;
+    if (typeof options.type === 'string') options.type = GuildAuditLogs.Actions[options.type];
+
     const data = await this.client.api.guilds(this.id)['audit-logs'].get({
       query: {
-        before: before?.id ?? before,
-        after: after?.id ?? after,
-        limit,
-        user_id: this.client.users.resolveID(user),
-        action_type: typeof type === 'string' ? GuildAuditLogs.Actions[type] : type,
+        before: options.before,
+        limit: options.limit,
+        user_id: this.client.users.resolveID(options.user),
+        action_type: options.type,
       },
     });
-
     return GuildAuditLogs.build(this, data);
   }
 
@@ -1326,17 +1308,6 @@ class Guild extends AnonymousGuild {
       reason,
     });
     return this;
-  }
-
-  /**
-   * Sets whether this guild's invites are disabled.
-   * @param {boolean} [disabled=true] Whether the invites are disabled
-   * @returns {Promise<Guild>}
-   */
-  disableInvites(disabled = true) {
-    const features = this.features.filter(feature => feature !== 'INVITES_DISABLED');
-    if (disabled) features.push('INVITES_DISABLED');
-    return this.edit({ features });
   }
 
   /**

@@ -130,35 +130,27 @@ class InteractionResponses {
     return options.fetchReply ? this.fetchReply() : undefined;
   }
 
-
   /**
-   * Fetches a reply to this interaction.
+   * Fetches the initial reply to this interaction.
    * @see Webhook#fetchMessage
-   * @param {MessageResolvable|'@original'} [message='@original'] The response to fetch
    * @returns {Promise<Message|APIMessage>}
    * @example
-   * // Fetch the initial reply to this interaction
+   * // Fetch the reply to this interaction
    * interaction.fetchReply()
    *   .then(reply => console.log(`Replied with ${reply.content}`))
    *   .catch(console.error);
    */
-  fetchReply(message = '@original') {
-    return this.webhook.fetchMessage(message);
+  fetchReply() {
+    return this.webhook.fetchMessage('@original');
   }
 
   /**
-   * Options that can be passed into {@link InteractionResponses#editReply}.
-   * @typedef {WebhookEditMessageOptions} InteractionEditReplyOptions
-   * @property {MessageResolvable|'@original'} [message='@original'] The response to edit
-   */
-
-  /**
-   * Edits a reply to this interaction.
+   * Edits the initial reply to this interaction.
    * @see Webhook#editMessage
-   * @param {string|MessagePayload|InteractionEditReplyOptions} options The new options for the message
+   * @param {string|MessagePayload|WebhookEditMessageOptions} options The new options for the message
    * @returns {Promise<Message|APIMessage>}
    * @example
-   * // Edit the initial reply to this interaction
+   * // Edit the reply to this interaction
    * interaction.editReply('New content')
    *   .then(console.log)
    *   .catch(console.error);
@@ -185,18 +177,18 @@ class InteractionResponses {
   }
 
   /**
-   * Deletes a reply to this interaction.
+   * Deletes the initial reply to this interaction.
    * @see Webhook#deleteMessage
-   * @param {MessageResolvable|'@original'} [message='@original'] The response to delete
    * @returns {Promise<void>}
    * @example
-   * // Delete the initial reply to this interaction
+   * // Delete the reply to this interaction
    * interaction.deleteReply()
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async deleteReply(message = '@original') {
-    await this.webhook.deleteMessage(message);
+  async deleteReply() {
+    if (this.ephemeral) throw new Error('INTERACTION_EPHEMERAL_REPLIED');
+    await this.webhook.deleteMessage('@original');
   }
 
   /**
@@ -317,7 +309,7 @@ class InteractionResponses {
    * An object containing the same properties as CollectorOptions, but a few more:
    * @typedef {Object} AwaitModalSubmitOptions
    * @property {CollectorFilter} [filter] The filter applied to this collector
-   * @property {number} time Time in milliseconds to wait for an interaction before rejecting
+   * @property {number} time Time to wait for an interaction before rejecting
    */
 
   /**
