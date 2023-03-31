@@ -1,5 +1,5 @@
 {
-    "name": "discord.js",
-    "packagePath": ".",
-    "tagTemplate": "{{new-version}}"
+  "name": "discord.js",
+  "packagePath": ".",
+  "tagTemplate": "{{new-version}}"
 }

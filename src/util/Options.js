@@ -35,7 +35,8 @@ const process = require('node:process');
  * recommended amount of shards from Discord and spawn that amount
  * @property {number} [closeTimeout=5000] The amount of time in milliseconds to wait for the close frame to be received
  * from the WebSocket.
- * <info>Don't have this too high/low. It's best to have it between 2000-6000 ms.</info>* @property {number} [shardCount=1] The total amount of shards used by all processes of this bot
+ * <info>Don't have this too high/low. It's best to have it between 2000-6000 ms.</info>
+ * @property {number} [shardCount=1] The total amount of shards used by all processes of this bot
  * (e.g. recommended shard count, shard count of the ShardingManager)
  * @property {CacheFactory} [makeCache] Function to create a cache.
  * You can use your own function, or the {@link Options} class to customize the Collection used for the cache.

@@ -276,7 +276,7 @@ class Activity {
      * Creation date of the activity
      * @type {number}
      */
-    this.createdTimestamp = new Date(data.created_at).getTime();
+    this.createdTimestamp = data.created_at;
   }
 
   /**
@@ -292,7 +292,9 @@ class Activity {
         this.type === activity.type &&
         this.url === activity.url &&
         this.state === activity.state &&
-        this.details === activity.details)
+        this.details === activity.details &&
+        this.emoji?.id === activity.emoji?.id &&
+        this.emoji?.name === activity.emoji?.name)
     );
   }
 

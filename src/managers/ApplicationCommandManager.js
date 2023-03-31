@@ -13,13 +13,6 @@ const Permissions = require('../util/Permissions');
  * Manages API methods for application commands and stores their cache.
  * @extends {CachedManager}
  */
-
-/* eslint-disable max-len */
-  /**
-   * Data that resolves to the data of an ApplicationCommand
-   * @typedef {ApplicationCommandData|APIApplicationCommand|SlashCommandBuilder|ContextMenuCommandBuilder} ApplicationCommandDataResolvable
-   */
-  /* eslint-enable max-len */
 class ApplicationCommandManager extends CachedManager {
   constructor(client, iterable) {
     super(client, ApplicationCommand, iterable);
@@ -61,6 +54,13 @@ class ApplicationCommandManager extends CachedManager {
    * * A Snowflake
    * @typedef {ApplicationCommand|Snowflake} ApplicationCommandResolvable
    */
+
+  /* eslint-disable max-len */
+  /**
+   * Data that resolves to the data of an ApplicationCommand
+   * @typedef {ApplicationCommandData|APIApplicationCommand|SlashCommandBuilder|ContextMenuCommandBuilder} ApplicationCommandDataResolvable
+   */
+  /* eslint-enable max-len */
 
   /**
    * Options used to fetch data from Discord
@@ -231,9 +231,10 @@ class ApplicationCommandManager extends CachedManager {
     }
 
     if ('defaultMemberPermissions' in command) {
-      default_member_permissions = command.defaultMemberPermissions
-        ? new Permissions(command.defaultMemberPermissions).bitfield.toString()
-        : command.defaultMemberPermissions;
+      default_member_permissions =
+        command.defaultMemberPermissions !== null
+          ? new Permissions(command.defaultMemberPermissions).bitfield.toString()
+          : command.defaultMemberPermissions;
     }
 
     return {

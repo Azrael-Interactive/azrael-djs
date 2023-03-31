@@ -5,7 +5,7 @@ const MessageCollector = require('../MessageCollector');
 const MessagePayload = require('../MessagePayload');
 const SnowflakeUtil = require('../../util/SnowflakeUtil');
 const { Collection } = require('@discordjs/collection');
-const { InteractionTypes } = require('../../util/Constants');
+const { InteractionTypes, MaxBulkDeletableMessageAge } = require('../../util/Constants');
 const { TypeError, Error } = require('../../errors');
 const InteractionCollector = require('../InteractionCollector');
 
@@ -73,7 +73,8 @@ class TextBasedChannel {
    * @typedef {BaseMessageOptions} MessageOptions
    * @property {ReplyOptions} [reply] The options for replying to a message
    * @property {StickerResolvable[]} [stickers=[]] Stickers to send in the message
-   * @property {MessageFlags} [flags] Which flags to set for the message. Only `SUPPRESS_EMBEDS` can be set.
+   * @property {MessageFlags} [flags]
+   * Which flags to set for the message. Only `SUPPRESS_EMBEDS` and `SUPPRESS_NOTIFICATIONS` can be set.
    */
 
   /**
@@ -193,14 +194,18 @@ class TextBasedChannel {
     return this.messages.cache.get(d.id) ?? this.messages._add(d);
   }
 
+  async startTyping() {
+    await this.client.api.channels(this.id).typing.post();
+  }
+
   /**
    * Sends a typing indicator in the channel.
    * @returns {Promise<void>} Resolves upon the typing status being sent
    * @example
    * // Start typing in a channel
-   * channel.startTyping();
+   * channel.sendTyping();
    */
-  async startTyping() {
+  async sendTyping() {
     await this.client.api.channels(this.id).typing.post();
   }
 
@@ -299,7 +304,7 @@ class TextBasedChannel {
    * @param {Collection<Snowflake, Message>|MessageResolvable[]|number} messages
    * Messages or number of messages to delete
    * @param {boolean} [filterOld=false] Filter messages to remove those which are older than two weeks automatically
-   * @returns {Promise<Collection<Snowflake, Message>>} Returns the deleted messages
+   * @returns {Promise<Collection<Snowflake, Message|undefined>>} Returns the deleted messages
    * @example
    * // Bulk delete messages
    * channel.bulkDelete(5)
@@ -310,7 +315,7 @@ class TextBasedChannel {
     if (Array.isArray(messages) || messages instanceof Collection) {
       let messageIds = messages instanceof Collection ? [...messages.keys()] : messages.map(m => m.id ?? m);
       if (filterOld) {
-        messageIds = messageIds.filter(id => Date.now() - SnowflakeUtil.timestampFrom(id) < 1_209_600_000);
+        messageIds = messageIds.filter(id => Date.now() - SnowflakeUtil.timestampFrom(id) < MaxBulkDeletableMessageAge);
       }
       if (messageIds.length === 0) return new Collection();
       if (messageIds.length === 1) {
@@ -410,7 +415,7 @@ class TextBasedChannel {
         'lastMessage',
         'lastPinAt',
         'bulkDelete',
-        'startTyping',
+        'sendTyping',
         'createMessageCollector',
         'awaitMessages',
         'createMessageComponentCollector',
