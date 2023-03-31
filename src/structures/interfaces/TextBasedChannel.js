@@ -194,6 +194,10 @@ class TextBasedChannel {
     return this.messages.cache.get(d.id) ?? this.messages._add(d);
   }
 
+  async startTyping() {
+    await this.client.api.channels(this.id).typing.post();
+  }
+
   /**
    * Sends a typing indicator in the channel.
    * @returns {Promise<void>} Resolves upon the typing status being sent
