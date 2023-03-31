@@ -242,6 +242,7 @@ class ApplicationCommand extends Base {
   /**
    * Edits this application command.
    * @param {Partial<ApplicationCommandData>} data The data to update the command with
+   * @param {ApplicationCommandData} data The data to update the command with
    * @returns {Promise<ApplicationCommand>}
    * @example
    * // Edit the description of this command
@@ -324,7 +325,7 @@ class ApplicationCommand extends Base {
    * @param {?PermissionResolvable} defaultMemberPermissions The default member permissions required to run this command
    * @returns {Promise<ApplicationCommand>}
    */
-  setDefaultMemberPermissions(defaultMemberPermissions) {
+   setDefaultMemberPermissions(defaultMemberPermissions) {
     return this.edit({ defaultMemberPermissions });
   }
 
@@ -382,8 +383,9 @@ class ApplicationCommand extends Base {
     }
 
     if ('defaultMemberPermissions' in command) {
-      defaultMemberPermissions =
-        command.defaultMemberPermissions !== null ? new Permissions(command.defaultMemberPermissions).bitfield : null;
+      defaultMemberPermissions = command.defaultMemberPermissions
+        ? new Permissions(command.defaultMemberPermissions).bitfield
+        : null;
     }
 
     // Check top level parameters

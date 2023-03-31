@@ -241,7 +241,7 @@ class ShardClientUtil {
    * @param {number} shardCount Number of shards
    * @returns {number}
    */
-  static shardIDForguildID(guildID, shardCount) {
+  static shardIDForGuildId(guildID, shardCount) {
     const shard = Number(BigInt(guildID) >> 22n) % shardCount;
     if (shard < 0) throw new Error('SHARDING_SHARD_MISCALCULATION', shard, guildID, shardCount);
     return shard;
