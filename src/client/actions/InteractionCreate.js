@@ -33,7 +33,7 @@ class InteractionCreateAction extends Action {
             InteractionType = UserContextMenuInteraction;
             break;
           case ApplicationCommandTypes.MESSAGE:
-            if (channel && !channel.isText()) return;
+            if (channel && !channel?.messages) return;
             InteractionType = MessageContextMenuInteraction;
             break;
           default:
@@ -45,7 +45,7 @@ class InteractionCreateAction extends Action {
         }
         break;
       case InteractionTypes.MESSAGE_COMPONENT:
-        if (channel && !channel.isText()) return;
+        if (channel && !channel?.messages) return;
 
         switch (data.data.component_type) {
           case MessageComponentTypes.BUTTON:
