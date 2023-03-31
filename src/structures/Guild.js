@@ -182,6 +182,10 @@ class Guild extends AnonymousGuild {
     return this.client.ws.shards.get(this.shardID);
   }
 
+  member(user) {
+    return this.members.resolve(user);
+  }
+
   _patch(data) {
     super._patch(data);
     this.id = data.id;
