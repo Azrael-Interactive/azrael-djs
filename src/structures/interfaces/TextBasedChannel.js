@@ -156,16 +156,31 @@ class TextBasedChannel {
    *   .then(console.log)
    *   .catch(console.error);
    */
-  async send(options) {
+  async send(content, options) {
     const User = require('../User');
     const { GuildMember } = require('../GuildMember');
+
+    let messagePayload;
+
+    if (!options) options = {};
+    if (typeof content == "string") {
+        options.content = content
+    } else if (typeof content == "object" && content?.type == "rich") {
+        options.embeds = [content]
+    } else if (typeof content == "object" && typeof content?.embed == "object") {
+        options = content
+        options.embeds = [content?.embed]
+    } else {
+        options = content
+        if (options?.embed) {
+          options.embeds = [options.embed]
+        }
+    }
 
     if (this instanceof User || this instanceof GuildMember) {
       const dm = await this.createDM();
       return dm.send(options);
     }
-
-    let messagePayload;
 
     if (options instanceof MessagePayload) {
       messagePayload = options.resolveData();
