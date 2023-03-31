@@ -146,7 +146,7 @@ class GuildManager extends CachedManager {
   /**
    * Options used to create a guild.
    * @typedef {Object} GuildCreateOptions
-   * @property {Snowflake|number} [afkchannelID] The AFK channel's id
+   * @property {Snowflake|number} [afkChannelID] The AFK channel's id
    * @property {number} [afkTimeout] The AFK timeout in seconds
    * @property {PartialChannelData[]} [channels=[]] The channels for this guild
    * @property {DefaultMessageNotificationLevel|number} [defaultMessageNotifications] The default message notifications
@@ -170,7 +170,7 @@ class GuildManager extends CachedManager {
   async create(
     name,
     {
-      afkchannelID,
+      afkChannelID,
       afkTimeout,
       channels = [],
       defaultMessageNotifications,
@@ -234,7 +234,7 @@ class GuildManager extends CachedManager {
         explicit_content_filter: explicitContentFilter,
         roles,
         channels,
-        afk_channel_id: afkchannelID,
+        afk_channel_id: afkChannelID,
         afk_timeout: afkTimeout,
         system_channel_id: systemChannelID,
         system_channel_flags: systemChannelFlags,

@@ -36,7 +36,7 @@ class SnowflakeUtil extends null {
     }
     if (INCREMENT >= 4095n) INCREMENT = BigInt(0);
 
-    // Assign workerID as 1 and processID as 0:
+    // Assign WorkerId as 1 and ProcessId as 0:
     return ((BigInt(timestamp - EPOCH) << 22n) | (1n << 17n) | INCREMENT++).toString();
   }
 
