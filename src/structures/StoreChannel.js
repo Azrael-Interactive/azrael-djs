@@ -49,7 +49,7 @@ class StoreChannel extends GuildChannel {
    * @returns {Promise<Collection<string, Invite>>}
    */
   fetchInvites(cache = true) {
-    return this.guild.invites.fetch({ channelId: this.id, cache });
+    return this.guild.invites.fetch({ channelID: this.id, cache });
   }
 }
 

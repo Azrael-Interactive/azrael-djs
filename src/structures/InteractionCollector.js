@@ -45,20 +45,20 @@ class InteractionCollector extends Collector {
      * The channel from which to collect interactions, if provided
      * @type {?Snowflake}
      */
-    this.channelId =
-      this.client.channels.resolveId(options.message?.channel) ??
+    this.channelID =
+      this.client.channels.resolveID(options.message?.channel) ??
       options.message?.channel_id ??
-      this.client.channels.resolveId(options.channel);
+      this.client.channels.resolveID(options.channel);
 
     /**
      * The guild from which to collect interactions, if provided
      * @type {?Snowflake}
      */
-    this.guildId =
-      this.client.guilds.resolveId(options.message?.guild) ??
+    this.guildID =
+      this.client.guilds.resolveID(options.message?.guild) ??
       options.message?.guild_id ??
-      this.client.guilds.resolveId(options.channel?.guild) ??
-      this.client.guilds.resolveId(options.guild);
+      this.client.guilds.resolveID(options.channel?.guild) ??
+      this.client.guilds.resolveID(options.guild);
 
     /**
      * The type of interaction to collect
@@ -103,14 +103,14 @@ class InteractionCollector extends Collector {
       this.client.on(Events.MESSAGE_BULK_DELETE, bulkDeleteListener);
     }
 
-    if (this.channelId) {
+    if (this.channelID) {
       this._handleChannelDeletion = this._handleChannelDeletion.bind(this);
       this._handleThreadDeletion = this._handleThreadDeletion.bind(this);
       this.client.on(Events.CHANNEL_DELETE, this._handleChannelDeletion);
       this.client.on(Events.THREAD_DELETE, this._handleThreadDeletion);
     }
 
-    if (this.guildId) {
+    if (this.guildID) {
       this._handleGuildDeletion = this._handleGuildDeletion.bind(this);
       this.client.on(Events.GUILD_DELETE, this._handleGuildDeletion);
     }
@@ -148,8 +148,8 @@ class InteractionCollector extends Collector {
     if (this.interactionType && interaction.type !== this.interactionType) return null;
     if (this.componentType && interaction.componentType !== this.componentType) return null;
     if (this.messageId && interaction.message?.id !== this.messageId) return null;
-    if (this.channelId && interaction.channelId !== this.channelId) return null;
-    if (this.guildId && interaction.guildId !== this.guildId) return null;
+    if (this.channelID && interaction.channelID !== this.channelID) return null;
+    if (this.guildID && interaction.guildID !== this.guildID) return null;
 
     return interaction.id;
   }
@@ -168,8 +168,8 @@ class InteractionCollector extends Collector {
     if (this.type && interaction.type !== this.type) return null;
     if (this.componentType && interaction.componentType !== this.componentType) return null;
     if (this.messageId && interaction.message?.id !== this.messageId) return null;
-    if (this.channelId && interaction.channelId !== this.channelId) return null;
-    if (this.guildId && interaction.guildId !== this.guildId) return null;
+    if (this.channelID && interaction.channelID !== this.channelID) return null;
+    if (this.guildID && interaction.guildID !== this.guildID) return null;
 
     return interaction.id;
   }
@@ -215,7 +215,7 @@ class InteractionCollector extends Collector {
    * @returns {void}
    */
   _handleChannelDeletion(channel) {
-    if (channel.id === this.channelId || channel.threads?.cache.has(this.channelId)) {
+    if (channel.id === this.channelID || channel.threads?.cache.has(this.channelID)) {
       this.stop('channelDelete');
     }
   }
@@ -227,7 +227,7 @@ class InteractionCollector extends Collector {
    * @returns {void}
    */
   _handleThreadDeletion(thread) {
-    if (thread.id === this.channelId) {
+    if (thread.id === this.channelID) {
       this.stop('threadDelete');
     }
   }
@@ -239,7 +239,7 @@ class InteractionCollector extends Collector {
    * @returns {void}
    */
   _handleGuildDeletion(guild) {
-    if (guild.id === this.guildId) {
+    if (guild.id === this.guildID) {
       this.stop('guildDelete');
     }
   }

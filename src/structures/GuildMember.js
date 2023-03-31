@@ -268,7 +268,7 @@ class GuildMember extends Base {
    * @readonly
    */
   get permissions() {
-    if (this.user.id === this.guild.ownerId) return new Permissions(Permissions.ALL).freeze();
+    if (this.user.id === this.guild.ownerID) return new Permissions(Permissions.ALL).freeze();
     return new Permissions(this.roles.cache.map(role => role.permissions)).freeze();
   }
 
@@ -279,9 +279,9 @@ class GuildMember extends Base {
    * @readonly
    */
   get manageable() {
-    if (this.user.id === this.guild.ownerId) return false;
+    if (this.user.id === this.guild.ownerID) return false;
     if (this.user.id === this.client.user.id) return false;
-    if (this.client.user.id === this.guild.ownerId) return true;
+    if (this.client.user.id === this.guild.ownerID) return true;
     if (!this.guild.members.me) throw new Error('GUILD_UNCACHED_ME');
     return this.guild.members.me.roles.highest.comparePositionTo(this.roles.highest) > 0;
   }
@@ -485,7 +485,7 @@ class GuildMember extends Base {
 
   toJSON() {
     const json = super.toJSON({
-      guild: 'guildId',
+      guild: 'guildID',
       user: 'userId',
       displayName: true,
       roles: true,

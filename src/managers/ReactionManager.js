@@ -47,7 +47,7 @@ class ReactionManager extends CachedManager {
 
   /**
    * Resolves a {@link MessageReactionResolvable} to a {@link MessageReaction} id.
-   * @method resolveId
+   * @method resolveID
    * @memberof ReactionManager
    * @instance
    * @param {MessageReactionResolvable} reaction The MessageReaction to resolve
@@ -59,7 +59,7 @@ class ReactionManager extends CachedManager {
    * @returns {Promise<Message>}
    */
   async removeAll() {
-    await this.client.api.channels(this.message.channelId).messages(this.message.id).reactions.delete();
+    await this.client.api.channels(this.message.channelID).messages(this.message.id).reactions.delete();
     return this.message;
   }
 }

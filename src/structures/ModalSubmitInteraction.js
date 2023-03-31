@@ -78,7 +78,7 @@ class ModalSubmitInteraction extends Interaction {
      * An associated interaction webhook, can be used to further interact with this interaction
      * @type {InteractionWebhook}
      */
-    this.webhook = new InteractionWebhook(this.client, this.applicationId, this.token);
+    this.webhook = new InteractionWebhook(this.client, this.applicationID, this.token);
   }
 
   /**

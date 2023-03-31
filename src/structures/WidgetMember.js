@@ -80,7 +80,7 @@ class WidgetMember extends Base {
      * The id of the voice channel the member is in, if any
      * @type {?Snowflake}
      */
-    this.channelId = data.channel_id ?? null;
+    this.channelID = data.channel_id ?? null;
 
     /**
      * The avatar URL of the member.

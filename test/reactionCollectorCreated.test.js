@@ -1,6 +1,6 @@
 'use strict';
 
-const { token, guildId, channelId, messageId } = require('./auth.js');
+const { token, guildID, channelID, messageId } = require('./auth.js');
 const { Client, Intents, ReactionCollector } = require('../src');
 
 const client = new Client({
@@ -8,9 +8,9 @@ const client = new Client({
 });
 
 client.on('ready', async () => {
-  const guild = client.guilds.cache.get(guildId);
+  const guild = client.guilds.cache.get(guildID);
 
-  const channel = guild.channels.cache.get(channelId);
+  const channel = guild.channels.cache.get(channelID);
 
   const message = await channel.messages.fetch(messageId);
 

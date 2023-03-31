@@ -67,7 +67,7 @@ class Webhook {
        * The guild the webhook belongs to
        * @type {Snowflake}
        */
-      this.guildId = data.guild_id;
+      this.guildID = data.guild_id;
     }
 
     if ('channel_id' in data) {
@@ -75,7 +75,7 @@ class Webhook {
        * The id of the channel the webhook belongs to
        * @type {Snowflake}
        */
-      this.channelId = data.channel_id;
+      this.channelID = data.channel_id;
     }
 
     if ('user' in data) {
@@ -274,7 +274,7 @@ class Webhook {
 
     this.name = data.name;
     this.avatar = data.avatar;
-    this.channelId = data.channel_id;
+    this.channelID = data.channel_id;
     return this;
   }
 
@@ -397,7 +397,7 @@ class Webhook {
    * @readonly
    */
   get channel() {
-    return this.client.channels.resolve(this.channelId);
+    return this.client.channels.resolve(this.channelID);
   }
 
   /**

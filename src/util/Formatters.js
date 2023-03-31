@@ -47,7 +47,7 @@ Formatters.bold = bold;
  * Formats a channel id into a channel mention.
  * @method channelMention
  * @memberof Formatters
- * @param {string} channelId The channel id to format.
+ * @param {string} channelID The channel id to format.
  * @returns {string}
  */
 Formatters.channelMention = channelMention;

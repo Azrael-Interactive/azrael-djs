@@ -179,7 +179,7 @@ class Integration extends Base {
   toJSON() {
     return super.toJSON({
       role: 'roleId',
-      guild: 'guildId',
+      guild: 'guildID',
       user: 'userId',
     });
   }

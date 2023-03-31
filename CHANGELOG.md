@@ -110,7 +110,7 @@ All notable changes to this project will be documented in this file.
 ## Typings
 
 - Disallow some channel types from webhook creation (#8535) ([10b12cc](https://github.com/discordjs/discord.js/commit/10b12ccea65011627649ecdfc814caffa5776e14))
-- **ModalMessageModalSubmitInteraction:** ChannelId is not nullable (v13) (#8505) ([526ea74](https://github.com/discordjs/discord.js/commit/526ea74e666556ffa13bde9130bd91388bf7a2a8))
+- **ModalMessageModalSubmitInteraction:** channelID is not nullable (v13) (#8505) ([526ea74](https://github.com/discordjs/discord.js/commit/526ea74e666556ffa13bde9130bd91388bf7a2a8))
 
 # [13.10.2](https://github.com/discordjs/discord.js/compare/13.10.1...13.10.2) - (2022-08-10)
 
@@ -154,12 +154,12 @@ All notable changes to this project will be documented in this file.
 ## Bug Fixes
 
 - **PermissionOverwriteManager:** Mutates user (#8282) ([4d86cf4](https://github.com/discordjs/discord.js/commit/4d86cf4ce0f56c4025533ef978417a5a71bd1b5c))
-- **GuildChannelManager:** Access `resolveId` correctly (v13) (#8297) ([beb3d8e](https://github.com/discordjs/discord.js/commit/beb3d8ec26d2dd8545b4d32a10a8bfcc4b0bc4bb))
+- **GuildChannelManager:** Access `resolveID` correctly (v13) (#8297) ([beb3d8e](https://github.com/discordjs/discord.js/commit/beb3d8ec26d2dd8545b4d32a10a8bfcc4b0bc4bb))
 - **GuildChannelManager:** Edit lockPermissions (#8267) ([8fe166d](https://github.com/discordjs/discord.js/commit/8fe166dcfddaec0255872fa1d3f333399c8852e9))
 - **applicationcommandmanager:** Explicitly allow passing builders to methods (v13) (#8229) ([f457cdd](https://github.com/discordjs/discord.js/commit/f457cdd2dea53614e3547dca7cff99d2492455b5))
 - Pass in the expected query object type for application commands (#8189) ([f704b26](https://github.com/discordjs/discord.js/commit/f704b261c03fe45f100e30637c86338583f3510f))
 - Use non-global flag whilst resolving regular expressions (#8178) ([4063b90](https://github.com/discordjs/discord.js/commit/4063b90cefeba052168315b5899cbe69d11206c3))
-- **GuildStickerManager.fetchUser:** Changed guildId to guild.id (#8176) ([0e0f784](https://github.com/discordjs/discord.js/commit/0e0f784447e6915cb067a06d1f2589ac839d05f7))
+- **GuildStickerManager.fetchUser:** Changed guildID to guild.id (#8176) ([0e0f784](https://github.com/discordjs/discord.js/commit/0e0f784447e6915cb067a06d1f2589ac839d05f7))
 - **guildmemberremove:** Remove member's presence for v13 (#8182) ([e8d72c7](https://github.com/discordjs/discord.js/commit/e8d72c7245f61f730b09b0dfed71f270d87f2019))
 - **WebSocketShard:** Backport error handler preservation on connections (#8164) ([c198e89](https://github.com/discordjs/discord.js/commit/c198e893c9b8904c2877599473472bcf0a3eb158))
 
@@ -649,7 +649,7 @@ All notable changes to this project will be documented in this file.
 - **WelcomeChannel:** Allow store channels (#6615) ([75d85f7](https://github.com/discordjs/discord.js/commit/75d85f7838eb3fffe9c6a2c02667a14b77940de7))
 - **MessageEmbed:** Allow APIEmbed type (#6629) ([256fb90](https://github.com/discordjs/discord.js/commit/256fb905feca370ec7e6e25e5467f64db43fae3e))
 - **TextBasedChannelFields:** Add back createMessageCollector (#6616) ([1b016a3](https://github.com/discordjs/discord.js/commit/1b016a30c8f52a123c927c0ba44d985321567703))
-- Make `channelId` non-nullable on `MessageComponentInteraction` (#6600) ([8cc3885](https://github.com/discordjs/discord.js/commit/8cc3885739127ebc7023b6358ed0259ba7527250))
+- Make `channelID` non-nullable on `MessageComponentInteraction` (#6600) ([8cc3885](https://github.com/discordjs/discord.js/commit/8cc3885739127ebc7023b6358ed0259ba7527250))
 - `Message#createMessageComponentCollector` use `MessageComponentInteractionOptions<T>` (#6596) ([c62823e](https://github.com/discordjs/discord.js/commit/c62823e43de50362ff0dabaf3fd53d2d39e5816b))
 - **MessagePayload:** Specify typings for `files` and `resolveFile` (#6608) ([ea36955](https://github.com/discordjs/discord.js/commit/ea3695585d59ed295cd0c8565f262ea6cc4fe098))
 - Collector filter parameter inference (#6574) ([0841956](https://github.com/discordjs/discord.js/commit/08419561edd710a6574b5e1449bf5dc1040580d5))
@@ -755,7 +755,7 @@ All notable changes to this project will be documented in this file.
 - **Typings:** Type attachments to InteractionUpdateOptions (#6162) ([4f8ca29](https://github.com/discordjs/discord.js/commit/4f8ca2936a85109757fb3225e9d6cf9aae9714e2))
 - **GuildAuditLog:** Assert `target` to null upon not finding invite codes (#6171) ([c8ca7bf](https://github.com/discordjs/discord.js/commit/c8ca7bfd2c5e7b29e54987a78301e9bdfa4a717b))
 - **Message:** Fix typo in sticker_items (#6173) ([870a0de](https://github.com/discordjs/discord.js/commit/870a0de53c01331c9357df4808fc0979ff17b9a4))
-- **Sticker:** Replace 'this.guildID' (undefined) by 'this.guildId' in fetchUser (#6160) ([07017a9](https://github.com/discordjs/discord.js/commit/07017a9699eecc4af7824ace39dd91e8b689f3c6))
+- **Sticker:** Replace 'this.guildID' (undefined) by 'this.guildID' in fetchUser (#6160) ([07017a9](https://github.com/discordjs/discord.js/commit/07017a9699eecc4af7824ace39dd91e8b689f3c6))
 - **CommandInteractionOptionResolver:** Type should be USER (#6148) ([02f55f0](https://github.com/discordjs/discord.js/commit/02f55f09712af5d6a6f67b5ac369b1969801e23f))
 - **CommandInteractionOptionResolver:** Export CommandInteractionOptio… (#6146) ([8ccfd6e](https://github.com/discordjs/discord.js/commit/8ccfd6e07b3208568c495110c80990366637818e))
 - **CommandInteraction:** Change options type from Collection to array (#6139) ([77784ac](https://github.com/discordjs/discord.js/commit/77784aca431709ff3c17095bd06f9e4016fbd11d))
@@ -918,7 +918,7 @@ All notable changes to this project will be documented in this file.
 - **CommandInteraction:** Correct type definition of `CommandInteractionOption` (#6169) ([5e70694](https://github.com/discordjs/discord.js/commit/5e706941fcf2977ac73ed42d3207abe2364f64b1))
 - **InteractionResponses:** Reply docs example (#6079) ([b170fb5](https://github.com/discordjs/discord.js/commit/b170fb5ce8a487c385b75b92082dff25207832bc))
 - **InteractionResponses:** Generalize wording in update to fit other component interaction types (#6074) ([67e9ce4](https://github.com/discordjs/discord.js/commit/67e9ce46933c6471fad60d38255f19ce4318c7d2))
-- **ClientUser:** Fix shardId nullable (#6072) ([28b5ffb](https://github.com/discordjs/discord.js/commit/28b5ffb4d67d9b8bae25fc8adfcea7c186ad7e76))
+- **ClientUser:** Fix shardID nullable (#6072) ([28b5ffb](https://github.com/discordjs/discord.js/commit/28b5ffb4d67d9b8bae25fc8adfcea7c186ad7e76))
 - Fixed several typings and MessagePayload#create JSDoc (#6059) ([4c0426c](https://github.com/discordjs/discord.js/commit/4c0426c469304d7ce8886ee9397153468fcf6274))
 - **ThreadChannel:** Fix documentation for setLocked method (#6053) ([8d9ab74](https://github.com/discordjs/discord.js/commit/8d9ab741c8037c2f6ca708e1afdc047ae4eb9eba))
 - **MessageManager:** Document options param for #edit as required (#6031) ([db60e36](https://github.com/discordjs/discord.js/commit/db60e367b4a455ae0055f8d25bd8b42139784c55))
@@ -1056,7 +1056,7 @@ All notable changes to this project will be documented in this file.
 - **GuildChannelManager:** Add 'fetch' method (#4966) ([e798fb7](https://github.com/discordjs/discord.js/commit/e798fb720ee5ced008471fe899337f6817936770))
 - **Rest:** Optional ratelimit errors (#5659) ([16f261e](https://github.com/discordjs/discord.js/commit/16f261e773a353c54a75f38008f9b28435ae6603))
 - Promisified single interaction collection (#5770) ([c2b3ed0](https://github.com/discordjs/discord.js/commit/c2b3ed09a0ec7f9b7453d0bcf9f2900e408f5001))
-- **Message:** ApplicationID for interaction responses (#5765) ([65dc00f](https://github.com/discordjs/discord.js/commit/65dc00f3210065015684b6d585f6747bd5ebadf1))
+- **Message:** applicationID for interaction responses (#5765) ([65dc00f](https://github.com/discordjs/discord.js/commit/65dc00f3210065015684b6d585f6747bd5ebadf1))
 - **Client:** Make use of with_expiration in #fetchInvite (#5764) ([bf191df](https://github.com/discordjs/discord.js/commit/bf191df9c033404da3e717f73306cdb3f659fafc))
 - **Interactions:** Add InteractionWebhook for better internals (#5712) ([dec191a](https://github.com/discordjs/discord.js/commit/dec191aa1e4f22690285ca06c6eee7e6086b2930))
 - **MessageComponents:** Clickybois (MessageButton, MessageActionRow, associated Collectors) (#5674) ([cbd7f2b](https://github.com/discordjs/discord.js/commit/cbd7f2b9aa44a9240947ed716d0e72257ac499f7))
@@ -1226,7 +1226,7 @@ All notable changes to this project will be documented in this file.
 - Use api-types for stricter typings (#6230) ([00c2bf8](https://github.com/discordjs/discord.js/commit/00c2bf81cdca751928d65a9e9a0645c5fd6e4ce9))
 - **ButtonMessageOptions:** Make button/link button typings more specific (#6212) ([77c72e6](https://github.com/discordjs/discord.js/commit/77c72e625f316aa7d12ca20936439ee967306752))
 - **WsEvents:** Add thread ws events (#6194) ([4f1f32f](https://github.com/discordjs/discord.js/commit/4f1f32f2a52832e1dc06a9dca14f331479f6bf8a))
-- **DataManager:** Add 'K' to type parameter of 'resolveId' (#6152) ([8586505](https://github.com/discordjs/discord.js/commit/85865058ed3ab13e3850908a44f9ca81a1c027b9))
+- **DataManager:** Add 'K' to type parameter of 'resolveID' (#6152) ([8586505](https://github.com/discordjs/discord.js/commit/85865058ed3ab13e3850908a44f9ca81a1c027b9))
 - **ColorResolvable:** Readonly tuple (#6153) ([1e90be8](https://github.com/discordjs/discord.js/commit/1e90be8f7a7290886cbbebc0e6cbe15075dd2fd9))
 - **Message:** Mark `#thread` as nullable (#6129) ([ef5ba05](https://github.com/discordjs/discord.js/commit/ef5ba05996ba45b56dde0f1f624347777b1de0ae))
 - **Options:** Add types for cacheWithLimits (#6095) ([8db6df3](https://github.com/discordjs/discord.js/commit/8db6df3d1eb58c542624e875f7da2a848153d11c))

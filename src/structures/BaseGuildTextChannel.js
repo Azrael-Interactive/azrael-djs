@@ -55,7 +55,7 @@ class BaseGuildTextChannel extends GuildChannel {
        * The last message id sent in the channel, if one was sent
        * @type {?Snowflake}
        */
-      this.lastMessageId = data.last_message_id;
+      this.lastMessageID = data.last_message_id;
     }
 
     if ('last_pin_timestamp' in data) {
@@ -159,7 +159,7 @@ class BaseGuildTextChannel extends GuildChannel {
    * @returns {Promise<Collection<string, Invite>>}
    */
   fetchInvites(cache = true) {
-    return this.guild.invites.fetch({ channelId: this.id, cache });
+    return this.guild.invites.fetch({ channelID: this.id, cache });
   }
 
   // These are here only for documentation purposes - they are implemented by TextBasedChannel

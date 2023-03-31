@@ -99,9 +99,9 @@ class GuildChannelManager extends CachedManager {
    * @param {GuildChannelResolvable} channel The GuildChannel resolvable to resolve
    * @returns {?Snowflake}
    */
-  resolveId(channel) {
-    if (channel instanceof ThreadChannel) return super.resolveId(channel.id);
-    return super.resolveId(channel);
+  resolveID(channel) {
+    if (channel instanceof ThreadChannel) return super.resolveID(channel.id);
+    return super.resolveID(channel);
   }
 
   /**
@@ -153,7 +153,7 @@ class GuildChannelManager extends CachedManager {
       reason,
     } = {},
   ) {
-    parent &&= this.client.channels.resolveId(parent);
+    parent &&= this.client.channels.resolveID(parent);
     permissionOverwrites &&= permissionOverwrites.map(o => PermissionOverwrites.resolve(o, this.guild));
     const intType = typeof type === 'number' ? type : ChannelTypes[type] ?? ChannelTypes.GUILD_TEXT;
 
@@ -213,7 +213,7 @@ class GuildChannelManager extends CachedManager {
    *   .catch(console.error)
    */
   async createWebhook(channel, name, { avatar, reason } = {}) {
-    const id = this.resolveId(channel);
+    const id = this.resolveID(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
     if (typeof avatar === 'string' && !avatar.startsWith('data:')) {
       avatar = await DataResolver.resolveImage(avatar);
@@ -236,11 +236,11 @@ class GuildChannelManager extends CachedManager {
    * @returns {Promise<Snowflake>} Returns created target webhook id.
    */
   async addFollower(channel, targetChannel, reason) {
-    const channelId = this.resolveId(channel);
-    const targetChannelId = this.resolveId(targetChannel);
-    if (!channelId || !targetChannelId) throw new Error('GUILD_CHANNEL_RESOLVE');
-    const { webhook_id } = await this.client.api.channels[channelId].followers.post({
-      data: { webhook_channel_id: targetChannelId },
+    const channelID = this.resolveID(channel);
+    const targetchannelID = this.resolveID(targetChannel);
+    if (!channelID || !targetchannelID) throw new Error('GUILD_CHANNEL_RESOLVE');
+    const { webhook_id } = await this.client.api.channels[channelID].followers.post({
+      data: { webhook_channel_id: targetchannelID },
       reason,
     });
     return webhook_id;
@@ -289,7 +289,7 @@ class GuildChannelManager extends CachedManager {
     channel = this.resolve(channel);
     if (!channel) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
 
-    const parent = data.parent && this.client.channels.resolveId(data.parent);
+    const parent = data.parent && this.client.channels.resolveID(data.parent);
 
     if (typeof data.position !== 'undefined') await this.setPosition(channel, data.position, { reason });
 
@@ -419,7 +419,7 @@ class GuildChannelManager extends CachedManager {
    *   .catch(console.error);
    */
   async fetchWebhooks(channel) {
-    const id = this.resolveId(channel);
+    const id = this.resolveID(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
     const data = await this.client.api.channels[id].webhooks.get();
     return data.reduce((hooks, hook) => hooks.set(hook.id, new Webhook(this.client, hook)), new Collection());
@@ -447,16 +447,16 @@ class GuildChannelManager extends CachedManager {
    * @param {ChannelPosition[]} channelPositions Channel positions to update
    * @returns {Promise<Guild>}
    * @example
-   * guild.channels.setPositions([{ channel: channelId, position: newChannelIndex }])
+   * guild.channels.setPositions([{ channel: channelID, position: newChannelIndex }])
    *   .then(guild => console.log(`Updated channel positions for ${guild}`))
    *   .catch(console.error);
    */
   async setPositions(channelPositions) {
     channelPositions = channelPositions.map(r => ({
-      id: this.client.channels.resolveId(r.channel),
+      id: this.client.channels.resolveID(r.channel),
       position: r.position,
       lock_permissions: r.lockPermissions,
-      parent_id: typeof r.parent !== 'undefined' ? this.resolveId(r.parent) : undefined,
+      parent_id: typeof r.parent !== 'undefined' ? this.resolveID(r.parent) : undefined,
     }));
 
     await this.client.api.guilds(this.guild.id).channels.patch({ data: channelPositions });
@@ -493,7 +493,7 @@ class GuildChannelManager extends CachedManager {
    *   .catch(console.error);
    */
   async delete(channel, reason) {
-    const id = this.resolveId(channel);
+    const id = this.resolveID(channel);
     if (!id) throw new TypeError('INVALID_TYPE', 'channel', 'GuildChannelResolvable');
     await this.client.api.channels(id).delete({ reason });
   }

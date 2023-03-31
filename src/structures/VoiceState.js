@@ -79,9 +79,9 @@ class VoiceState extends Base {
        * The session id for this member's connection
        * @type {?string}
        */
-      this.sessionId = data.session_id;
+      this.sessionID = data.session_id;
     } else {
-      this.sessionId ??= null;
+      this.sessionID ??= null;
     }
 
     // The self_stream is property is omitted if false, check for another property
@@ -101,9 +101,9 @@ class VoiceState extends Base {
        * The {@link VoiceChannel} or {@link StageChannel} id the member is in
        * @type {?Snowflake}
        */
-      this.channelId = data.channel_id;
+      this.channelID = data.channel_id;
     } else {
-      this.channelId ??= null;
+      this.channelID ??= null;
     }
 
     if ('suppress' in data) {
@@ -142,7 +142,7 @@ class VoiceState extends Base {
    * @readonly
    */
   get channel() {
-    return this.guild.channels.cache.get(this.channelId) ?? null;
+    return this.guild.channels.cache.get(this.channelID) ?? null;
   }
 
   /**
@@ -222,7 +222,7 @@ class VoiceState extends Base {
 
     await this.client.api.guilds(this.guild.id, 'voice-states', '@me').patch({
       data: {
-        channel_id: this.channelId,
+        channel_id: this.channelID,
         request_to_speak_timestamp: request ? new Date().toISOString() : null,
       },
     });
@@ -254,7 +254,7 @@ class VoiceState extends Base {
 
     await this.client.api.guilds(this.guild.id, 'voice-states', target).patch({
       data: {
-        channel_id: this.channelId,
+        channel_id: this.channelID,
         suppress: suppressed,
       },
     });
@@ -267,8 +267,8 @@ class VoiceState extends Base {
       serverMute: true,
       selfDeaf: true,
       selfMute: true,
-      sessionId: true,
-      channelId: 'channel',
+      sessionID: true,
+      channelID: 'channel',
     });
   }
 }

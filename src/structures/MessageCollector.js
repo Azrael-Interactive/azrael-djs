@@ -76,7 +76,7 @@ class MessageCollector extends Collector {
      * @event MessageCollector#collect
      * @param {Message} message The message that was collected
      */
-    if (message.channelId !== this.channel.id) return null;
+    if (message.channelID !== this.channel.id) return null;
     this.received++;
     return message.id;
   }
@@ -92,7 +92,7 @@ class MessageCollector extends Collector {
      * @event MessageCollector#dispose
      * @param {Message} message The message that was disposed of
      */
-    return message.channelId === this.channel.id ? message.id : null;
+    return message.channelID === this.channel.id ? message.id : null;
   }
 
   /**
@@ -113,7 +113,7 @@ class MessageCollector extends Collector {
    * @returns {void}
    */
   _handleChannelDeletion(channel) {
-    if (channel.id === this.channel.id || channel.id === this.channel.parentId) {
+    if (channel.id === this.channel.id || channel.id === this.channel.parentID) {
       this.stop('channelDelete');
     }
   }

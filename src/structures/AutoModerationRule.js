@@ -33,7 +33,7 @@ class AutoModerationRule extends Base {
      * The user that created this auto moderation rule.
      * @type {Snowflake}
      */
-    this.creatorId = data.creator_id;
+    this.creatorID = data.creator_id;
 
     /**
      * The trigger type of this auto moderation rule.
@@ -99,7 +99,7 @@ class AutoModerationRule extends Base {
       /**
        * Additional data used when an auto moderation rule is executed.
        * @typedef {Object} AutoModerationActionMetadata
-       * @property {?Snowflake} channelId The id of the channel to which content will be logged
+       * @property {?Snowflake} channelID The id of the channel to which content will be logged
        * @property {?number} durationSeconds The timeout duration in seconds
        */
 
@@ -111,7 +111,7 @@ class AutoModerationRule extends Base {
         type: AutoModerationActionTypes[action.type],
         metadata: {
           durationSeconds: action.metadata.duration_seconds ?? null,
-          channelId: action.metadata.channel_id ?? null,
+          channelID: action.metadata.channel_id ?? null,
         },
       }));
     }

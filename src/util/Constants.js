@@ -73,27 +73,27 @@ exports.Endpoints = {
         if (dynamic && hash.startsWith('a_')) format = 'gif';
         return makeImageUrl(`${root}/avatars/${userId}/${hash}`, { format, size });
       },
-      GuildMemberAvatar: (guildId, memberId, hash, format = 'webp', size, dynamic = false) => {
+      GuildMemberAvatar: (guildID, memberId, hash, format = 'webp', size, dynamic = false) => {
         if (dynamic && hash.startsWith('a_')) format = 'gif';
-        return makeImageUrl(`${root}/guilds/${guildId}/users/${memberId}/avatars/${hash}`, { format, size });
+        return makeImageUrl(`${root}/guilds/${guildID}/users/${memberId}/avatars/${hash}`, { format, size });
       },
       Banner: (id, hash, format, size, dynamic = false) => {
         if (dynamic && hash.startsWith('a_')) format = 'gif';
         return makeImageUrl(`${root}/banners/${id}/${hash}`, { format, size });
       },
-      Icon: (guildId, hash, format, size, dynamic = false) => {
+      Icon: (guildID, hash, format, size, dynamic = false) => {
         if (dynamic && hash.startsWith('a_')) format = 'gif';
-        return makeImageUrl(`${root}/icons/${guildId}/${hash}`, { format, size });
+        return makeImageUrl(`${root}/icons/${guildID}/${hash}`, { format, size });
       },
       AppIcon: (appId, hash, options) => makeImageUrl(`${root}/app-icons/${appId}/${hash}`, options),
       AppAsset: (appId, hash, options) => makeImageUrl(`${root}/app-assets/${appId}/${hash}`, options),
       StickerPackBanner: (bannerId, format, size) =>
         makeImageUrl(`${root}/app-assets/710982414301790216/store/${bannerId}`, { size, format }),
-      GDMIcon: (channelId, hash, format, size) =>
-        makeImageUrl(`${root}/channel-icons/${channelId}/${hash}`, { size, format }),
-      Splash: (guildId, hash, format, size) => makeImageUrl(`${root}/splashes/${guildId}/${hash}`, { size, format }),
-      DiscoverySplash: (guildId, hash, format, size) =>
-        makeImageUrl(`${root}/discovery-splashes/${guildId}/${hash}`, { size, format }),
+      GDMIcon: (channelID, hash, format, size) =>
+        makeImageUrl(`${root}/channel-icons/${channelID}/${hash}`, { size, format }),
+      Splash: (guildID, hash, format, size) => makeImageUrl(`${root}/splashes/${guildID}/${hash}`, { size, format }),
+      DiscoverySplash: (guildID, hash, format, size) =>
+        makeImageUrl(`${root}/discovery-splashes/${guildID}/${hash}`, { size, format }),
       TeamIcon: (teamId, hash, options) => makeImageUrl(`${root}/team-icons/${teamId}/${hash}`, options),
       Sticker: (stickerId, stickerFormat) =>
         `${root}/stickers/${stickerId}.${
@@ -106,7 +106,7 @@ exports.Endpoints = {
     };
   },
   invite: (root, code, eventId) => (eventId ? `${root}/${code}?event=${eventId}` : `${root}/${code}`),
-  scheduledEvent: (root, guildId, eventId) => `${root}/${guildId}/${eventId}`,
+  scheduledEvent: (root, guildID, eventId) => `${root}/${guildID}/${eventId}`,
   botGateway: '/gateway/bot',
 };
 

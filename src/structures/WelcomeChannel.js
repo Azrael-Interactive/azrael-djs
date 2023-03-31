@@ -37,7 +37,7 @@ class WelcomeChannel extends Base {
      * The id of this welcome channel
      * @type {Snowflake}
      */
-    this.channelId = data.channel_id;
+    this.channelID = data.channel_id;
   }
 
   /**
@@ -45,7 +45,7 @@ class WelcomeChannel extends Base {
    * @type {?(TextChannel|NewsChannel|StoreChannel|ForumChannel)}
    */
   get channel() {
-    return this.client.channels.resolve(this.channelId);
+    return this.client.channels.resolve(this.channelID);
   }
 
   /**

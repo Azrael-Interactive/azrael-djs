@@ -87,7 +87,7 @@ class GuildManager extends CachedManager {
    * @typedef {Object} PartialChannelData
    * @property {Snowflake|number} [id] The channel's id, used to set its parent,
    * this is a placeholder and will be replaced by the API after consumption
-   * @property {Snowflake|number} [parentId] The parent id for this channel
+   * @property {Snowflake|number} [parentID] The parent id for this channel
    * @property {ChannelType|number} [type] The type of the channel
    * @property {string} name The name of the channel
    * @property {string} [topic] The topic of the text channel
@@ -124,13 +124,13 @@ class GuildManager extends CachedManager {
 
   /**
    * Resolves a {@link GuildResolvable} to a {@link Guild} id string.
-   * @method resolveId
+   * @method resolveID
    * @memberof GuildManager
    * @instance
    * @param {GuildResolvable} guild The guild resolvable to identify
    * @returns {?Snowflake}
    */
-  resolveId(guild) {
+  resolveID(guild) {
     if (
       guild instanceof GuildChannel ||
       guild instanceof GuildMember ||
@@ -138,15 +138,15 @@ class GuildManager extends CachedManager {
       guild instanceof Role ||
       (guild instanceof Invite && guild.guild)
     ) {
-      return super.resolveId(guild.guild.id);
+      return super.resolveID(guild.guild.id);
     }
-    return super.resolveId(guild);
+    return super.resolveID(guild);
   }
 
   /**
    * Options used to create a guild.
    * @typedef {Object} GuildCreateOptions
-   * @property {Snowflake|number} [afkChannelId] The AFK channel's id
+   * @property {Snowflake|number} [afkchannelID] The AFK channel's id
    * @property {number} [afkTimeout] The AFK timeout in seconds
    * @property {PartialChannelData[]} [channels=[]] The channels for this guild
    * @property {DefaultMessageNotificationLevel|number} [defaultMessageNotifications] The default message notifications
@@ -155,7 +155,7 @@ class GuildManager extends CachedManager {
    * @property {?(BufferResolvable|Base64Resolvable)} [icon=null] The icon for the guild
    * @property {PartialRoleData[]} [roles=[]] The roles for this guild,
    * the first element of this array is used to change properties of the guild's everyone role.
-   * @property {Snowflake|number} [systemChannelId] The system channel's id
+   * @property {Snowflake|number} [systemChannelID] The system channel's id
    * @property {SystemChannelFlagsResolvable} [systemChannelFlags] The flags of the system channel
    * @property {VerificationLevel} [verificationLevel] The verification level for the guild
    */
@@ -170,14 +170,14 @@ class GuildManager extends CachedManager {
   async create(
     name,
     {
-      afkChannelId,
+      afkchannelID,
       afkTimeout,
       channels = [],
       defaultMessageNotifications,
       explicitContentFilter,
       icon = null,
       roles = [],
-      systemChannelId,
+      systemChannelID,
       systemChannelFlags,
       verificationLevel,
     } = {},
@@ -194,8 +194,8 @@ class GuildManager extends CachedManager {
     }
     for (const channel of channels) {
       channel.type &&= typeof channel.type === 'number' ? channel.type : ChannelTypes[channel.type];
-      channel.parent_id = channel.parentId;
-      delete channel.parentId;
+      channel.parent_id = channel.parentID;
+      delete channel.parentID;
       channel.user_limit = channel.userLimit;
       delete channel.userLimit;
       channel.rate_limit_per_user = channel.rateLimitPerUser;
@@ -234,9 +234,9 @@ class GuildManager extends CachedManager {
         explicit_content_filter: explicitContentFilter,
         roles,
         channels,
-        afk_channel_id: afkChannelId,
+        afk_channel_id: afkchannelID,
         afk_timeout: afkTimeout,
-        system_channel_id: systemChannelId,
+        system_channel_id: systemChannelID,
         system_channel_flags: systemChannelFlags,
       },
     });
@@ -284,7 +284,7 @@ class GuildManager extends CachedManager {
    * @returns {Promise<Guild|Collection<Snowflake, OAuth2Guild>>}
    */
   async fetch(options = {}) {
-    const id = this.resolveId(options) ?? this.resolveId(options.guild);
+    const id = this.resolveID(options) ?? this.resolveID(options.guild);
 
     if (id) {
       if (!options.force) {

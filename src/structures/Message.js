@@ -40,13 +40,13 @@ class Message extends Base {
      * The id of the channel the message was sent in
      * @type {Snowflake}
      */
-    this.channelId = data.channel_id;
+    this.channelID = data.channel_id;
 
     /**
      * The id of the guild the message was sent in, if any
      * @type {?Snowflake}
      */
-    this.guildId = data.guild_id ?? this.channel?.guild?.id ?? null;
+    this.guildID = data.guild_id ?? this.channel?.guild?.id ?? null;
 
     this._patch(data);
   }
@@ -246,9 +246,9 @@ class Message extends Base {
        * The id of the webhook that sent the message, if applicable
        * @type {?Snowflake}
        */
-      this.webhookId = data.webhook_id;
+      this.webhookID = data.webhook_id;
     } else {
-      this.webhookId ??= null;
+      this.webhookID ??= null;
     }
 
     if ('application' in data) {
@@ -266,9 +266,9 @@ class Message extends Base {
        * The id of the application of the interaction that sent this message, if any
        * @type {?Snowflake}
        */
-      this.applicationId = data.application_id;
+      this.applicationID = data.application_id;
     } else {
-      this.applicationId ??= null;
+      this.applicationID ??= null;
     }
 
     if ('activity' in data) {
@@ -277,7 +277,7 @@ class Message extends Base {
        * @type {?MessageActivity}
        */
       this.activity = {
-        partyId: data.activity.party_id,
+        partyID: data.activity.party_id,
         type: data.activity.type,
       };
     } else {
@@ -314,8 +314,8 @@ class Message extends Base {
      * * THREAD_STARTER_MESSAGE
      * @see {@link https://discord.com/developers/docs/resources/channel#message-types}
      * @typedef {Object} MessageReference
-     * @property {Snowflake} channelId The channel's id the message was referenced
-     * @property {?Snowflake} guildId The guild's id the message was referenced
+     * @property {Snowflake} channelID The channel's id the message was referenced
+     * @property {?Snowflake} guildID The guild's id the message was referenced
      * @property {?Snowflake} messageId The message's id that was referenced
      */
 
@@ -325,8 +325,8 @@ class Message extends Base {
        * @type {?MessageReference}
        */
       this.reference = {
-        channelId: data.message_reference.channel_id,
-        guildId: data.message_reference.guild_id,
+        channelID: data.message_reference.channel_id,
+        guildID: data.message_reference.guild_id,
         messageId: data.message_reference.message_id,
       };
     } else {
@@ -399,7 +399,7 @@ class Message extends Base {
    * @readonly
    */
   get channel() {
-    return this.client.channels.resolve(this.channelId);
+    return this.client.channels.resolve(this.channelID);
   }
 
   /**
@@ -445,7 +445,7 @@ class Message extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildId) ?? this.channel?.guild ?? null;
+    return this.client.guilds.resolve(this.guildID) ?? this.channel?.guild ?? null;
   }
 
   /**
@@ -474,7 +474,7 @@ class Message extends Base {
    * @readonly
    */
   get url() {
-    return `https://discord.com/channels/${this.guildId ?? '@me'}/${this.channelId}/${this.id}`;
+    return `https://discord.com/channels/${this.guildID ?? '@me'}/${this.channelID}/${this.id}`;
   }
 
   /**
@@ -677,8 +677,8 @@ class Message extends Base {
    */
   async fetchReference() {
     if (!this.reference) throw new Error('MESSAGE_REFERENCE_MISSING');
-    const { channelId, messageId } = this.reference;
-    const channel = this.client.channels.resolve(channelId);
+    const { channelID, messageId } = this.reference;
+    const channel = this.client.channels.resolve(channelID);
     if (!channel) throw new Error('GUILD_CHANNEL_RESOLVE');
     const message = await channel.messages.fetch(messageId);
     return message;
@@ -942,9 +942,9 @@ class Message extends Base {
    * @returns {Promise<?Webhook>}
    */
   fetchWebhook() {
-    if (!this.webhookId) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
-    if (this.webhookId === this.applicationId) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
-    return this.client.fetchWebhook(this.webhookId);
+    if (!this.webhookID) return Promise.reject(new Error('WEBHOOK_MESSAGE'));
+    if (this.webhookID === this.applicationID) return Promise.reject(new Error('WEBHOOK_APPLICATION'));
+    return this.client.fetchWebhook(this.webhookID);
   }
 
   /**
@@ -1018,7 +1018,7 @@ class Message extends Base {
    * @returns {boolean}
    */
   inGuild() {
-    return Boolean(this.guildId);
+    return Boolean(this.guildID);
   }
 
   /**
@@ -1034,10 +1034,10 @@ class Message extends Base {
 
   toJSON() {
     return super.toJSON({
-      channel: 'channelId',
+      channel: 'channelID',
       author: 'authorId',
-      groupActivityApplication: 'groupActivityApplicationId',
-      guild: 'guildId',
+      groupActivityApplication: 'groupActivityapplicationID',
+      guild: 'guildID',
       cleanContent: true,
       member: false,
       reactions: false,

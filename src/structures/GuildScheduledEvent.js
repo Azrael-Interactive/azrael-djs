@@ -28,7 +28,7 @@ class GuildScheduledEvent extends Base {
      * The id of the guild this guild scheduled event belongs to
      * @type {Snowflake}
      */
-    this.guildId = data.guild_id;
+    this.guildID = data.guild_id;
 
     this._patch(data);
   }
@@ -39,9 +39,9 @@ class GuildScheduledEvent extends Base {
        * The channel id in which the scheduled event will be hosted, or `null` if entity type is `EXTERNAL`
        * @type {?Snowflake}
        */
-      this.channelId = data.channel_id;
+      this.channelID = data.channel_id;
     } else {
-      this.channelId ??= null;
+      this.channelID ??= null;
     }
 
     if ('creator_id' in data) {
@@ -49,9 +49,9 @@ class GuildScheduledEvent extends Base {
        * The id of the user that created this guild scheduled event
        * @type {?Snowflake}
        */
-      this.creatorId = data.creator_id;
+      this.creatorID = data.creator_id;
     } else {
-      this.creatorId ??= null;
+      this.creatorID ??= null;
     }
 
     /**
@@ -129,7 +129,7 @@ class GuildScheduledEvent extends Base {
        */
       this.creator = this.client.users._add(data.creator);
     } else {
-      this.creator ??= this.client.users.resolve(this.creatorId);
+      this.creator ??= this.client.users.resolve(this.creatorID);
     }
 
     /* eslint-disable max-len */
@@ -220,7 +220,7 @@ class GuildScheduledEvent extends Base {
    * @readonly
    */
   get channel() {
-    return this.client.channels.resolve(this.channelId);
+    return this.client.channels.resolve(this.channelID);
   }
 
   /**
@@ -229,7 +229,7 @@ class GuildScheduledEvent extends Base {
    * @readonly
    */
   get guild() {
-    return this.client.guilds.resolve(this.guildId);
+    return this.client.guilds.resolve(this.guildID);
   }
 
   /**
@@ -238,7 +238,7 @@ class GuildScheduledEvent extends Base {
    * @readonly
    */
   get url() {
-    return Endpoints.scheduledEvent(this.client.options.http.scheduledEvent, this.guildId, this.id);
+    return Endpoints.scheduledEvent(this.client.options.http.scheduledEvent, this.guildID, this.id);
   }
 
   /**
@@ -254,13 +254,13 @@ class GuildScheduledEvent extends Base {
    * @returns {Promise<string>}
    */
   async createInviteURL(options) {
-    let channelId = this.channelId;
+    let channelID = this.channelID;
     if (this.entityType === 'EXTERNAL') {
       if (!options?.channel) throw new Error('INVITE_OPTIONS_MISSING_CHANNEL');
-      channelId = this.guild.channels.resolveId(options.channel);
-      if (!channelId) throw new Error('GUILD_CHANNEL_RESOLVE');
+      channelID = this.guild.channels.resolveID(options.channel);
+      if (!channelID) throw new Error('GUILD_CHANNEL_RESOLVE');
     }
-    const invite = await this.guild.invites.create(channelId, options);
+    const invite = await this.guild.invites.create(channelID, options);
     return Endpoints.invite(this.client.options.http.invite, invite.code, this.id);
   }
 

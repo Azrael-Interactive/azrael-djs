@@ -43,9 +43,9 @@ class BaseGuildEmojiManager extends CachedManager {
    * @param {EmojiResolvable} emoji The Emoji resolvable to identify
    * @returns {?Snowflake}
    */
-  resolveId(emoji) {
+  resolveID(emoji) {
     if (emoji instanceof ReactionEmoji) return emoji.id;
-    return super.resolveId(emoji);
+    return super.resolveID(emoji);
   }
 
   /**
@@ -61,7 +61,7 @@ class BaseGuildEmojiManager extends CachedManager {
    * @param {EmojiIdentifierResolvable} emoji The emoji resolvable to resolve
    * @returns {?string}
    */
-  resolveIdentifier(emoji) {
+  resolveIDentifier(emoji) {
     const emojiResolvable = this.resolve(emoji);
     if (emojiResolvable) return emojiResolvable.identifier;
     if (emoji instanceof ReactionEmoji) return emoji.identifier;

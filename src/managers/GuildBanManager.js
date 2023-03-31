@@ -47,7 +47,7 @@ class GuildBanManager extends CachedManager {
    * @returns {?GuildBan}
    */
   resolve(ban) {
-    return super.resolve(ban) ?? super.resolve(this.client.users.resolveId(ban));
+    return super.resolve(ban) ?? super.resolve(this.client.users.resolveID(ban));
   }
 
   /**
@@ -98,7 +98,7 @@ class GuildBanManager extends CachedManager {
   fetch(options) {
     if (!options) return this._fetchMany();
     const { user, cache, force, limit, before, after } = options;
-    const resolvedUser = this.client.users.resolveId(user ?? options);
+    const resolvedUser = this.client.users.resolveID(user ?? options);
     if (resolvedUser) return this._fetchSingle({ user: resolvedUser, cache, force });
 
     if (!before && !after && !limit && typeof cache === 'undefined') {
@@ -150,7 +150,7 @@ class GuildBanManager extends CachedManager {
    */
   async create(user, options = {}) {
     if (typeof options !== 'object') throw new TypeError('INVALID_TYPE', 'options', 'object', true);
-    const id = this.client.users.resolveId(user);
+    const id = this.client.users.resolveID(user);
     if (!id) throw new Error('BAN_RESOLVE_ID', true);
 
     if (typeof options.days !== 'undefined' && !deprecationEmittedForDays) {
@@ -194,7 +194,7 @@ class GuildBanManager extends CachedManager {
    *   .catch(console.error);
    */
   async remove(user, reason) {
-    const id = this.client.users.resolveId(user);
+    const id = this.client.users.resolveID(user);
     if (!id) throw new Error('BAN_RESOLVE_ID');
     await this.client.api.guilds(this.guild.id).bans(id).delete({ reason });
     return this.client.users.resolve(user);

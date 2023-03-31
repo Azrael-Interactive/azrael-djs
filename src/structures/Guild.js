@@ -140,7 +140,7 @@ class Guild extends AnonymousGuild {
      * The id of the shard this Guild belongs to.
      * @type {number}
      */
-    this.shardId = data.shardId;
+    this.shardID = data.shardID;
   }
 
   /**
@@ -179,7 +179,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get shard() {
-    return this.client.ws.shards.get(this.shardId);
+    return this.client.ws.shards.get(this.shardID);
   }
 
   _patch(data) {
@@ -266,7 +266,7 @@ class Guild extends AnonymousGuild {
        * The id of the application that created this guild (if applicable)
        * @type {?Snowflake}
        */
-      this.applicationId = data.application_id;
+      this.applicationID = data.application_id;
     }
 
     if ('afk_timeout' in data) {
@@ -282,7 +282,7 @@ class Guild extends AnonymousGuild {
        * The id of the voice channel where AFK members are moved
        * @type {?Snowflake}
        */
-      this.afkChannelId = data.afk_channel_id;
+      this.afkchannelID = data.afk_channel_id;
     }
 
     if ('system_channel_id' in data) {
@@ -290,7 +290,7 @@ class Guild extends AnonymousGuild {
        * The system channel's id
        * @type {?Snowflake}
        */
-      this.systemChannelId = data.system_channel_id;
+      this.systemChannelID = data.system_channel_id;
     }
 
     if ('premium_tier' in data) {
@@ -314,7 +314,7 @@ class Guild extends AnonymousGuild {
        * The widget channel's id, if enabled
        * @type {?string}
        */
-      this.widgetChannelId = data.widget_channel_id;
+      this.widgetChannelID = data.widget_channel_id;
     }
 
     if ('explicit_content_filter' in data) {
@@ -422,7 +422,7 @@ class Guild extends AnonymousGuild {
        * The rules channel's id for the guild
        * @type {?Snowflake}
        */
-      this.rulesChannelId = data.rules_channel_id;
+      this.rulesChannelID = data.rules_channel_id;
     }
 
     if ('public_updates_channel_id' in data) {
@@ -430,7 +430,7 @@ class Guild extends AnonymousGuild {
        * The community updates channel's id for the guild
        * @type {?Snowflake}
        */
-      this.publicUpdatesChannelId = data.public_updates_channel_id;
+      this.publicUpdatesChannelID = data.public_updates_channel_id;
     }
 
     if ('preferred_locale' in data) {
@@ -470,7 +470,7 @@ class Guild extends AnonymousGuild {
        * The user id of this guild's owner
        * @type {Snowflake}
        */
-      this.ownerId = data.owner_id;
+      this.ownerID = data.owner_id;
     }
 
     if (data.presences) {
@@ -549,12 +549,12 @@ class Guild extends AnonymousGuild {
 
   /**
    * Fetches the owner of the guild.
-   * If the member object isn't needed, use {@link Guild#ownerId} instead.
+   * If the member object isn't needed, use {@link Guild#ownerID} instead.
    * @param {BaseFetchOptions} [options] The options for fetching the member
    * @returns {Promise<GuildMember>}
    */
   fetchOwner(options) {
-    return this.members.fetch({ ...options, user: this.ownerId });
+    return this.members.fetch({ ...options, user: this.ownerID });
   }
 
   /**
@@ -563,7 +563,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get afkChannel() {
-    return this.client.channels.resolve(this.afkChannelId);
+    return this.client.channels.resolve(this.afkchannelID);
   }
 
   /**
@@ -572,7 +572,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get systemChannel() {
-    return this.client.channels.resolve(this.systemChannelId);
+    return this.client.channels.resolve(this.systemChannelID);
   }
 
   /**
@@ -581,7 +581,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get widgetChannel() {
-    return this.client.channels.resolve(this.widgetChannelId);
+    return this.client.channels.resolve(this.widgetChannelID);
   }
 
   /**
@@ -590,7 +590,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get rulesChannel() {
-    return this.client.channels.resolve(this.rulesChannelId);
+    return this.client.channels.resolve(this.rulesChannelID);
   }
 
   /**
@@ -599,7 +599,7 @@ class Guild extends AnonymousGuild {
    * @readonly
    */
   get publicUpdatesChannel() {
-    return this.client.channels.resolve(this.publicUpdatesChannelId);
+    return this.client.channels.resolve(this.publicUpdatesChannelID);
   }
 
   /**
@@ -781,7 +781,7 @@ class Guild extends AnonymousGuild {
   async fetchWidgetSettings() {
     const data = await this.client.api.guilds(this.id).widget.get();
     this.widgetEnabled = data.enabled;
-    this.widgetChannelId = data.channel_id;
+    this.widgetChannelID = data.channel_id;
     return {
       enabled: data.enabled,
       channel: data.channel_id ? this.channels.cache.get(data.channel_id) : null,
@@ -814,7 +814,7 @@ class Guild extends AnonymousGuild {
         before: before?.id ?? before,
         after: after?.id ?? after,
         limit,
-        user_id: this.client.users.resolveId(user),
+        user_id: this.client.users.resolveID(user),
         action_type: typeof type === 'string' ? GuildAuditLogs.Actions[type] : type,
       },
     });
@@ -884,14 +884,14 @@ class Guild extends AnonymousGuild {
           : VerificationLevels[data.verificationLevel];
     }
     if (typeof data.afkChannel !== 'undefined') {
-      _data.afk_channel_id = this.client.channels.resolveId(data.afkChannel);
+      _data.afk_channel_id = this.client.channels.resolveID(data.afkChannel);
     }
     if (typeof data.systemChannel !== 'undefined') {
-      _data.system_channel_id = this.client.channels.resolveId(data.systemChannel);
+      _data.system_channel_id = this.client.channels.resolveID(data.systemChannel);
     }
     if (data.afkTimeout) _data.afk_timeout = Number(data.afkTimeout);
     if (typeof data.icon !== 'undefined') _data.icon = await DataResolver.resolveImage(data.icon);
-    if (data.owner) _data.owner_id = this.client.users.resolveId(data.owner);
+    if (data.owner) _data.owner_id = this.client.users.resolveID(data.owner);
     if (typeof data.splash !== 'undefined') _data.splash = await DataResolver.resolveImage(data.splash);
     if (typeof data.discoverySplash !== 'undefined') {
       _data.discovery_splash = await DataResolver.resolveImage(data.discoverySplash);
@@ -913,10 +913,10 @@ class Guild extends AnonymousGuild {
       _data.system_channel_flags = SystemChannelFlags.resolve(data.systemChannelFlags);
     }
     if (typeof data.rulesChannel !== 'undefined') {
-      _data.rules_channel_id = this.client.channels.resolveId(data.rulesChannel);
+      _data.rules_channel_id = this.client.channels.resolveID(data.rulesChannel);
     }
     if (typeof data.publicUpdatesChannel !== 'undefined') {
-      _data.public_updates_channel_id = this.client.channels.resolveId(data.publicUpdatesChannel);
+      _data.public_updates_channel_id = this.client.channels.resolveID(data.publicUpdatesChannel);
     }
     if (typeof data.features !== 'undefined') {
       _data.features = data.features;
@@ -985,7 +985,7 @@ class Guild extends AnonymousGuild {
       return {
         emoji_id: emoji?.id,
         emoji_name: emoji?.name ?? welcomeChannelData.emoji,
-        channel_id: this.channels.resolveId(welcomeChannelData.channel),
+        channel_id: this.channels.resolveID(welcomeChannelData.channel),
         description: welcomeChannelData.description,
       };
     });
@@ -1260,7 +1260,7 @@ class Guild extends AnonymousGuild {
    * @returns {Promise<Guild>}
    * @deprecated Use {@link GuildChannelManager#setPositions} instead
    * @example
-   * guild.setChannelPositions([{ channel: channelId, position: newChannelIndex }])
+   * guild.setChannelPositions([{ channel: channelID, position: newChannelIndex }])
    *   .then(guild => console.log(`Updated channel positions for ${guild}`))
    *   .catch(console.error);
    */
@@ -1317,7 +1317,7 @@ class Guild extends AnonymousGuild {
     await this.client.api.guilds(this.id).widget.patch({
       data: {
         enabled: settings.enabled,
-        channel_id: this.channels.resolveId(settings.channel),
+        channel_id: this.channels.resolveID(settings.channel),
       },
       reason,
     });
@@ -1345,7 +1345,7 @@ class Guild extends AnonymousGuild {
    *   .catch(console.error);
    */
   async leave() {
-    if (this.ownerId === this.client.user.id) throw new Error('GUILD_OWNED');
+    if (this.ownerID === this.client.user.id) throw new Error('GUILD_OWNED');
     await this.client.api.users('@me').guilds(this.id).delete();
     return this.client.actions.GuildDelete.handle({ id: this.id }).guild;
   }
@@ -1383,7 +1383,7 @@ class Guild extends AnonymousGuild {
       this.memberCount === guild.memberCount &&
       this.large === guild.large &&
       this.icon === guild.icon &&
-      this.ownerId === guild.ownerId &&
+      this.ownerID === guild.ownerID &&
       this.verificationLevel === guild.verificationLevel &&
       (this.features === guild.features ||
         (this.features.length === guild.features.length &&

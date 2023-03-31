@@ -9,7 +9,7 @@ const Util = require('../util/Util');
 /**
  * Activity sent in a message.
  * @typedef {Object} MessageActivity
- * @property {string} [partyId] Id of the party represented in activity
+ * @property {string} [partyID] Id of the party represented in activity
  * @property {MessageActivityType} type Type of activity sent
  */
 
@@ -197,7 +197,7 @@ class Activity {
      * The id of the application associated with this activity
      * @type {?Snowflake}
      */
-    this.applicationId = data.application_id ?? null;
+    this.applicationID = data.application_id ?? null;
 
     /**
      * Represents timestamps of an activity
@@ -264,7 +264,7 @@ class Activity {
      * The game's or Spotify session's id
      * @type {?string}
      */
-    this.sessionId = data.session_id ?? null;
+    this.sessionID = data.session_id ?? null;
 
     /**
      * The labels of the buttons of this rich presence
@@ -369,7 +369,7 @@ class RichPresenceAssets {
       }
     }
 
-    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationId, this.smallImage, {
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.smallImage, {
       format,
       size,
     });
@@ -396,7 +396,7 @@ class RichPresenceAssets {
       }
     }
 
-    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationId, this.largeImage, {
+    return this.activity.presence.client.rest.cdn.AppAsset(this.activity.applicationID, this.largeImage, {
       format,
       size,
     });

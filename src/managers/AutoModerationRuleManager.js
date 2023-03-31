@@ -36,7 +36,7 @@ class AutoModerationRuleManager extends CachedManager {
 
   /**
    * Resolves an {@link AutoModerationRuleResolvable} to a {@link AutoModerationRule} id.
-   * @method resolveId
+   * @method resolveID
    * @memberof AutoModerationRuleManager
    * @instance
    * @param {AutoModerationRuleResolvable} autoModerationRule The AutoModerationRule resolvable to resolve
@@ -130,12 +130,12 @@ class AutoModerationRuleManager extends CachedManager {
           type: typeof action.type === 'number' ? action.type : AutoModerationActionTypes[action.type],
           metadata: {
             duration_seconds: action.metadata?.durationSeconds,
-            channel_id: action.metadata?.channel && this.guild.channels.resolveId(action.metadata.channel),
+            channel_id: action.metadata?.channel && this.guild.channels.resolveID(action.metadata.channel),
           },
         })),
         enabled,
-        exempt_roles: exemptRoles?.map(exemptRole => this.guild.roles.resolveId(exemptRole)),
-        exempt_channels: exemptChannels?.map(exemptChannel => this.guild.channels.resolveId(exemptChannel)),
+        exempt_roles: exemptRoles?.map(exemptRole => this.guild.roles.resolveID(exemptRole)),
+        exempt_channels: exemptChannels?.map(exemptChannel => this.guild.channels.resolveID(exemptChannel)),
       },
       reason,
     });
@@ -169,7 +169,7 @@ class AutoModerationRuleManager extends CachedManager {
     autoModerationRule,
     { name, eventType, triggerMetadata, actions, enabled, exemptRoles, exemptChannels, reason },
   ) {
-    const autoModerationRuleId = this.resolveId(autoModerationRule);
+    const autoModerationRuleId = this.resolveID(autoModerationRule);
 
     const data = await this.client.api
       .guilds(this.guild.id)('auto-moderation')
@@ -191,12 +191,12 @@ class AutoModerationRuleManager extends CachedManager {
             type: typeof action.type === 'number' ? action.type : AutoModerationActionTypes[action.type],
             metadata: {
               duration_seconds: action.metadata?.durationSeconds,
-              channel_id: action.metadata?.channel && this.guild.channels.resolveId(action.metadata.channel),
+              channel_id: action.metadata?.channel && this.guild.channels.resolveID(action.metadata.channel),
             },
           })),
           enabled,
-          exempt_roles: exemptRoles?.map(exemptRole => this.guild.roles.resolveId(exemptRole)),
-          exempt_channels: exemptChannels?.map(exemptChannel => this.guild.channels.resolveId(exemptChannel)),
+          exempt_roles: exemptRoles?.map(exemptRole => this.guild.roles.resolveID(exemptRole)),
+          exempt_channels: exemptChannels?.map(exemptChannel => this.guild.channels.resolveID(exemptChannel)),
         },
         reason,
       });
@@ -247,7 +247,7 @@ class AutoModerationRuleManager extends CachedManager {
   fetch(options) {
     if (!options) return this._fetchMany();
     const { autoModerationRule, cache, force } = options;
-    const resolvedAutoModerationRule = this.resolveId(autoModerationRule ?? options);
+    const resolvedAutoModerationRule = this.resolveID(autoModerationRule ?? options);
     if (resolvedAutoModerationRule) {
       return this._fetchSingle({ autoModerationRule: resolvedAutoModerationRule, cache, force });
     }
@@ -280,7 +280,7 @@ class AutoModerationRuleManager extends CachedManager {
    * @returns {Promise<void>}
    */
   async delete(autoModerationRule, reason) {
-    const autoModerationRuleId = this.resolveId(autoModerationRule);
+    const autoModerationRuleId = this.resolveID(autoModerationRule);
     await this.client.api.guilds(this.guild.id)('auto-moderation').rules(autoModerationRuleId).delete({ reason });
   }
 }

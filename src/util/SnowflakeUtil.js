@@ -36,7 +36,7 @@ class SnowflakeUtil extends null {
     }
     if (INCREMENT >= 4095n) INCREMENT = BigInt(0);
 
-    // Assign WorkerId as 1 and ProcessId as 0:
+    // Assign workerID as 1 and processID as 0:
     return ((BigInt(timestamp - EPOCH) << 22n) | (1n << 17n) | INCREMENT++).toString();
   }
 
@@ -45,8 +45,8 @@ class SnowflakeUtil extends null {
    * @typedef {Object} DeconstructedSnowflake
    * @property {number} timestamp Timestamp the snowflake was created
    * @property {Date} date Date the snowflake was created
-   * @property {number} workerId The worker's id in the snowflake
-   * @property {number} processId The process's id in the snowflake
+   * @property {number} workerID The worker's id in the snowflake
+   * @property {number} processID The process's id in the snowflake
    * @property {number} increment Increment in the snowflake
    * @property {string} binary Binary representation of the snowflake
    */
@@ -63,8 +63,8 @@ class SnowflakeUtil extends null {
       get date() {
         return new Date(this.timestamp);
       },
-      workerId: Number((bigIntSnowflake >> 17n) & 0b11111n),
-      processId: Number((bigIntSnowflake >> 12n) & 0b11111n),
+      workerID: Number((bigIntSnowflake >> 17n) & 0b11111n),
+      processID: Number((bigIntSnowflake >> 12n) & 0b11111n),
       increment: Number(bigIntSnowflake & 0b111111111111n),
       binary: bigIntSnowflake.toString(2).padStart(64, '0'),
     };

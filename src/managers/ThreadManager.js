@@ -51,7 +51,7 @@ class ThreadManager extends CachedManager {
 
   /**
    * Resolves a {@link ThreadChannelResolvable} to a {@link ThreadChannel} id.
-   * @method resolveId
+   * @method resolveID
    * @memberof ThreadManager
    * @instance
    * @param {ThreadChannelResolvable} thread The ThreadChannel resolvable to resolve
@@ -80,7 +80,7 @@ class ThreadManager extends CachedManager {
    */
   fetch(options, { cache = true, force = false } = {}) {
     if (!options) return this.fetchActive(cache);
-    const channel = this.client.channels.resolveId(options);
+    const channel = this.client.channels.resolveID(options);
     if (channel) return this.client.channels.fetch(channel, cache, force);
     if (options.archived) {
       return this.fetchArchived(options.archived, cache);
@@ -129,7 +129,7 @@ class ThreadManager extends CachedManager {
     let id;
     if (typeof before !== 'undefined') {
       if (before instanceof ThreadChannel || /^\d{16,19}$/.test(String(before))) {
-        id = this.resolveId(before);
+        id = this.resolveID(before);
         timestamp = this.resolve(before)?.archivedAt?.toISOString();
       } else {
         try {
@@ -158,7 +158,7 @@ class ThreadManager extends CachedManager {
   static _mapThreads(rawThreads, client, { parent, guild, cache }) {
     const threads = rawThreads.threads.reduce((coll, raw) => {
       const thread = client.channels._add(raw, guild ?? parent?.guild, { cache });
-      if (parent && thread.parentId !== parent.id) return coll;
+      if (parent && thread.parentID !== parent.id) return coll;
       return coll.set(thread.id, thread);
     }, new Collection());
     // Discord sends the thread id as id in this object

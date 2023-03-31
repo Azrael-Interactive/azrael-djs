@@ -103,8 +103,8 @@ class MessageMentions {
     /**
      * Crossposted channel data.
      * @typedef {Object} CrosspostedChannel
-     * @property {Snowflake} channelId The mentioned channel's id
-     * @property {Snowflake} guildId The id of the guild that has the channel
+     * @property {Snowflake} channelID The mentioned channel's id
+     * @property {Snowflake} guildID The id of the guild that has the channel
      * @property {ChannelType} type The channel's type
      * @property {string} name The channel's name
      */
@@ -123,8 +123,8 @@ class MessageMentions {
         for (const d of crosspostedChannels) {
           const type = channelTypes[d.type];
           this.crosspostedChannels.set(d.id, {
-            channelId: d.id,
-            guildId: d.guild_id,
+            channelID: d.id,
+            guildID: d.guild_id,
             type: type ?? 'UNKNOWN',
             name: d.name,
           });

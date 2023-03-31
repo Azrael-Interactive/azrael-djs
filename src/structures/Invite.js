@@ -174,7 +174,7 @@ class Invite extends Base {
        * The channel's id this invite is for
        * @type {Snowflake}
        */
-      this.channelId = data.channel_id;
+      this.channelID = data.channel_id;
       this.channel = this.client.channels.cache.get(data.channel_id);
     }
 
@@ -184,7 +184,7 @@ class Invite extends Base {
        * @type {Channel}
        */
       this.channel ??= this.client.channels._add(data.channel, this.guild, { cache: false });
-      this.channelId ??= data.channel.id;
+      this.channelID ??= data.channel.id;
     }
 
     if ('created_at' in data) {
@@ -307,9 +307,9 @@ class Invite extends Base {
       presenceCount: false,
       memberCount: false,
       uses: false,
-      channel: 'channelId',
+      channel: 'channelID',
       inviter: 'inviterId',
-      guild: 'guildId',
+      guild: 'guildID',
     });
   }
 

@@ -41,7 +41,7 @@ class AutoModerationActionExecution {
      * The id of the channel where this action was triggered from.
      * @type {?Snowflake}
      */
-    this.channelId = data.channel_id ?? null;
+    this.channelID = data.channel_id ?? null;
 
     /**
      * The id of the message that triggered this action.

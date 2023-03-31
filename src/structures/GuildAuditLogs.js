@@ -533,7 +533,7 @@ class GuildAuditLogsEntry {
         break;
       case Actions.APPLICATION_COMMAND_PERMISSION_UPDATE:
         this.extra = {
-          applicationId: data.options.application_id,
+          applicationID: data.options.application_id,
         };
         break;
       case Actions.AUTO_MODERATION_BLOCK_MESSAGE:
