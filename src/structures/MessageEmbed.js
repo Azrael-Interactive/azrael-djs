@@ -4,9 +4,9 @@ const process = require('node:process');
 const { RangeError } = require('../errors');
 const Util = require('../util/Util');
 
-let deprecationEmittedForSetAuthor = false;
-let deprecationEmittedForSetFooter = false;
-let deprecationEmittedForAddField = false;
+let deprecationEmittedForSetAuthor = true;
+let deprecationEmittedForSetFooter = true;
+let deprecationEmittedForAddField = true;
 
 // TODO: Remove the deprecated code for `setAuthor()` and `setFooter()`.
 
